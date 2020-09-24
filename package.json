@@ -6,6 +6,7 @@
   "scripts": {
     "start":"node app.js",
     "test": "mocha",
+    "test_profileModel": "mocha ./test/model/profileItem.test.js",
     "devDeploy":"nodemon app.js"
   },
   "author": "DanielCsonka",
