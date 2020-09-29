@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let assert = require('assert');
+let assert = require('chai').assert;
 let expect = require('chai').expect;
 
 const dbaccess = require('../../config/appConfig.js').dbaccess;
@@ -56,10 +56,11 @@ describe('Model Profile CRUD operations', ()=>{
       if(err) console.log('MongoDB profiles collection is not empty!');
 
       ProfileSchema.insertMany(profileTestDatas, (err)=>{
-        if(err) console.log('Failed insertion at ');
+        if(err) console.log('Failed insertion of test datas to MongoDB');
       });
     });
-    done();
+    setTimeout(()=>{ done();}, 800);  //MongoDB cloud server occupied - no async test attempt
+
   });
 
   after(done=>{
@@ -68,14 +69,15 @@ describe('Model Profile CRUD operations', ()=>{
   });
 
   describe('Reading processes', ()=>{
+
     it('Read in one doc test', (done)=>{
       ProfileSchema.findOne({first_name: 'Jack'}, (error, doc) =>{
         expect(error).to.be.a('null');
         expect(doc).to.not.be.a('null');
         assert.equal(doc.last_name, 'Nicholson', 'Single readed doc is failed');
+        done();
       });
     });
-
     it('Read in all doc test', (done)=>{
       ProfileSchema.find((error, docs)=>{
         expect(error).to.be.a('null');
@@ -83,6 +85,7 @@ describe('Model Profile CRUD operations', ()=>{
         done();
       });
     });
+
   });
 
   describe('Manipulate processes', ()=>{
@@ -106,17 +109,32 @@ describe('Model Profile CRUD operations', ()=>{
         done();
       });
     });
-
-     // Fine!
     it('Remove the last added doc test', (done)=>{
       ProfileSchema.deleteOne({first_name: "James"}, (error, report)=>{
         expect(error).to.be.a('null');
         expect(report).to.not.be.a('null');
-                console.log(report);
-        assert.equal(report.deleteCount, 1, 'Deletion doesnt occured '+ report);
+        assert.equal(report.deletedCount, 1, 'Deletion doesnt occured '+ report);
         done();
       });
     });
-
   });
+
+  // describe('Virtual processes', ()=>{
+  //   it('Persistent data full name', (done)=>{
+  //     ProfileSchema.findOne({ age: 43 }, (error, doc)=>{
+  //       expect(error).to.be.a('null');
+  //       expect(doc).to.not.be.a('null');
+  //       doc.populate();
+  //       let fullname = doc.fullName;
+  //       expect(fullname).to.not.be.a('null');
+  //       assert.isString(fullname, 'Not proper fullname content - no string result');
+  //       assert.equal(fullname, 'Jane Doe', 'Not proper fullname content - no proper result');
+  //       done();
+  //        //It is failing the lack of correct management - occasionall appeared
+  //
+  //     });
+  //   });
+  // });
+
+
 });

@@ -6,7 +6,8 @@
   "scripts": {
     "start":"node app.js",
     "test": "mocha",
-    "test_profileModel": "mocha ./test/model/profileItem.test.js",
+    "test_modelProfile": "mocha ./test/model/profileItem.test.js",
+    "test_modelTodo": "mocha ./test/model/todoItem.test.js",
     "devDeploy":"nodemon app.js"
   },
   "author": "DanielCsonka",

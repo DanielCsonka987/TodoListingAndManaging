@@ -8,11 +8,11 @@ var TodoItemSchema = Schema({
   notation: {type: String, maxlength: 150},
   startingDate: {type: Date, default: Date.now()},
   lastModfingDate: {type: Date, default: Date.now()},
-  status: {type: String, enum: {'Finished', 'Proceeding'} default: 'Proceeding' },
-  owner: {type: Schema.Types.ObjectId}
+  status: {type: String, enum: ['Finished', 'Proceeding'], default: 'Proceeding' },
+  owner: {type: Schema.Types.ObjectId, require: true, ref: 'profiles'}
 });
 
-TodoItemschema.virtual('setStatus').set((status)=>{
+TodoItemSchema.virtual('setStatus').set((status)=>{
   this.status = status? 'Finished':'Proceeding';
   this.lastModfingDate = Date.now();
 });

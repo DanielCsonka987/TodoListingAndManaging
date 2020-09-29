@@ -11,7 +11,7 @@ ProfileItemSchema.virtual('fullName').get(()=>{
   return `${this.first_name} ${this.last_name}`;
 });
 
-ProfileItemSchema.virtual('getResourceURL').get((routPath)=>{
+ProfileItemSchema.virtual('resourceURL').get((routPath)=>{
   return `${routPath}/${this._id}`;
 });
 
