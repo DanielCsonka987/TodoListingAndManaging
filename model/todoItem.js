@@ -13,7 +13,7 @@ var TodoItemSchema = Schema({
 });
 
 TodoItemSchema.virtual('setStatus').set((status)=>{
-  this.status = status? 'Finished':'Proceeding';
+  this.status = status;
   this.lastModfingDate = Date.now();
 });
 
