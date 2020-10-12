@@ -63,9 +63,14 @@ before( (done)=>{
 });
 
 after((done)=>{
-  mongoose.connection.close();
+
+  ProfileSchema.deleteOne({_id: ownerProfile._id}, (rep)=>{
+    mongoose.connection.close();
+
+  });
   done();
 });
+
 
 describe('Todo middleware processes test - positive set', ()=>{
 
@@ -94,23 +99,24 @@ describe('Todo middleware processes test - positive set', ()=>{
         expect(creationInfo.report._id).to.not.be.a('null');
         expect(creationInfo.report.task).to.equal(newRawTodos[0].task);
         expect(creationInfo.message).to.equal('Creation done!');
+
+        newRawTodos[0] = creationInfo.report;
       })
-      .then((creationInfo)=>{
-        expect(doc).to.not.be.a('null');
+      .then(()=>{
         todoProcesses.loadInProfileTodos(ownerProfile._id)
-        .then((docs)=>{
-          let properCreation = false;
-          docs.forEach((item, i) => {
-            if(item._id == creationInfo.report._id){
-              properCreation = true;
-            }
-          });
-          expect(properCreation).to.be.true;
-        });
+        .then((readInfo)=>{
+          expect(readInfo).to.not.be.a('null');
+          expect(readInfo.report).to.not.be.empty;
+          let createdOne = readInfo.report
+            .filter(item => item._id.equals(newRawTodos[0]._id));
+          expect(createdOne).to.not.be.empty;
+          expect(createdOne.length).to.equal(1);
+        })
+        .catch(err=>{ console.log('Readback problem ', err)});
       })
       .catch(err=>{ console.log('Error happened ', err)  });
 
-      done();
+      setTimeout(()=>{ done(); }, 50);
   })
 
   it('Revise update status', (done)=>{
@@ -122,39 +128,192 @@ describe('Todo middleware processes test - positive set', ()=>{
         expect(updateInfo.report).to.not.be.a('null');
         expect(updateInfo.message).to.not.be.a('null');
         expect(updateInfo.message).to.equal('Update done!');
+        return updateInfo;
       })
       .then((updateInfo)=>{
         todoProcesses.loadInProfileTodos(ownerProfile._id)
-        .then((docs)=>{
-          let properUpdate = false;
-          docs.forEach((item, i) => {
-            if(item._id === updateInfo._id){
-              if(item.status === 'Finished'
-              && item.lastModfingDate > item.startingDate)
-                properUpdate == true;
-            }
-          });
-          expect(properUpdate).to.be.true;
+        .then((readInfo)=>{
+          expect(readInfo).to.not.be.a('null');
+          expect(readInfo.report).to.not.be.empty;
+          let updateResult = readInfo.report
+            .filter(item=> item._id.equals(updateInfo._id));
+          expect(updateResult).to.not.be.empty;
+          expect(updateResult.length).to.equal(1);
+          expect(updateResult[0].status).to.equal('Finished');
+          // expect(updateResult[0].startingDate).to.be.above(updateResult[0].lastModfingDate);
         });
       })
       .catch(err=>{ console.log('Error happened ', err)  });
+      setTimeout(()=>{ done(); }, 50);
+
+  })
+
+  it('Revise update notation', (done)=>{
+    todoProcesses
+      .updateNotationTodo(todoTestDatas[0]._id, 'No one else would do this')
+      .then((updateInfo)=>{
+        expect(updateInfo).to.not.be.a('null');
+        expect(updateInfo._id).to.not.be.a('null');
+        expect(updateInfo.report).to.not.be.a('null');
+        expect(updateInfo.report.nModified).to.equal(1);
+        expect(updateInfo.message).to.equal('Update done!');
+        return updateInfo;
+      })
+      .then((updateInfo)=>{
+        todoProcesses.loadInProfileTodos(ownerProfile._id)
+        .then((readInfo)=>{
+          let updateResult = readInfo.report
+            .filter(item => item._id.equals(updateInfo._id) );
+          expect(updateResult).to.be.a('array');
+          expect(updateResult).to.not.be.empty;
+          expect(updateResult.length).to.equal(1);
+          expect(updateResult[0].notation).to.equal('No one else would do this');
+          // expect(updateResult[0].startingDate).to.be.above(updateResult[0].lastModfingDate);
+        });
+      })
+      .catch(err=>{ console.log('Error happened ', err)  });
+      setTimeout(()=>{ done(); }, 50);
+
+  })
+
+  it('Revise deletion single todo item', (done)=>{
+    todoProcesses
+      .deleteThisTodo(ownerProfile._id, newRawTodos[0]._id)
+      .then((deletionInfo)=>{
+        expect(deletionInfo).to.not.be.a('null');
+        expect(deletionInfo.report).to.not.be.a('null');
+        expect(deletionInfo.report.deletedCount).to.equal(1);
+        expect(deletionInfo.message).to.not.be.a('null');
+        expect(deletionInfo.message).to.equal('Deletion done!');
+      })
+      .then(()=>{
+        todoProcesses.loadInProfileTodos(ownerProfile._id)
+        .then((readInfo) =>{
+          expect(readInfo).to.not.be.a('null');
+          expect(readInfo.report).to.not.be.a('null');
+          let supposedToDelete = readInfo.report
+            .filter(item =>  item._id.equals(newRawTodos[0]._id) );
+          expect(supposedToDelete).to.be.empty;
+        })
+        .catch(err=>{ console.log('Readback problem ', err)} );
+      })
+      .catch( err=>{ console.log('Error happened ', err); });
       done();
-    })
-
-  // it('Revise update notation', (done)=>{
-  //   todoProcesses
-  //     .updateNotationTodo()
-  //     .then()
-  //     .then();
-  // })
+  })
   //
-
-  //
-  // it('Revise deletion todo item', (done)=>{
-  //   todoProcesses
-  //     .deleteThisTodo()
-  //     .then()
-  //     .then();
-  // })
+  it('Revise deletion all todo items', (done)=>{
+    todoProcesses
+      .deleteAllTodos(ownerProfile._id)
+      .then((deletionInfo)=>{
+        expect(deletionInfo).to.not.be.a('null');
+        expect(deletionInfo.report).to.not.be.a('null');
+        expect(deletionInfo.report).to.above(0);
+      })
+      .then(()=>{
+        todoProcesses.loadInProfileTodos(ownerProfile._id)
+        .then((readInfo)=>{
+          expect(readInfo).to.not.be.a('null');
+          expect(readInfo.report).to.not.be.a('null');
+          expect(readInfo.report).to.be.empty;
+        })
+        .catch(err=>{throw new Error('Readback problem ', err)});
+      })
+      .catch(err=>{ console.log('Error happened ', err) });
+      done();
+  })
 
 });
+
+
+describe('Todo middleware processes - negative set', ()=>{
+
+  it('Readin docs without profile id', (done)=>{
+    todoProcesses.loadInProfileTodos()
+    .then(readInfo=>{
+
+    })
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('No content to show!');
+      expect(err.report).to.be.a('array');
+      expect(err.report).to.be.empty;
+    });
+    done();
+  })
+
+  it('Readin docs without proper profile id', (done)=>{
+    //must be a single String of 12 bytes or a string of 24 hex characters
+    todoProcesses.loadInProfileTodos('123456789012')
+    .then(readInfo=>{
+
+    })
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('MongoDB error!');
+      expect(err.report).to.be.a('array');
+      expect(err.report).to.be.empty;
+    });
+    done();
+  })
+
+  it('Updte state without an identifier',(done)=>{
+    todoProcesses.updateStateTodo('123456789012', true)
+    .then(updateInfo=>{
+      expect(updateInfo).to.be.a('null');
+    })
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('No target to update!');
+      expect(err.report).to.not.be.a('null');
+      expect(err.report.n).to.equal(0);
+    });
+    done();
+  })
+
+  it('Update notation without an identifier', (done)=>{
+    todoProcesses.updateNotationTodo('123456789012', 'No reasont ot persist')
+    .then(updateInfo=>{
+      expect(updateInfo).to.be.a('null');
+    })
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('No target to update!');
+      expect(err.report).to.not.be.a('null');
+      expect(err.report.n).to.equal(0);
+    });
+    done();
+  })
+
+  it('Single deletion without an identifier', (done)=>{
+    todoProcesses.deleteThisTodo('123456789012', '123456789012')
+    .then(deletionInfo=>{
+
+    })
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('No target to delete!');
+      expect(err.report).to.not.be.a('null');
+      expect(err.report.n).to.equal(0);
+    });
+    done();
+  })
+
+  it('All deletion without an identifier', (done)=>{
+    todoProcesses.deleteAllTodos('123456789012')
+    .then(deletionInfo=>{})
+    .catch(err=>{
+      expect(err).to.not.be.a('null');
+      expect(err.message).to.not.be.a('null');
+      expect(err.message).to.equal('No target to delete!');
+      expect(err.report).to.not.be.a('null');
+      expect(err.report.n).to.equal(0);
+    });
+    done();
+  })
+
+})

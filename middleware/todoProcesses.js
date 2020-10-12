@@ -24,6 +24,10 @@ module.exports.updateStateTodo = (todoId, todoStatus)=>{
        lastModfingDate: Date.now()}, (err, rep)=>{
 
       if(err) reject( {_id: todoId, report: err, message: 'MongoDB error!'} );
+      if(!rep)
+        reject( {_id: todoId, report: rep, message: 'Update malfuntion!'} );
+      if(rep.n === 0)
+        reject( {_id: todoId, report: rep, message: 'No target to update!', });
       if(rep.n === 1 && rep.nModified === 1){
         resolve( {_id: todoId, report: rep, message: 'Update done!' });
       }else{
@@ -39,10 +43,14 @@ module.exports.updateNotationTodo = (todoId, todoNotation)=>{
        (err, rep)=>{
 
       if(err) reject( {_id: todoId, report: err, message: 'MongoDB error!'} );
-      if(rep.n == 1 && rep.nModified ==1 ){
+      if(!rep)
+        reject( {_id: todoId, report: rep, message: 'Update malfuntion!'} );
+      if(rep.n === 0)
+        reject( {_id: todoId, report: rep, message: 'No target to update!', });
+      if(rep.n === 1 && rep.nModified === 1 ){
         resolve( {_id: todoId, report: rep, message: 'Update done!'} );
       }else{
-        reject( {_id: todoId, report: rep, message: 'Update malfuncion!'} );
+        reject( {_id: todoId, report: rep, message: 'Update malfunction!'} );
       }
     });
   });
@@ -53,8 +61,12 @@ module.exports.deleteThisTodo = (profileId, todoId)=>{
     TodoSchema.deleteOne({_id: todoId, owner: profileId}, (err, rep)=>{
 
       if(err) reject( {report: err, error: 'MongoDB error!'} );
-      if(rep.n == 1 && rep.nDeleted == 1){
-        resolve( {report: rep, message: 'Deletion successfully!'} );
+      if(!rep)
+        reject( {report: rep, message: 'Delete malfuntion!'} );
+      if(rep.n === 0)
+        reject( {report: rep, message: 'No target to delete!'} );
+      if(rep.n === 1 && rep.deletedCount === 1){
+        resolve( {report: rep, message: 'Deletion done!'} );
       }else{
         reject( {report: rep, message: 'Delete malfunction!'} );
       }
@@ -64,13 +76,17 @@ module.exports.deleteThisTodo = (profileId, todoId)=>{
 
 module.exports.deleteAllTodos = (profileId)=>{
   return new Promise((resolve, reject)=>{
-    TodoSchema.deleteNany({owner: profileId}, (err, rep)=>{
+    TodoSchema.deleteMany({owner: profileId}, (err, rep)=>{
 
       if(err) reject( {report: err, message: 'MongoDB error!'} );
-      if(rep.n == rep.nDeleted){
-        resolve( {report: rep.nDeleted, message: 'Deletion successfully!'} );
+      if(!rep)
+        reject( {report: rep, message: 'Delete malfuntion!'} );
+      if(rep.n === 0)
+        reject( {report: rep, message: 'No target to delete!'} );
+      if(rep.n === rep.deletedCount){
+        resolve( {report: rep.deletedCount, message: 'Deletion successfully!'} );
       }else{
-        reject( {report: rep, message: 'Deleted amount: ' + rep.nDeleted
+        reject( {report: rep, message: 'Deleted amount: ' + rep.deletedCount
          + ' from ' + rep.n} )
       }
     });
@@ -82,7 +98,10 @@ module.exports.loadInProfileTodos = (profileId)=>{
     TodoSchema.find({owner: profileId}, (err, docs)=>{
 
       if(err) reject( {report: err, message: 'MongoDB error!'} );
-      resolve( {report: docs, message: 'Reading done!'} );
+      if(!docs)
+        reject( {report: [], message: 'No content to show!'} );
+      else
+        resolve( {report: docs, message: 'Reading done!'} );
     });
   });
 }
