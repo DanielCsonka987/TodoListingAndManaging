@@ -9,29 +9,39 @@ let profileTestDatas = [
   {
     first_name: 'John',
     last_name: 'Doe',
+    username: 'JohnD',
+    password: 'test',
     age: 31,
     occupation: 'actor'
   },
   {
     first_name: 'Jane',
     last_name: 'Doe',
+    username: 'janed',
+    password: 'retest',
     age: 43
   },
   {
     first_name: 'Jack',
     last_name: 'Nicholson',
+    username: 'jack',
+    password: 'nich',
     age: 64,
     occupation: 'actor'
   },
   {
     first_name: 'Sherlock',
     last_name: 'Holmes',
+    username: 'holmes',
+    password: 'strong',
     age: 61,
     occupation: 'detective'
   },
   {
     first_name: 'Lev',
     last_name: 'Tolstoj',
+    username: 'levy',
+    password: 'warpeace',
     age: 51,
     occupation: 'writer'
   }
@@ -40,6 +50,8 @@ let profileTestDatas = [
 let additionalPerson = {
   first_name: 'James',
   last_name: 'McCoy',
+  username: 'mc',
+  password: 'machine',
   age: 23,
   occupation: 'engeneer'
 }
@@ -69,7 +81,6 @@ describe('Model Profile CRUD operations', ()=>{
   });
 
   describe('Reading processes', ()=>{
-
     it('Read in one doc test', (done)=>{
       ProfileSchema.findOne({first_name: 'Jack'}, (error, doc) =>{
         expect(error).to.be.a('null');
@@ -118,23 +129,5 @@ describe('Model Profile CRUD operations', ()=>{
       });
     });
   });
-
-  // describe('Virtual processes', ()=>{
-  //   it('Persistent data full name', (done)=>{
-  //     ProfileSchema.findOne({ age: 43 }, (error, doc)=>{
-  //       expect(error).to.be.a('null');
-  //       expect(doc).to.not.be.a('null');
-  //       doc.populate();
-  //       let fullname = doc.fullName;
-  //       expect(fullname).to.not.be.a('null');
-  //       assert.isString(fullname, 'Not proper fullname content - no string result');
-  //       assert.equal(fullname, 'Jane Doe', 'Not proper fullname content - no proper result');
-  //       done();
-  //        //It is failing the lack of correct management - occasionall appeared
-  //
-  //     });
-  //   });
-  // });
-
 
 });

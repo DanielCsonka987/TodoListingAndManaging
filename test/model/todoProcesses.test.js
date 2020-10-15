@@ -1,15 +1,17 @@
-let todoProcesses = require('../../middleware/todoProcesses.js');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
+const mongoose = require('mongoose');
 
 const dbaccess = require('../../config/appConfig.js').dbaccess;
-let mongoose = require('mongoose');
-let TodoSchema = require('../../model/todoItem.js');
-let ProfileSchema = require('../../model/profileItem.js');
+const TodoSchema = require('../../model/todoItem.js');
+const ProfileSchema = require('../../model/profileItem.js');
+const todoProcesses = require('../../model/todoProcesses.js');
 
 let ownerProfile = new ProfileSchema({
   first_name: 'Steve',
   last_name: 'Jobs',
+  username: 'apple',
+  password: 'donotforget',
   age: 56,
   occupation: 'bussinessman'
 });

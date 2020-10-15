@@ -8,7 +8,8 @@
     "test": "mocha",
     "test_modelProfile": "mocha ./test/model/profileItem.test.js",
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
-    "test_todos": "mocha ./test/middle/todoProcesses.test.js",
+    "test_todos": "mocha ./test/model/todoProcesses.test.js",
+    "test_profiles": "mocha ./test/model/profileProcesses.test.js",
     "devDeploy":"nodemon app.js"
   },
   "author": "DanielCsonka",

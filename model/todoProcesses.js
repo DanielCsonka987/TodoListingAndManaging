@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let TodoSchema = require('../model/todoItem.js');
+let TodoSchema = require('./todoItem.js');
 
 module.exports.createTodo = (profileId, todo)=>{
   return new Promise((resolve, reject)=>{
