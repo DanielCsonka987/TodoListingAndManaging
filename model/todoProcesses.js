@@ -27,11 +27,11 @@ module.exports.updateStateTodo = (todoId, todoStatus)=>{
       if(!rep)
         reject( {_id: todoId, report: rep, message: 'Update malfuntion!'} );
       if(rep.n === 0)
-        reject( {_id: todoId, report: rep, message: 'No target to update!', });
+        reject( {_id: todoId, report: rep, message: 'No target to update!'});
       if(rep.n === 1 && rep.nModified === 1){
         resolve( {_id: todoId, report: rep, message: 'Update done!' });
       }else{
-        reject( {_id: todoId, report: rep, message: 'Update malfunction!', });
+        reject( {_id: todoId, report: rep, message: 'Update malfunction!' });
       }
     });
   });
@@ -46,7 +46,7 @@ module.exports.updateNotationTodo = (todoId, todoNotation)=>{
       if(!rep)
         reject( {_id: todoId, report: rep, message: 'Update malfuntion!'} );
       if(rep.n === 0)
-        reject( {_id: todoId, report: rep, message: 'No target to update!', });
+        reject( {_id: todoId, report: rep, message: 'No target to update!'});
       if(rep.n === 1 && rep.nModified === 1 ){
         resolve( {_id: todoId, report: rep, message: 'Update done!'} );
       }else{

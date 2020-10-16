@@ -1,19 +1,19 @@
-module.exports.forModelObj = (itemToReport, message)=>{
-  return {report: itemToReport, message: message}
+module.exports.forModelObj = (itemToReport, msg)=>{
+  return {report: itemToReport, message: msg}
 }
 
-module.exports.forModelObjWithId = (id, itemToReport, message)=>{
-  let obj = exports.forModelObj(itemToReport, message);
-  obj._id = id;
+module.exports.forModelObjWithId = (id, itemToReport, msg)=>{
+  let obj = exports.forModelObj(itemToReport, msg);
+  obj.identifier = id;
   return obj;
 }
 
-module.exports.forErrorObj = (itemToReport, message, src) =>{
-  return {report: itemToReport, message: message, source: src}
+module.exports.forErrorObj = (itemToReport, msg, src) =>{
+  return {report: itemToReport, message: msg, source: src}
 }
 
-module.exports.forErrorObjWithId = (id, itemToReport, message, src) =>{
-  let obj = exports.forErrorObj(itemToReport, message, src);
-  obj._id = id;
+module.exports.forErrorObjWithId = (id, itemToReport, msg, src) =>{
+  let obj = exports.forErrorObj(itemToReport, msg, src);
+  obj.identifier = id;
   return obj;
 }

@@ -65,12 +65,15 @@ before((done)=>{
     .once('close', ()=>{ console.log('MongoDB closed properly') })
 
   mongoose.connection.collections.profiles.drop((err)=>{
-    expect(err).to.be.a('null');
+    if(err){
+      if(err.code !== 26) //NameSpaceNotFound -> collection dropped already
+        expect(err).to.be.a('null');
+    }
     ProfileSchema.insertMany(profileTestDatas, err=>{
       expect(err).to.be.a('null');
     });
   });
-  setTimeout(()=>{done();}, 800);
+  setTimeout(()=>{done();}, 1000);
 });
 
 after((done)=>{
@@ -79,6 +82,7 @@ after((done)=>{
 });
 
 describe('Profile processes test - positive set', ()=>{
+
   it('Reading in datas', (done)=>{
     ProfileProcesses.loadInProfiles()
     .then((readInfo)=>{
@@ -93,7 +97,6 @@ describe('Profile processes test - positive set', ()=>{
     })
     .catch(err=>{ console.log('Error happened ', err) });
     setTimeout( ()=>{done();} , 50);
-
   });
 
   it('Create new profile', (done)=>{
@@ -107,10 +110,76 @@ describe('Profile processes test - positive set', ()=>{
       additionalPerson = createInfo.report;
     })
     .then(()=>{
-
+      ProfileProcesses.loadInProfiles()
+      .then((readInfo)=>{
+        expect(readInfo).to.not.be.a('null');
+        expect(readInfo.report).to.be.a('array');
+        expect(readInfo.report).to.not.be.empty;
+        let createdFilter = readInfo.report
+          .filter(item=> item._id.equals(additionalPerson._id) );
+        expect(createdFilter).to.not.be.empty;
+        expect(createdFilter.length).to.equal(1);
+      })
+      .catch((err)=>{ console.log('Readback error ', err) });
     })
     .catch((err)=>{ console.log('Error happened ', err) });
-    setTimeout( ()=>{done();} , 50);
+    setTimeout( ()=>{done();} , 80);
+  })
+
+  it('Reading single profile by id', (done)=>{
+    ProfileProcesses.findThisProfileById(additionalPerson._id)
+    .then(readInfo=>{
+      expect(readInfo).to.not.be.a('null');
+      expect(readInfo.identifier).to.not.be.a('null');
+      expect(readInfo.report).to.not.be.a('null');
+      expect(readInfo.report._id.toString())
+        .to.equal(additionalPerson._id.toString());
+      expect(readInfo.report.username.toString())
+        .to.equal(additionalPerson.username.toString());
+      expect(readInfo.message).to.be.a('string');
+      expect(readInfo.message).to.equal('Reading done!');
+    })
+    .catch((err)=>{ console.log('Error happened ', err) });
+    setTimeout(()=>{done();}, 50);
+  });
+
+  it('Reading single profile by username', (done)=>{
+    ProfileProcesses.findThisProfileByUsername('mc')
+    .then(readInfo=>{
+      expect(readInfo).to.not.be.a('null');
+      expect(readInfo.identifier).to.not.be.a('null');
+      expect(readInfo.report).to.not.be.a('null');
+      expect(readInfo.report._id.toString())
+        .to.equal(additionalPerson._id.toString());
+      expect(readInfo.message).to.be.a('string');
+      expect(readInfo.message).to.equal('Reading done!');
+    })
+    .catch((err)=>{ console.log('Error happened ', err) });
+    setTimeout(()=>{done();}, 50);
+  });
+
+  it('Update password', (done)=>{
+    ProfileProcesses.updateProfilePassword(additionalPerson._id, 'planning')
+    .then((updateInfo)=>{
+      expect(updateInfo).to.not.be.a('null');
+      expect(updateInfo.message).to.be.a('string');
+      expect(updateInfo.message).to.equal('Update done!');
+    })
+    .then(()=>{
+      ProfileProcesses.loadInProfiles()
+      .then(readInfo=>{
+        expect(readInfo).to.not.be.a('null');
+        expect(readInfo.report).to.be.a('array');
+        expect(readInfo.report).to.not.be.empty;
+        let updateProfile = readInfo.report
+          .filter(item => item._id.equals(additionalPerson._id));
+        expect(updateProfile).to.not.be.empty;
+        expect(updateProfile[0].password).to.equals('planning');
+      })
+      .catch((err)=>{ console.log('Readback error ', err) });
+    })
+    .catch((err)=>{ console.log('Error happened ', err) });
+    setTimeout(()=> done(), 80);
   })
 
   it('Delete existing profile', (done)=>{
@@ -118,13 +187,24 @@ describe('Profile processes test - positive set', ()=>{
     .then((deletionInfo)=>{
       expect(deletionInfo).to.not.be.a('null');
       expect(deletionInfo._id).to.not.be.a('null');
-      expcet(deletionInfo.report).to.not.be.a('null');
+      expect(deletionInfo.report).to.be.a('null');
       expect(deletionInfo.message).to.not.be.a('null');
-      expect(deletionInfo,message).to.equal('Deletion done!');
+      expect(deletionInfo.message).to.equal('Deletion done!');
     })
-    // .then()
+    .then(()=>{
+      ProfileProcesses.loadInProfiles()
+      .then((readInfo)=>{
+        expect(readInfo).to.not.be.a('null');
+        expect(readInfo.report).to.be.a('array');
+        expect(readInfo.report).to.not.be.empty;
+        let deletedFilter = readInfo.report
+          .filter(item=> item._id.equals(additionalPerson._id) );
+        expect(deletedFilter).to.be.empty;
+      })
+      .catch((err)=>{ console.log('Readback error ', err) });
+    })
     .catch( err=>{console.log('Error happened ',err)});
-    setTimeout(()=>{done()}, 50);
+    setTimeout(()=>{done()}, 100);
   })
 
 });
@@ -132,4 +212,82 @@ describe('Profile processes test - positive set', ()=>{
 
 describe('Profile processes test - negatve set', ()=>{
 
+  it('Profile seeking with non-existing id', (done)=>{
+    ProfileProcesses.findThisProfileById('123456789012')
+    .then(()=>{})
+    .catch((errorInfo)=>{
+      expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.identifier).to.not.be.a('null');
+      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('Read malfunction!');
+    });
+    setTimeout(()=>{done();}, 50);
+  })
+
+  it('Profile seeking with non-existing username', (done)=>{
+    ProfileProcesses.findThisProfileByUsername('stgToTest')
+    .then(()=>{})
+    .catch((errorInfo)=>{
+      expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.identifier).to.not.be.a('null');
+      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('Read malfunction!');
+    });
+    setTimeout(()=>{done();}, 50);
+  })
+
+  it('Profile creation without some essencial datas 1', (done)=>{
+    ProfileProcesses.createProfile( {
+      username: 'stg',
+      password: 'stg'
+    })
+    .then(()=>{})
+    .catch((errorInfo)=>{
+      expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('MongoDB error!');
+    });
+    setTimeout(()=>{done();}, 50);
+  });
+
+  it('Profile creation without some essencial datas 2', (done)=>{
+    ProfileProcesses.createProfile( {
+      first_name: 'Alisha',
+      username: 'st',
+      password: 'stg'
+    })
+    .then(()=>{})
+    .catch((errorInfo)=>{
+      expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('MongoDB error!');
+    });
+    setTimeout(()=>{done();}, 50);
+  });
+
+  it('Profile update password with non-existing id', (done)=>{
+    ProfileProcesses.updateProfilePassword('123456789012', 'stg')
+    .then(()=>{})
+    .catch(errorInfo =>{
+      expect(errorInfo).to.be.not.a('null');
+      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('No target to update!');
+    });
+    setTimeout(()=>{done();}, 50);
+  })
+
+  it('Profile deletion with non-existing id', (done)=>{
+    ProfileProcesses.deleteProfile('123456789012')
+    .then(()=>{})
+    .catch(errorInfo=>{
+      expect(errorInfo).to.be.not.a('null');
+      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('No target to delete!');
+    })
+    setTimeout(()=>{done();}, 50);
+  })
 });
