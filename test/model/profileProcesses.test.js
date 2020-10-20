@@ -103,9 +103,9 @@ describe('Profile processes test - positive set', ()=>{
     ProfileProcesses.createProfile(additionalPerson)
     .then((createInfo)=>{
       expect(createInfo).to.not.be.a('null');
-      expect(createInfo._id).to.not.be.a('null');
       expect(createInfo.report).to.not.be.a('null');
-      expect(createInfo.message).to.not.be.a('null');
+      expect(createInfo.report._id).to.not.be.a('null');
+      expect(createInfo.message).to.be.a('string');
       expect(createInfo.message).to.equal('Creation done!');
       additionalPerson = createInfo.report;
     })
@@ -130,8 +130,8 @@ describe('Profile processes test - positive set', ()=>{
     ProfileProcesses.findThisProfileById(additionalPerson._id)
     .then(readInfo=>{
       expect(readInfo).to.not.be.a('null');
-      expect(readInfo.identifier).to.not.be.a('null');
       expect(readInfo.report).to.not.be.a('null');
+      expect(readInfo.report._id).to.not.be.a('null');
       expect(readInfo.report._id.toString())
         .to.equal(additionalPerson._id.toString());
       expect(readInfo.report.username.toString())
@@ -139,16 +139,17 @@ describe('Profile processes test - positive set', ()=>{
       expect(readInfo.message).to.be.a('string');
       expect(readInfo.message).to.equal('Reading done!');
     })
-    .catch((err)=>{ console.log('Error happened ', err) });
+    .catch(
+      (errirInfo)=>{ console.log('Error happened ', err) });
     setTimeout(()=>{done();}, 50);
   });
 
   it('Reading single profile by username', (done)=>{
-    ProfileProcesses.findThisProfileByUsername('mc')
+    ProfileProcesses.findThisProfileByUsername(additionalPerson.username)
     .then(readInfo=>{
       expect(readInfo).to.not.be.a('null');
-      expect(readInfo.identifier).to.not.be.a('null');
       expect(readInfo.report).to.not.be.a('null');
+      expect(readInfo.report._id).to.not.be.a('null');
       expect(readInfo.report._id.toString())
         .to.equal(additionalPerson._id.toString());
       expect(readInfo.message).to.be.a('string');
@@ -162,6 +163,7 @@ describe('Profile processes test - positive set', ()=>{
     ProfileProcesses.updateProfilePassword(additionalPerson._id, 'planning')
     .then((updateInfo)=>{
       expect(updateInfo).to.not.be.a('null');
+      expect(updateInfo.report).to.not.be.a('null');
       expect(updateInfo.message).to.be.a('string');
       expect(updateInfo.message).to.equal('Update done!');
     })
@@ -186,9 +188,8 @@ describe('Profile processes test - positive set', ()=>{
     ProfileProcesses.deleteProfile(additionalPerson._id)
     .then((deletionInfo)=>{
       expect(deletionInfo).to.not.be.a('null');
-      expect(deletionInfo._id).to.not.be.a('null');
-      expect(deletionInfo.report).to.be.a('null');
-      expect(deletionInfo.message).to.not.be.a('null');
+      expect(deletionInfo.report).to.not.be.a('null');
+      expect(deletionInfo.message).to.be.a('string');
       expect(deletionInfo.message).to.equal('Deletion done!');
     })
     .then(()=>{
@@ -217,8 +218,11 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.identifier).to.not.be.a('null');
-      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.involvedId).to.not.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo.report.explanation).to.be.a('string');
+      expect(errorInfo.report.explanation).to
+        .equal('No proper query answer is created!');
       expect(errorInfo.message).to.be.a('string');
       expect(errorInfo.message).to.equal('Read malfunction!');
     });
@@ -230,15 +234,18 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.identifier).to.not.be.a('null');
-      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.involvedId).to.not.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo.report.explanation).to.be.a('string');
+      expect(errorInfo.report.explanation).to
+        .equal('No proper query answer is created!');
       expect(errorInfo.message).to.be.a('string');
       expect(errorInfo.message).to.equal('Read malfunction!');
     });
     setTimeout(()=>{done();}, 50);
   })
 
-  it('Profile creation without some essencial datas 1', (done)=>{
+  it('Profile creation without some essential datas 1', (done)=>{
     ProfileProcesses.createProfile( {
       username: 'stg',
       password: 'stg'
@@ -246,13 +253,14 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
       expect(errorInfo.message).to.be.a('string');
       expect(errorInfo.message).to.equal('MongoDB error!');
     });
     setTimeout(()=>{done();}, 50);
   });
 
-  it('Profile creation without some essencial datas 2', (done)=>{
+  it('Profile creation without some essential datas 2', (done)=>{
     ProfileProcesses.createProfile( {
       first_name: 'Alisha',
       username: 'st',
@@ -261,6 +269,7 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
       expect(errorInfo.message).to.be.a('string');
       expect(errorInfo.message).to.equal('MongoDB error!');
     });
@@ -272,9 +281,11 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch(errorInfo =>{
       expect(errorInfo).to.be.not.a('null');
-      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo.report.explanation).to.be.a('string');
+      expect(errorInfo.report.explanation).to.equal('No target to update!');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('No target to update!');
+      expect(errorInfo.message).to.equal('Update unsuccessful!');
     });
     setTimeout(()=>{done();}, 50);
   })
@@ -284,10 +295,13 @@ describe('Profile processes test - negatve set', ()=>{
     .then(()=>{})
     .catch(errorInfo=>{
       expect(errorInfo).to.be.not.a('null');
-      expect(errorInfo.report).to.be.a('null');
+      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo.report.explanation).to.be.a('string');
+      expect(errorInfo.report.explanation).to.equal('No target to delete!');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('No target to delete!');
+      expect(errorInfo.message).to.equal('Deletion unsucessful!');
     })
     setTimeout(()=>{done();}, 50);
   })
+
 });
