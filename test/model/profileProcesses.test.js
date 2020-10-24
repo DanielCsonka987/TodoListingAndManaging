@@ -51,7 +51,7 @@ let profileTestDatas = [
 let additionalPerson = {
   first_name: 'James',
   last_name: 'McCoy',
-  username: 'mc',
+  username: 'mchn',
   password: 'machine',
   age: 23,
   occupation: 'engeneer'
