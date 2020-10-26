@@ -6,7 +6,7 @@ module.exports = {
   dbaccess: 'mongodb+srv://' + dbUser + ':' + dbPwd +
    '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
 
-  encryption_saltsounds: 10,
+  encryption_saltrounds: 10,
   password_regexp: '^[0-9a-zA-Z]{4,40}$',
 
   common_apiHeader: {

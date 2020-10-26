@@ -13,6 +13,7 @@ const TestProfileVerify =
 const ProductionProfileVerify =
   require('../../middleware/dataValidation/profileDatasValidity.js')
   .validation;
+const LoginVerif = require('../../middleware/dataValidation/loginDatasValidity.js');
 
 describe('Profile datas verificiation - positive case', ()=>{
   it('Todo with required properties', (done)=>{
@@ -243,3 +244,75 @@ describe('Todo datas verificiation - negative case', ()=>{
     })
   })
 });
+
+describe('Login datas verification - positive/negative cases', ()=>{
+  it('Correct composition', (done)=>{
+    LoginVerif({
+      username: 'somebody',
+      password: '123that'
+    })
+    .then(res=>{
+      expect(res).to.be.a('object');
+      expect(res.username).to.be.a('string');
+      expect(res.username).to.equal('somebody');
+    })
+    .catch(err=>{ expect(err).to.be.a('undefined') });
+    done();
+  });
+  it('Missing username', (done)=>{
+    LoginVerif({
+      password: 'something'
+    })
+    .then(res=> { expect(res).to.be.a('undefined')})
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Wrong username or password!');
+    });
+    done();
+  })
+  it('Missing password', (done)=>{
+    LoginVerif({
+      username: 'somebody'
+    })
+    .then(res=> { expect(res).to.be.a('undefined')})
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Wrong username or password!');
+    });
+    done();
+  })
+  it('Wrong username', (done)=>{
+    LoginVerif({
+      username: 's'
+    })
+    .then(res=> { expect(res).to.be.a('undefined')})
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Wrong username or password!');
+    });
+    done();
+  })
+  it('Wrong password', (done)=>{
+    LoginVerif({
+      password: 's'
+    })
+    .then(res=> { expect(res).to.be.a('undefined')})
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Wrong username or password!');
+    });
+    done();
+  })
+})

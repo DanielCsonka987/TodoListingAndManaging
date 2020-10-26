@@ -30,17 +30,17 @@ validateProfileDatas = (profileData)=>{
           let involvedKey = errorAnswer.involvedId.replace('_','');
           errorAnswer.message = `This ${involvedKey} is not permitted`;
         }
-        return reject(errorAnswer);
+        reject(errorAnswer);
 
       } else {
-        return reject({
-          report: error.name,
+        reject({
+          report: 'Unexpected error!',
           involvedId: error.details,
           message: 'Data verification error!'
         });
       }
     } else
-      return resolve(value);
+      resolve(value);
   });
 }
 

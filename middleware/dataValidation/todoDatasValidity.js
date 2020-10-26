@@ -24,17 +24,17 @@ validateTodoDatas = (todoData)=>{
           errorAnswer.message = 'Missing priority indicator!';
         else
           errorAnswer.message = 'Missing some value!';
-          return reject(errorAnswer);
-          
+        reject(errorAnswer);
+
       } else {
-        return reject({
-          report: error.name,
+        reject({
+          report: 'Unexpected error!',
           involvedId: error.details,
           message: 'Data verification error!'
         });
       }
     } else
-      return resolve(value);
+      resolve(value);
   });
 }
 
