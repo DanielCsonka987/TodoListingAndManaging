@@ -14,30 +14,31 @@ validateProfileDatas = (profileData)=>{
   return new Promise((resolve, reject)=>{
     const {error, value} = SchemaProfile.validate(profileData);
 
-    if(error.name === 'ValidationError'){
-      let errorAnswer = {
-         report: 'Validation error!',
-         involvedId: error.details[0].context.key,
-      }
-      if(errorAnswer.involvedId === 'username')
-        errorAnswer.message = 'The chosen username is not permitted!';
-      else if(errorAnswer.involvedId === 'password')
-        errorAnswer.message = 'The chosen password is not permitted!';
-      else if(errorAnswer.involvedId === 'password_repeat')
-        errorAnswer.message = 'No match between the password and its confirmation!';
-      else {
-        let involvedKey = errorAnswer.involvedId.replace('_','');
-        errorAnswer.message = `This ${involvedKey} is not permitted`;
-      }
-      return reject(errorAnswer);
+    if(error){
+      if(error.name === 'ValidationError'){
+        let errorAnswer = {
+          report: 'Validation error!',
+          involvedId: error.details[0].context.key
+        }
+        if(errorAnswer.involvedId === 'username')
+          errorAnswer.message = 'The chosen username is not permitted!';
+        else if(errorAnswer.involvedId === 'password')
+          errorAnswer.message = 'The chosen password is not permitted!';
+        else if(errorAnswer.involvedId === 'password_repeat')
+          errorAnswer.message = 'No match between the password and its confirmation!';
+        else {
+          let involvedKey = errorAnswer.involvedId.replace('_','');
+          errorAnswer.message = `This ${involvedKey} is not permitted`;
+        }
+        return reject(errorAnswer);
 
-    } else if(error){
-      return reject({
-        report: error.name,
-        involvedId: error.details[0].path,
-        message: 'Data verification error!'
-      });
-
+      } else {
+        return reject({
+          report: error.name,
+          involvedId: error.details,
+          message: 'Data verification error!'
+        });
+      }
     } else
       return resolve(value);
   });
