@@ -2,11 +2,16 @@ const expect = require('chai').expect;
 const assert = require('chai').assert;
 
 const TodoVerify = require('../../middleware/dataValidation/todoDatasValidity.js');
-const ProfileVerify = require('../../middleware/dataValidation/profileDatasValidity.js');
+const TestProfileVerify =
+  require('../../middleware/dataValidation/profileDatasValidity.js')
+  .testValidation;
+const ProductionProfileVerify =
+  require('../../middleware/dataValidation/profileDatasValidity.js')
+  .validation;
 
 describe('Profile datas verificiation - positive case', ()=>{
   it('Todo with required properties', (done)=>{
-    ProfileVerify({
+    TestProfileVerify({
       username: 'username',
       password: '1234',
       password_repeat: '1234',
@@ -18,7 +23,7 @@ describe('Profile datas verificiation - positive case', ()=>{
     done();
   })
   it('Todo with all properties', (done)=>{
-    ProfileVerify({
+    ProductionProfileVerify({
       username: 'username',
       password: '1234',
       password_repeat: '1234',
@@ -35,8 +40,8 @@ describe('Profile datas verificiation - positive case', ()=>{
 });
 
 describe('Profile datas verificiation - negative case', ()=>{
-  it('Todo lack of some essential property 1', (done)=>{
-    ProfileVerify({
+  it('Todo lack of some essential property 1 - Test', (done)=>{
+    TestProfileVerify({
       username: 'username',
       password: '1234',
       age: 13,
@@ -48,8 +53,22 @@ describe('Profile datas verificiation - negative case', ()=>{
     });
     done();
   })
-  it('Todo lack of some essential property 2', (done)=>{
-    ProfileVerify({
+  it('Todo lack of some essential property 2 - Test', (done)=>{
+    TestProfileVerify({
+      username: 'username',
+      password: '1234',
+      age: 13,
+      occupation: 'lawyer'
+    }).then((res)=>{
+      expect(res).to.be.a('undefined');
+    }).catch(err=>{
+      expect(err.name).to.equal('ValidationError');
+      expect(err.details).to.be.a('array');
+    });
+    done();
+  })
+  it('Todo lack of some essential property 3 - Production', (done)=>{
+    ProductionProfileVerify({
       username: 'username',
       password: '1234',
       password_repeat: '1234',
@@ -58,14 +77,15 @@ describe('Profile datas verificiation - negative case', ()=>{
     }).then((res)=>{
       expect(res).to.be.a('undefined');
     }).catch(err=> {
-      expect(err.name).to.equal('ValidationError');
-      expect(err.details).to.be.a('array');
-      expect(err.details.type).to.not.be.a('null');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('first_name');
+      expect(err.message).to.equal('This firstname is not permitted');
     });
     done();
   })
-  it('Todo lack of some essential property 3', (done)=>{
-    ProfileVerify({
+  it('Todo lack of some essential property 4 - Production', (done)=>{
+    ProductionProfileVerify({
       password: '1234',
       password_repeat: '1234',
       first_name: 'Some',
@@ -74,27 +94,30 @@ describe('Profile datas verificiation - negative case', ()=>{
     }).then((res)=>{
       expect(res).to.be.a('undefined');
     }).catch(err=> {
-      expect(err.name).to.equal('ValidationError');
-      expect(err.details).to.be.a('array');
-      expect(err.details.type).to.not.be.a('null');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('username');
+      expect(err.message).to.equal('The chosen username is not permitted!');
     });
     done();
   })
-  it('Todo lack of all essential property', (done)=>{
-    ProfileVerify({
+  it('Todo lack of all essential property - Production', (done)=>{
+    ProductionProfileVerify({
       last_name: 'Body',
       age: 13,
       occupation: 'lawyer'
     }).then((res)=>{
       expect(res).to.be.a('undefined');
     }).catch(err=> {
-      expect(err.name).to.equal('ValidationError');
-      expect(err.details).to.be.a('array');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('username');
+      expect(err.message).to.equal('The chosen username is not permitted!');
     });
     done();
   })
-  it('Todo without proper password property 1', (done)=>{
-    ProfileVerify({
+  it('Todo without proper password property - Production', (done)=>{
+    ProductionProfileVerify({
       username: 'username',
       password: '12',
       password_repeat: '12',
@@ -102,13 +125,15 @@ describe('Profile datas verificiation - negative case', ()=>{
     }).then((res)=>{
       expect(res).to.be.a('undefined');
     }).catch(err=> {
-      expect(err.name).to.equal('ValidationError');
-      expect(err._original).to.be.a('object');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('password');
+      expect(err.message).to.equal('The chosen password is not permitted!');
     });
     done();
   })
-  it('Todo without proper password repeat', (done)=>{
-    ProfileVerify({
+  it('Todo without proper password repeat - Production', (done)=>{
+    ProductionProfileVerify({
       username: 'username',
       password: '1234',
       password_repeat: '1243',
@@ -116,9 +141,10 @@ describe('Profile datas verificiation - negative case', ()=>{
     }).then((res)=>{
       expect(res).to.be.a('undefined');
     }).catch(err=> {
-      expect(err.name).to.equal('ValidationError');
-      expect(err.details).to.be.a('array');
-      expect(err.details[0].message).to.equal('"password_repeat" must be [ref:password]');
+      expect(err.report).to.equal('Validation error!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('password_repeat');
+      expect(err.message).to.equal('No match between the password and its confirmation!');
     });
     done();
   })

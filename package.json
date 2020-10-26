@@ -10,8 +10,8 @@
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
     "test_profiles": "mocha ./test/model/profileProcesses.test.js",
-    "test_validity": "mocha ./test/middleware/dataValidation.test.js",
-    "devDeploy": "nodemon app.js"
+    "test_validation": "mocha ./test/middleware/dataValidation.test.js",
+    "dev": "nodemon app.js"
   },
   "author": "DanielCsonka",
   "license": "ISC",
