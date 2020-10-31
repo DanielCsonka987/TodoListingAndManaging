@@ -14,6 +14,7 @@ const ProductionProfileVerify =
   require('../../middleware/dataValidation/profileDatasValidity.js')
   .validation;
 const LoginVerif = require('../../middleware/dataValidation/loginDatasValidity.js');
+const CookieVerif = require('../../middleware/dataValidation/cookieDatasValidity.js');
 
 describe('Profile datas verificiation - positive case', ()=>{
   it('Todo with required properties', (done)=>{
@@ -159,7 +160,7 @@ describe('Profile datas verificiation - negative case', ()=>{
 describe('Todo datas verificiation - positive case', ()=>{
   it('Todo with essentail properties', (done)=>{
     TestTodoVerify({
-      owner: '1234567890abc',
+      owner: '1234567890bc',
       task: 'Finish already TodoApp',
       priority: 9
     }).then(res=>{
@@ -171,7 +172,7 @@ describe('Todo datas verificiation - positive case', ()=>{
   })
   it('Todo with all properties', (done)=>{
     ProductionTodoVerify({
-      owner: '1234567890abc',
+      owner: '1234567890bc',
       task: 'Be ready to stdy new',
       priority: 10,
       notation: 'It is really important'
@@ -188,7 +189,7 @@ describe('Todo datas verificiation - positive case', ()=>{
 describe('Todo datas verificiation - negative case', ()=>{
   it('Todo without some essentail properties 1 - Test', (done)=>{
     TestTodoVerify({
-      owner: '1234567890abc',
+      owner: '1234567890bc',
       prority: 6
     }).then(res =>
       expect(res).to.be.a('undifined')
@@ -218,7 +219,7 @@ describe('Todo datas verificiation - negative case', ()=>{
   })
   it('Todo without some essentail properties 3 - Production', (done)=>{
     ProductionTodoVerify({
-      owner: '1234567890abc',
+      owner: '1234567890bc',
       notation: 'Meaningless without the other properties'
     }).then(res =>
       expect(res).to.be.a('undefined')
@@ -230,7 +231,7 @@ describe('Todo datas verificiation - negative case', ()=>{
     done();
     it('Todo without some essentail properties 4 - Production', (done)=>{
       ProductionTodoVerify({
-        owner: '1234567890abc',
+        owner: '1234567890bc',
         task: 'Write HTML to this app',
         notation: 'Meaningless without the other properties'
       }).then(res =>
@@ -314,5 +315,60 @@ describe('Login datas verification - positive/negative cases', ()=>{
       expect(err.message).to.equal('Wrong username or password!');
     });
     done();
+  })
+})
+
+describe('Cookie datas verification - positive/negative cases', function(){
+  it('Good cookie input', function(){
+    return CookieVerif('1234567890bc')
+    .then(res=>{
+      expect(res).to.be.a('string');
+    })
+    .catch(err=>{ expect(err).to.be.a('undefined')});
+  })
+  it('Bad cookie input - less than needed', function(){
+    return CookieVerif('1234bc')
+    .then(res=>{
+      expect(res).to.be.a('undefined');
+    })
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Bad cookie in structure or content!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('1234bc');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Authentication error!')
+    });
+  })
+  it('Bad cookie input - more than needed', function(){
+    return CookieVerif('1234567890bcc')
+    .then(res=>{
+      expect(res).to.be.a('undefined');
+    })
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Bad cookie in structure or content!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('1234567890bcc');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Authentication error!')
+    });
+  })
+  it('Bad cookie input - different content than needed', function(){
+    return CookieVerif('12345rrrrrbc')
+    .then(res=>{
+      expect(res).to.be.a('undefined');
+    })
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.report).to.be.a('string');
+      expect(err.report).to.equal('Bad cookie in structure or content!');
+      expect(err.involvedId).to.be.a('string');
+      expect(err.involvedId).to.equal('12345rrrrrbc');
+      expect(err.message).to.be.a('string');
+      expect(err.message).to.equal('Authentication error!')
+    });
   })
 })

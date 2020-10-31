@@ -8,6 +8,9 @@ module.exports = {
 
   encryption_saltrounds: 10,
   password_regexp: '^[0-9a-zA-Z]{4,40}$',
+  mongodbid_regexp: '[0-9a-f]{12}',
+
+  cookieLifetime: 900000,   //15 min
 
   common_apiHeader: {
 

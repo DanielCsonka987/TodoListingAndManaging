@@ -215,7 +215,9 @@ describe('Profile processes test - negatve set', ()=>{
 
   it('Profile seeking with non-existing id', (done)=>{
     ProfileProcesses.findThisProfileById('123456789012')
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
       expect(errorInfo.involvedId).to.not.be.a('null');
@@ -231,7 +233,9 @@ describe('Profile processes test - negatve set', ()=>{
 
   it('Profile seeking with non-existing username', (done)=>{
     ProfileProcesses.findThisProfileByUsername('stgToTest')
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
       expect(errorInfo.involvedId).to.not.be.a('null');
@@ -250,7 +254,9 @@ describe('Profile processes test - negatve set', ()=>{
       username: 'stg',
       password: 'stg'
     })
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
       expect(errorInfo.report).to.not.be.a('null');
@@ -266,7 +272,9 @@ describe('Profile processes test - negatve set', ()=>{
       username: 'st',
       password: 'stg'
     })
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch((errorInfo)=>{
       expect(errorInfo).to.not.be.a('null');
       expect(errorInfo.report).to.not.be.a('null');
@@ -278,7 +286,9 @@ describe('Profile processes test - negatve set', ()=>{
 
   it('Profile update password with non-existing id', (done)=>{
     ProfileProcesses.updateProfilePassword('123456789012', 'stg')
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch(errorInfo =>{
       expect(errorInfo).to.be.not.a('null');
       expect(errorInfo.report).to.not.be.a('null');
@@ -292,7 +302,9 @@ describe('Profile processes test - negatve set', ()=>{
 
   it('Profile deletion with non-existing id', (done)=>{
     ProfileProcesses.deleteProfile('123456789012')
-    .then(()=>{})
+    .then((res)=>{
+      expect(res).to.be.a('undefined');
+    })
     .catch(errorInfo=>{
       expect(errorInfo).to.be.not.a('null');
       expect(errorInfo.report).to.not.be.a('null');
