@@ -6,8 +6,11 @@ const bodyparser = require('body-parser');
 
 const PORT = process.env.PORT || 8080;
 const dbAccessUrl = require('./config/appConfig.js').dbaccess;
-const routerProfile = require('./control/routeProfiles.js');
-const routerProfile = require('./control/routeProfilesLimited.js');
+const routerProfileAllowed = require('./control/routeProfilesAllowed.js');
+const routerProfileLog = require('./control/routeProfilesLog.js');
+const routerCookieAuth = require('./control/routeLimitators.js');
+const routerLimitedProfile = require('./control/routeProfilesLimited.js');
+const routerTodos = require('./control/routeTodos.js');
 const createCookie = require('./middleware/cookieManager.js').cookieSetting;
 
 mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} )
@@ -34,15 +37,17 @@ mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} 
     }
   }
 
-  app.use('/api/profiles', routerProfile);
-  app.use('/api/profiles/:id', routerProfile);
-
+  app.use('/api/profiles', routerProfileAllowed); //GET ALL + REGISTER
+  app.use('/api/profiles', routerProfileLog); //LOGIN + LOGUT
+  app.use('/api/profiles/:id', routerCookieAuth);  //COOKIE VALIDATION STRUCT + DB
+  app.use('/api/profiles/:id', routerLimitedProfile); //PROFILE GET+POST+PUT+DELETE
+  app.use('/api/profiles/:id/todos', routerTodos);  //TODO PROCESSES
 
   // ERROR handling //
   app.all('/', (err, req, res, next)=>{
     console.log(err);
     res.status(err.defStatus);
-    res.send(JSON.stringify( { err } );
+    res.send(JSON.stringify(err);
   })
 
   app.listen(PORT, ()=>{
