@@ -49,7 +49,7 @@ router.post('/login', (req, res)=>{
 
 
 // LOGOUT //
-router.get('/logout', (res,res)=>{
+router.get('/logout', (req,res)=>{
   res.cookie(deleteCookie());
   res.status(200);
 })

@@ -12,7 +12,7 @@ router.all('/:id', (req, res, next)=>{
       report: 'User interfering in another account!',
       involvedId: req.params.id,
       message: 'Management is permitted only at your account!',
-      defStatus: 401;   //UNAUTHORIZED
+      defStatus: 401   //UNAUTHORIZED
     });
   }
 })
@@ -31,12 +31,12 @@ router.all('/:id', (req, res, next)=>{
     });
   } else {
     next({
-      report: 'No cookie to authetnticate!'
+      report: 'No cookie to authetnticate!',
       involvedId: '',
-      message: 'User not logged in!'
+      message: 'User not logged in!',
       defStatus: 401
     })
   }
-}
+})
 
 module.exports = router;

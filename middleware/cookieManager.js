@@ -5,7 +5,7 @@ const cookieLifetime = require('../config/appConfig.js').cookieLifetime;
 
 verifyStructureContentCookie = (cookieNameContent)=>{
   return new Promise((resolve, reject)=>{
-    verifyCookie(req.cookies.name])
+    verifyCookie(req.cookies.name)
     .then(result=>{
       modelProfile.findThisProfileById(req.cookies.name)
       .then(res=>{ resolve() })
@@ -18,7 +18,7 @@ verifyStructureContentCookie = (cookieNameContent)=>{
         let errorMesasge = {
           report: `Problem occured - ${newReport}!`,
           involvedId: '',
-          message: 'Re-authentication is unsuccessful!';
+          message: 'Re-authentication is unsuccessful!'
         }
         reject(errorMesasge)
       });
@@ -30,11 +30,11 @@ verifyStructureContentCookie = (cookieNameContent)=>{
 }
 
 createCookie = (profileId)=>{
-  return {'name', profileId, { maxAge: cookieLifetime, httpOnly: true }}
+  return ['name', profileId, { maxAge: cookieLifetime, httpOnly: true } ]
 }
 
 deleteCookie = ()=>{
-  return (name: '', { maxAge: 0, httpOnly: true});
+  return ['name', '', { maxAge: 0, httpOnly: true}];
 }
 
 module.exports.cookieVerify = verifyStructureContentCookie;

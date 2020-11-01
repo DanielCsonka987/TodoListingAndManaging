@@ -6,19 +6,16 @@ const bodyparser = require('body-parser');
 
 const PORT = process.env.PORT || 8080;
 const dbAccessUrl = require('./config/appConfig.js').dbaccess;
-const routerProfileAllowed = require('./control/routeProfilesAllowed.js');
-const routerProfileLog = require('./control/routeProfilesLog.js');
-const routerCookieAuth = require('./control/routeLimitators.js');
-const routerLimitedProfile = require('./control/routeProfilesLimited.js');
-const routerTodos = require('./control/routeTodos.js');
+const routerProfileAllowed = require('./control/routerProfilesAllowed.js');
+const routerProfileLog = require('./control/routerProfilesLog.js');
+const routerCookieAuth = require('./control/routerCookieAuth.js');
+const routerLimitedProfile = require('./control/routerProfilesLimited.js');
+const routerTodos = require('./control/routerTodos.js');
 const createCookie = require('./middleware/cookieManager.js').cookieSetting;
 
 mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} )
 .then(()=>{
-  console.log('MongoDB connection establised!');
-  mongoose.connection
-    .on('error', err=>{ console.log('MongoDB error occured: ', err) })
-    .once('close', ()=>{ console.log('MongoDB connection closed!') })
+  console.log('MongoDB server connection establised!');
 
   const app = express();
   app.use(cookieparser());
@@ -35,7 +32,7 @@ mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} 
     if(req.cookies.name){
       res.cookie(createCookie(cookieIdentif));
     }
-  }
+  });
 
   app.use('/api/profiles', routerProfileAllowed); //GET ALL + REGISTER
   app.use('/api/profiles', routerProfileLog); //LOGIN + LOGUT
@@ -47,12 +44,19 @@ mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} 
   app.all('/', (err, req, res, next)=>{
     console.log(err);
     res.status(err.defStatus);
-    res.send(JSON.stringify(err);
+    res.send(JSON.stringify(err));
   })
 
-  app.listen(PORT, ()=>{
+  const server = app.listen(PORT, ()=>{
     console.log(`Server online at port:${PORT}`);
   });
+
+  mongoose.connection
+    .on('error', err=>{ console.log('MongoDB error occured: ', err) })
+    .once('close', ()=>{
+      console.log('MongoDB server connection closed!');
+      server.close();
+    })
 })
 .catch((err)=>{
   console.log('Server initializing stoped! ', err);
