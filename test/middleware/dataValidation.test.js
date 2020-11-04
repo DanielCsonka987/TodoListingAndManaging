@@ -87,7 +87,7 @@ describe('Profile datas verificiation - negative case', ()=>{
       expect(err.report).to.equal('Validation error!');
       expect(err.involvedId).to.be.a('string');
       expect(err.involvedId).to.equal('first_name');
-      expect(err.message).to.equal('This firstname is not permitted');
+      expect(err.message).to.equal('This firstname is not permitted!');
     });
     done();
   })

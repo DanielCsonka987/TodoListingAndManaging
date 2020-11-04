@@ -10,9 +10,10 @@
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
     "test_profiles": "mocha ./test/model/profileProcesses.test.js",
     "test_validation": "mocha ./test/middleware/dataValidation.test.js",
-    "test_api": "mocha ./test/service/generalApi.test.js",
-    "test_apiprof": "mocha ./test/service/profileApi.test.js",
-    "test_apitodo": "mocha ./test/service/todoApi.test.js",
+    "test_regapi": "mocha ./test/service/registerApi.test.js",
+    "test_loginapi": "mocha ./test/service/loginApi.test.js",
+    "test_profapi": "mocha ./test/service/profileApi.test.js",
+    "test_todoapi": "mocha ./test/service/todoApi.test.js",
     "dev": "nodemon app.js"
   },
   "author": "DanielCsonka",

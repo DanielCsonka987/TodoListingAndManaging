@@ -2,7 +2,7 @@ const Joi = require('joi');
 const passwordRegexp = require('../../config/appConfig.js').password_regexp;
 const SchemaProfile = Joi.object({
   username: Joi.string().min(4).max(80).required(),
-  password: Joi.string().pattern(new RegExp(passwordRegexp)),
+  password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
   password_repeat: Joi.ref('password'),
   first_name: Joi.string().max(80).required(),
   last_name: Joi.string().max(80),
@@ -35,7 +35,7 @@ validateProfileDatas = (profileData)=>{
         else {
 
           let involvedKey = errorAnswer.involvedId.replace('_','');
-          errorAnswer.message = `This ${involvedKey} is not permitted`;
+          errorAnswer.message = `This ${involvedKey} is not permitted!`;
         }
         reject(errorAnswer);
 
