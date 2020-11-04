@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test_modelProfile": "mocha ./test/model/profileItem.test.js",
+    "test_modelProf": "mocha ./test/model/profileItem.test.js",
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
     "test_profiles": "mocha ./test/model/profileProcesses.test.js",
@@ -19,11 +19,12 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "joi": "^17.2.1",
     "mongoose": "^5.10.6",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.5"
+    "multer": "^1.4.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",

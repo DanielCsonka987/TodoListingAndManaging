@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const modelProfile = require('../model/profileProcesses.js');
-const verifyProfile = require('../middleware/dataValidation/profileDatasValidity.js');
+const verifyProfile = require('../middleware/dataValidation/profileDatasValidity.js').validation;
 
 // READ all user //
 router.get('/', (req,res)=>{
@@ -11,8 +11,8 @@ router.get('/', (req,res)=>{
     res.json(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    next(err);
+    res.status(405);    //METHOD NOT ALLOWED
+    res.send(JSON.stringify(err));
   });
 })
 
@@ -25,8 +25,8 @@ router.post('/register', (req, res, next)=>{
   verifyProfile(req.body)
   .then(result=>{ next()  })
   .catch(err=>{
-    err.defStatus = 400;  //BAD REQUEST
-    next(err);
+    res.status(400);    //BAD REQUEST
+    res.send(JSON.stringify(err));
    });
 })
 //registration username uniquity revision
@@ -36,28 +36,37 @@ router.post('/register', (req, res, next)=>{
     if(result.report.length === 0){
       next();
     } else {
-      next({
+      res.status(405);    //METHOD NOT ALLOWED
+      res.send(JSON.stringify({
         report: 'Username occupied!',
         involvedId: req.body,
         message: 'This username is already in use!',
-        defStatus: 400
-      })
+      }));
     }
   })
-  .catch(err=>{ next(err) });
+  .catch(err=>{
+    res.setStatsu(500);    //INTERNALE SERVER ERROR
+  });
 })
 //execute regisration
 router.post('/register', (req, res)=>{
-  modelProfile.createProfile(result)
+  const newProf = {
+    username: req.body.username,
+    password: req.body.password,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    age: req.body.age,
+    occupation: req.body.occupation
+  }
+  modelProfile.createProfile(newProf)
   .then(result=>{
-    res.status(202);
+    res.status(202);    //ACCEPTED
     res.json(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    next(err);
+    res.status(500);    //INTERNAL SERVER ERROR
+    res.send(JSON.stringify(err));
   });
 })
-
 
 module.exports = router;

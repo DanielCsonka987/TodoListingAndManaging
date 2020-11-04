@@ -44,40 +44,41 @@ let newRawTodos = [
   }
 ]
 
-before( (done)=>{
-  mongoose.connect(dbaccess, { useNewUrlParser: true, useUnifiedTopology: true});
-  mongoose.connection
-    .once('open', ()=>{ console.log('MongoDB connection establisehd')})
-    .once('close', ()=>{ console.log('MongoDB closed properly')})
-    .on('error', (err)=>{ console.log('MongoDB error ' + err)});
+before( ()=>{
+  return new Promise((resolve, reject)=>{
+    mongoose.connect(dbaccess, { useNewUrlParser: true, useUnifiedTopology: true});
+    mongoose.connection
+      .once('open', ()=>{ console.log('MongoDB connection establisehd')})
+      .once('close', ()=>{ console.log('MongoDB closed properly')})
+      .on('error', (err)=>{ console.log('MongoDB error ' + err)});
   // console.log(mongoose.connection);
-  mongoose.connection.collections.todos.drop(()=>{
-    ownerProfile.save(()=>{
-      todoTestDatas.forEach((item, i) => {
-        item.owner = ownerProfile._id;
-        let sch = new TodoSchema(item);
-        sch.save();
+    mongoose.connection.collections.todos.drop(()=>{
+      ownerProfile.save(()=>{
+        todoTestDatas.forEach((item, i) => {
+          item.owner = ownerProfile._id;
+          let sch = new TodoSchema(item);
+          sch.save();
+        });
+        resolve();
       });
     });
-  });
-
-  setTimeout(()=>{ done(); }, 1000);
+  }).catch(err=>{ console.log(err) });
 });
 
-after((done)=>{
-
-  ProfileSchema.deleteOne({_id: ownerProfile._id}, (rep)=>{
-    mongoose.connection.close();
-
-  });
-  done();
+after(()=>{
+  return new Promise((resolve, reject)=>{
+    ProfileSchema.deleteOne({_id: ownerProfile._id}, (rep)=>{
+      mongoose.connection.close();
+      resolve();
+    });
+  }).catch(err=>{ console.log(err) });
 });
 
 
 describe('Todo middleware processes test - positive set', ()=>{
 
-  it('Revise the content of all component', (done)=>{
-    todoProcesses
+  it('Revise the content of all component', ()=>{
+    return todoProcesses
       .loadInProfileTodos(ownerProfile._id)
       .then((readInfo)=>{
         expect(readInfo).to.not.be.a('null');
@@ -90,11 +91,10 @@ describe('Todo middleware processes test - positive set', ()=>{
         expect(readInfo.message).to.equal('Reading done!');
       })
       .catch(err=>{ console.log('Error happened ', err)  });
-      done();
   })
 
-  it('Revise creation todo item', (done)=>{
-    todoProcesses
+  it('Revise creation todo item', ()=>{
+    return todoProcesses
       .createTodo(ownerProfile._id, newRawTodos[0])
       .then((creationInfo)=>{
         expect(creationInfo).to.not.be.a('null');
@@ -119,12 +119,10 @@ describe('Todo middleware processes test - positive set', ()=>{
         .catch(err=>{ console.log('Readback problem ', err)});
       })
       .catch(err=>{ console.log('Error happened ', err)  });
-
-      setTimeout(()=>{ done(); }, 50);
   })
 
-  it('Revise update status', (done)=>{
-    todoProcesses
+  it('Revise update status', ()=>{
+    return todoProcesses
       .updateStateTodo(todoTestDatas[1]._id, true)
       .then((updateInfo)=>{
         // console.log(updatedInfo);
@@ -147,12 +145,10 @@ describe('Todo middleware processes test - positive set', ()=>{
         });
       })
       .catch(err=>{ console.log('Error happened ', err)  });
-      setTimeout(()=>{ done(); }, 50);
-
   })
 
-  it('Revise update notation', (done)=>{
-    todoProcesses
+  it('Revise update notation', ()=>{
+    return todoProcesses
       .updateNotationTodo(todoTestDatas[0]._id, 'No one else would do this')
       .then((updateInfo)=>{
         expect(updateInfo).to.not.be.a('null');
@@ -174,12 +170,10 @@ describe('Todo middleware processes test - positive set', ()=>{
         });
       })
       .catch(err=>{ console.log('Error happened ', err)  });
-      setTimeout(()=>{ done(); }, 50);
-
   })
 
-  it('Revise deletion single todo item', (done)=>{
-    todoProcesses
+  it('Revise deletion single todo item', ()=>{
+    return todoProcesses
       .deleteThisTodo(ownerProfile._id, newRawTodos[0]._id)
       .then((deletionInfo)=>{
         expect(deletionInfo).to.not.be.a('null');
@@ -200,11 +194,10 @@ describe('Todo middleware processes test - positive set', ()=>{
         .catch(err=>{ console.log('Readback problem ', err)} );
       })
       .catch( err=>{ console.log('Error happened ', err); });
-      done();
   })
   //
-  it('Revise deletion all todo items', (done)=>{
-    todoProcesses
+  it('Revise deletion all todo items', ()=>{
+    return todoProcesses
       .deleteAllTodos(ownerProfile._id)
       .then((deletionInfo)=>{
         expect(deletionInfo).to.not.be.a('null');
@@ -223,7 +216,6 @@ describe('Todo middleware processes test - positive set', ()=>{
         .catch(err=>{throw new Error('Readback problem ', err)});
       })
       .catch(err=>{ console.log('Error happened ', err) });
-      done();
   })
 
 });

@@ -16,10 +16,16 @@ validateProfileDatas = (profileData)=>{
 
     if(error){
       if(error.name === 'ValidationError'){
+        let problematicField = error.details[0].context.key;
+
+        if(problematicField === undefined) //in case if no password_repeat
+          problematicField = error.details[0].context.peer;
+
         let errorAnswer = {
           report: 'Validation error!',
-          involvedId: error.details[0].context.key
+          involvedId: problematicField
         }
+
         if(errorAnswer.involvedId === 'username')
           errorAnswer.message = 'The chosen username is not permitted!';
         else if(errorAnswer.involvedId === 'password')
@@ -27,6 +33,7 @@ validateProfileDatas = (profileData)=>{
         else if(errorAnswer.involvedId === 'password_repeat')
           errorAnswer.message = 'No match between the password and its confirmation!';
         else {
+
           let involvedKey = errorAnswer.involvedId.replace('_','');
           errorAnswer.message = `This ${involvedKey} is not permitted`;
         }
