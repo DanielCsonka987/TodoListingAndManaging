@@ -9,12 +9,12 @@ var ProfileItemSchema = mongoose.Schema({
   occupation: {type: String, maxlength: 50, default:'unknown'}
 });
 
-ProfileItemSchema.virtual('fullName').get(()=>{
-  return `${this.first_name} ${this.last_name}`;
-});
-
-ProfileItemSchema.virtual('resourceURL').get((routPath)=>{
-  return `${routPath}/${this._id}`;
-});
+// ProfileItemSchema.virtual('fullName').get(()=>{
+//   return `${this.first_name} ${this.last_name}`;
+// });
+//
+// ProfileItemSchema.virtual('resourceURL').get((routPath)=>{
+//   return `${routPath}/${this._id}`;
+// });
 
 module.exports = mongoose.model('profiles', ProfileItemSchema);

@@ -12,14 +12,14 @@ var TodoItemSchema = Schema({
   owner: {type: Schema.Types.ObjectId, require: true, ref: 'profiles'}
 });
 
-TodoItemSchema.virtual('setStatus').set((status)=>{
-  this.status = status;
-  this.lastModfingDate = Date.now();
-});
-
-TodoItemSchema.virtual('setNotation').set((notation)=>{
-  this.notation = notation;
-  this.lastModfingDate = Date.now();
-});
+// TodoItemSchema.virtual('setStatus').set((status)=>{
+//   this.status = status;
+//   this.lastModfingDate = Date.now();
+// });
+//
+// TodoItemSchema.virtual('setNotation').set((notation)=>{
+//   this.notation = notation;
+//   this.lastModfingDate = Date.now();
+// });
 
 module.exports = mongoose.model('todos', TodoItemSchema);
