@@ -6,12 +6,16 @@ module.exports = {
   dbaccess: 'mongodb+srv://' + dbUser + ':' + dbPwd +
    '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
 
-  encryption_saltrounds: 10,
+  encryption_saltrounds: 12,
   password_regexp: '^[0-9a-zA-Z]{4,40}$',
   mongodbid_regexp: '[0-9a-f]{12}',
 
-  cookieLifetime: 900000,   //15 min
-
+  cookieDetails: {
+    sessionCookieNameing: '__Host-name',
+    path: '/api/profiles/',
+    cookieLifetime: 900000,   //15 min
+    cookieHTTPOnly: true
+  },
   common_apiHeader: {
 
   }

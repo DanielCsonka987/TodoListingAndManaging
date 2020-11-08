@@ -28,13 +28,14 @@ module.exports.findThisProfileById = (profileId)=>{
 };
 
 // REGISTARTION process - revising username collision //
+// LOGIN process - revising if it is existing avvount //
 module.exports.findThisProfileByUsername = (profileUsername)=>{
   return new Promise((resolve, reject)=>{
     ProfileSchema.findOne({username: profileUsername}, (err, doc)=>{
       if(err) reject( answerDBError(err, profileUsername, 'MongoDB error!') );
       if(doc) resolve( answerObject(doc, 'Reading done!') );
       else {
-        resolve( answerObject([], 'No content to show!' ) );
+        reject( answerObject([], 'No content to show!' ) );
       }
     });
   });

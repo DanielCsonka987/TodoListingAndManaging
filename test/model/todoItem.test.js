@@ -1,33 +1,13 @@
-let mongoose = require('mongoose');
-let assert = require('chai').assert;
-let expect = require('chai').expect;
+const mongoose = require('mongoose');
+const assert = require('chai').assert;
+const expect = require('chai').expect;
 
 const dbaccess = require('../../config/appConfig.js').dbaccess;
-let TodoSchema = require('../../model/todoItem.js');
-let ProfileSchema = require('../../model/profileItem.js');
+const TodoSchema = require('../../model/todoItem.js');
+const ProfileSchema = require('../../model/profileItem.js');
 
-let todoTestDatas = [
-  {
-    task: 'Do the loundry',
-    priority: 4
-  },
-  {
-    task: 'Make javascript project model layer',
-    priority: 7,
-    notation: 'The deadhline is this weekend!',
-  },
-  {
-    task: 'Call the partner company - what are the other requirements of software',
-    priority: 3,
-    notation: 'IdealReality ltd. - Healthcare-revisor project',
-  }
-];
-
-let newTodoItem = {
-  task: 'Finish the testing of model layer',
-  priority: 5,
-  notation: 'JS Healthcare-revisor',
-}
+let todoTestDatas = require('./todoTestDatas').todos;
+let newTodoItem = require('./todoTestDatas').newTodos[0];
 
 before(()=>{
   return new Promise((resolve, reject)=>{

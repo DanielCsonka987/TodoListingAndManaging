@@ -1,14 +1,15 @@
 const router = require('express').Router();
 
 const modelProfile = require('../model/profileProcesses.js');
-const verifyProfile = require('../middleware/dataValidation/profileDatasValidity.js').validation;
+const verifyProfile =
+  require('../middleware/dataValidation/profileDatasValidity.js').validation;
 
 // READ all user //
 router.get('/', (req,res)=>{
   modelProfile.loadInProfiles()
   .then((result)=>{
     res.status(200);
-    res.json(JSON.stringify(result));
+    res.send(JSON.stringify(result));
   })
   .catch(err=>{
     res.status(405);    //METHOD NOT ALLOWED
@@ -33,19 +34,15 @@ router.post('/register', (req, res, next)=>{
 router.post('/register', (req, res, next)=>{
   modelProfile.findThisProfileByUsername(req.body.username)
   .then(result =>{
-    if(result.report.length === 0){
-      next();
-    } else {
-      res.status(405);    //METHOD NOT ALLOWED
-      res.send(JSON.stringify({
-        report: 'Username occupied!',
-        involvedId: req.body,
-        message: 'This username is already in use!',
-      }));
-    }
+    res.status(405);    //METHOD NOT ALLOWED
+    res.send(JSON.stringify({
+      report: 'Username occupied!',
+      involvedId: req.body,
+      message: 'This username is already in use!',
+    }));
   })
   .catch(err=>{
-    res.setStatsu(500);    //INTERNALE SERVER ERROR
+    next();
   });
 })
 //execute regisration
@@ -60,8 +57,8 @@ router.post('/register', (req, res)=>{
   }
   modelProfile.createProfile(newProf)
   .then(result=>{
-    res.status(202);    //ACCEPTED
-    res.json(JSON.stringify(result));
+    res.status(201);    //CREATED
+    res.send(JSON.stringify(result));
   })
   .catch(err=>{
     res.status(500);    //INTERNAL SERVER ERROR

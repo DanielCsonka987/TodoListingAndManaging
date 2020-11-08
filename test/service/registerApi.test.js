@@ -9,15 +9,8 @@ const mongooseProfileProc = require('../../model/profileProcesses.js');
 const dbaccess = require('../../config/appConfig.js').dbaccess;
 const ProfileSchema = require('../../model/profileItem.js');
 
-const newUser = {
-  'username': 'meHere',
-  'password': 'pwdText',
-  'password_repeat': 'pwdText',
-  'first_name': 'meHereAgain',
-  'last_name': 'MrSomebody',
-  'age': 31,
-  'occupation': 'stranger'
-}
+const newUser = require('./profileTestDatas.js').registGoodProfile;
+const faultyUsers = require('./profileTestDatas.js').registFaultyProfiles;
 
 before(function(){
   return new Promise((resolve, reject)=>{
@@ -98,11 +91,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'password': 'pwdText',
-        'password_repeat': 'pwdText',
-        'first_name': 'meHereAgain'
-      })
+      .send(faultyUsers[0]) //no username
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -123,10 +112,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'username': 'meHere',
-        'first_name': 'meHereAgain'
-      })
+      .send(faultyUsers[1]) //no password and confirmation
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -146,11 +132,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'username': 'meHere',
-        'password': 'pwdText',
-        'first_name': 'meHereAgain'
-      })
+      .send(faultyUsers[2]) //no password confirmation
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -170,11 +152,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'username': 'meHere',
-        'password': 'pwdText',
-        'password_repeat': 'pwdText',
-      })
+      .send(faultyUsers[3]) //no firstname
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -195,12 +173,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'username': 'me',
-        'password': 'pwdText',
-        'password_repeat': 'pwdText',
-        'first_name': 'meHereAgain'
-      })
+      .send(faultyUsers[4]) //too short username
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -221,12 +194,7 @@ describe('Register on api', function(){
       chai.request(api).keepOpen()
       .post('/api/profiles/register')
       .type('form')
-      .send({
-        'username': 'meHere',
-        'password': 'pwdText',
-        'password_repeat': 'pwdText1',
-        'first_name': 'meHereAgain'
-      })
+      .send(faultyUsers[5]) //no proper password confirmation
       .end((err, res)=>{
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
@@ -241,12 +209,4 @@ describe('Register on api', function(){
       })
     }).catch(err=>{ console.log(err) });
   })
-})
-
-describe('Login-out on api', function(){
-
-})
-
-describe('Read all users', function(){
-
 })

@@ -7,42 +7,9 @@ const TodoSchema = require('../../model/todoItem.js');
 const ProfileSchema = require('../../model/profileItem.js');
 const todoProcesses = require('../../model/todoProcesses.js');
 
-let ownerProfile = new ProfileSchema({
-  first_name: 'Steve',
-  last_name: 'Jobs',
-  username: 'apple',
-  password: 'donotforget',
-  age: 56,
-  occupation: 'bussinessman'
-});
-let todoTestDatas = [
-  new TodoSchema({
-    task: 'Do the loundry',
-    priority: 4
-  }),
-  new TodoSchema({
-    task: 'Make javascript project model layer',
-    priority: 7,
-    notation: 'The deadhline is this weekend!',
-  }),
-  new TodoSchema({
-    task: 'Call the partner company - what are the other requirements of software',
-    priority: 3,
-    notation: 'IdealReality ltd. - Healthcare-revisor project',
-  })
-];
-let newRawTodos = [
-  {
-    task: 'Finish the testing of model layer',
-    priority: 5,
-    notation: 'JS Healthcare-revisor',
-    status: 'Proceeding'
-  },
-  {
-    task: 'Refactor new components',
-    priority: 1
-  }
-]
+let ownerProfile = require('./profileTestDatas.js').newProfSchema;
+let todoTestDatas = require('./todoTestDatas.js').todosSchemas;
+let newRawTodos = require('./todoTestDatas.js').newTodos;
 
 before( ()=>{
   return new Promise((resolve, reject)=>{

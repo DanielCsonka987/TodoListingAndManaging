@@ -6,56 +6,8 @@ const dbaccess = require('../../config/appConfig.js').dbaccess;
 const ProfileSchema = require('../../model/profileItem.js');
 const ProfileProcesses = require('../../model/profileProcesses.js');
 
-let profileTestDatas = [
-  {
-    first_name: 'John',
-    last_name: 'Doe',
-    username: 'JohnD',
-    password: 'test',
-    age: 31,
-    occupation: 'actor'
-  },
-  {
-    first_name: 'Jane',
-    last_name: 'Doe',
-    username: 'janed',
-    password: 'retest',
-    age: 43
-  },
-  {
-    first_name: 'Jack',
-    last_name: 'Nicholson',
-    username: 'jack',
-    password: 'nich',
-    age: 64,
-    occupation: 'actor'
-  },
-  {
-    first_name: 'Sherlock',
-    last_name: 'Holmes',
-    username: 'holmes',
-    password: 'strong',
-    age: 61,
-    occupation: 'detective'
-  },
-  {
-    first_name: 'Lev',
-    last_name: 'Tolstoj',
-    username: 'levy',
-    password: 'warpeace',
-    age: 51,
-    occupation: 'writer'
-  }
-]
-
-let additionalPerson = {
-  first_name: 'James',
-  last_name: 'McCoy',
-  username: 'mchn',
-  password: 'machine',
-  age: 23,
-  occupation: 'engeneer'
-}
+let profileTestDatas = require('./profileTestDatas').profiles;
+let additionalPerson = require('./profileTestDatas').newProfile;
 
 before(()=>{
   return new Promise((resolve, reject)=>{
@@ -231,14 +183,14 @@ describe('Profile processes test - negatve set', ()=>{
   it('Profile seeking with non-existing username', ()=>{
     return ProfileProcesses.findThisProfileByUsername('stgToTest')
     .then((res)=>{
-      expect(res).to.not.be.a('null');
-      expect(res.report).to.be.a('array');
-      expect(res.report).to.be.empty;
-      expect(res.message).to.be.a('string');
-      expect(res.message).to.equal('No content to show!');
+      expect(res).to.be.a('undefined');
     })
     .catch((errorInfo)=>{
-      expect(errorInfo).to.be.a('undefined');
+      expect(errorInfo).to.not.be.a('null');
+      expect(errorInfo.report).to.be.a('array');
+      expect(errorInfo.report).to.be.empty;
+      expect(errorInfo.message).to.be.a('string');
+      expect(errorInfo.message).to.equal('No content to show!');
     });
   })
 
