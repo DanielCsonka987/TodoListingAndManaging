@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const mongodbid = require('../../config/appConfig').mongodbid_regexp;
-const SchemaCookie = Joi.string().pattern(new RegExp(mongodbid)).max(12).required();
+const SchemaCookie = Joi.string().pattern(new RegExp(mongodbid))
+  .max(24).required();
 
 
 validationCookieContent = (cookieValue)=>{

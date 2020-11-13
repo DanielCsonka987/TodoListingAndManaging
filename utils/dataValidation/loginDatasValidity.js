@@ -6,7 +6,7 @@ const SchemaLogin = Joi.object({
   password: Joi.string().pattern(new RegExp(passwordRegexp))
 }).with('username', 'password');
 
-validationLoginPwd = (loginData)=>{
+module.exports = (loginData)=>{
   return new Promise((resolve, reject)=>{
     const {error, value} = SchemaLogin.validate(loginData);
 
@@ -28,5 +28,3 @@ validationLoginPwd = (loginData)=>{
       resolve(value);
   });
 }
-
-module.exports = validationLoginPwd;

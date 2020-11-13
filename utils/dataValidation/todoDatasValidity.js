@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const mongodbid = require('../../config/appConfig').mongodbid_regexp;
 const SchemaTodo = Joi.object({
-  owner: Joi.string().pattern(new RegExp(mongodbid)).max(12).required(),
+  owner: Joi.string().pattern(new RegExp(mongodbid)).max(24).required(),
   task: Joi.string().max(150).required(),
   priority: Joi.number().min(0).max(10),
   notation: Joi.string().max(150)

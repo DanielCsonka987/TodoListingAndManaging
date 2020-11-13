@@ -1,7 +1,20 @@
 const router = require('express').Router();
 
+const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
 const modelTodos = require('../model/todoProcesses.js');
-const verifyTodo = require('../middleware/dataValidation/todoDatasValidity.js');
+const todoMiddle = require('../middleware/todoMiddlewares.js');
+const cookieMiddle = require('../middleware/cookieManagers.js');
+
+// API response common response configuration //
+router.all('/', apiResponseHeaders)
+router.all('/:id', apiResponseHeaders)
+
+// SESSION COOKIE AUTHENTICATION //
+router.all('/:id', cookieMiddle.existVerification);
+router.all('/:id', cookieMiddle.contentVerification);
+
+// SESSION COOKIE RENEWING //
+router.all('/:id', cookieMiddle.sessionCookieRenew);
 
 // READ all todos of user
 router.get('/', (req,res)=>{
@@ -11,25 +24,14 @@ router.get('/', (req,res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    throw new Error(err);
+    res.status(404);
+    res.send(JSON.stringify(err));
   });
 })
 
 
 // CREATE new todo //
-//todo content revision
-router.post('/', (req, res, next)=>{
-  verifyTodo(req.body)
-  .then(result=>{
-    next();
-  })
-  .catch(err=>{
-    err.defStatus = 400;
-    next(err);
-  });
-})
-//new todo saving
+router.post('/', todoMiddle.todoContentVerification);
 router.post('/', (req, res)=>{
   modelTodos.createTodo(req.cookies.name, req.body)
   .then(result=>{
@@ -37,8 +39,8 @@ router.post('/', (req, res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    throw new Error(err);
+    res.status(404);
+    res.send(JSON.stringify(err));
   });
 })
 
@@ -52,7 +54,10 @@ router.put('/:id/status', (req, res)=>{
     res.status(200);
     res.send(JSON.stringify(result));
   })
-  .catch(err=>{  throw new Error(err);  });
+  .catch(err=>{
+    res.status(404);
+    res.send(JSON.stringify(err));
+  });
 })
 //update notation
 router.put('/:id/notation', (req, res)=>{
@@ -62,8 +67,8 @@ router.put('/:id/notation', (req, res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    throw new Error(err);
+    res.status(404);
+    res.send(JSON.stringify(err));
   });
 })
 
@@ -78,8 +83,8 @@ router.delete('/', (req,res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    throw new Error(err);
+    res.status(404);
+    res.send(JSON.stringify(err));
   });
 })
 //delete single todo
@@ -90,8 +95,8 @@ router.delete('/:id', (req, res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    err.defStatus = 404;
-    throw new Error(err);
+    res.status(404);
+    res.send(JSON.stringify(err));
   });
 })
 

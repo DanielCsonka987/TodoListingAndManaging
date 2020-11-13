@@ -8,17 +8,18 @@ module.exports = {
 
   encryption_saltrounds: 12,
   password_regexp: '^[0-9a-zA-Z]{4,40}$',
-  mongodbid_regexp: '[0-9a-f]{12}',
+  mongodbid_regexp: '[0-9a-f]{24}',
 
   cookieDetails: {
-    sessionCookieNameing: '__Host-name',
+    sessionCookiePrefix: '',
+    sessionCookieNameing: 'session',
     path: '/api/profiles/',
     cookieLifetime: 900000,   //15 min
     cookieHTTPOnly: true
   },
-  common_apiHeader: {
-
-  }
+  common_apiHeader: [
+    ['Content-Type','application/json']
+  ]
 }
 
 

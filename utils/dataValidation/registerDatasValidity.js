@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const passwordRegexp = require('../../config/appConfig.js').password_regexp;
-const SchemaProfile = Joi.object({
+const SchemaRegister = Joi.object({
   username: Joi.string().min(4).max(80).required(),
   password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
   password_repeat: Joi.ref('password'),
@@ -12,7 +12,7 @@ const SchemaProfile = Joi.object({
 
 validateProfileDatas = (profileData)=>{
   return new Promise((resolve, reject)=>{
-    const {error, value} = SchemaProfile.validate(profileData);
+    const {error, value} = SchemaRegister.validate(profileData);
 
     if(error){
       if(error.name === 'ValidationError'){
@@ -53,7 +53,7 @@ validateProfileDatas = (profileData)=>{
 
 testValidateProfileDatas = (profileData)=>{
   return new Promise((resolve, reject)=>{
-    const {error, value} = SchemaProfile.validate(profileData);
+    const {error, value} = SchemaRegister.validate(profileData);
     if(error)
       return reject(error);
     else

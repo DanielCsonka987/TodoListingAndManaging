@@ -1,8 +1,15 @@
 const router = require('express').Router();
 
+const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
+const cookieMiddle = require('../middleware/cookieManagers.js');
 const modelProfile = require('../model/profileProcesses.js');
-const verifyProfile =
-  require('../middleware/dataValidation/profileDatasValidity.js').validation;
+const registrateMiddle = require('../middleware/registerMangers.js');
+
+// API response common response configuration //
+router.all('/', apiResponseHeaders)
+
+// SESSION COOKIE RENEWING //
+router.all('/', cookieMiddle.sessionCookieRenew);
 
 // READ all user //
 router.get('/', (req,res)=>{
@@ -22,34 +29,18 @@ router.get('/', (req,res)=>{
 
 // REGISETER a new user //
 //registration input-content revision
-router.post('/register', (req, res, next)=>{
-  verifyProfile(req.body)
-  .then(result=>{ next()  })
-  .catch(err=>{
-    res.status(400);    //BAD REQUEST
-    res.send(JSON.stringify(err));
-   });
-})
+router.post('/register',registrateMiddle.profileUpdateContentVerification);
 //registration username uniquity revision
-router.post('/register', (req, res, next)=>{
-  modelProfile.findThisProfileByUsername(req.body.username)
-  .then(result =>{
-    res.status(405);    //METHOD NOT ALLOWED
-    res.send(JSON.stringify({
-      report: 'Username occupied!',
-      involvedId: req.body,
-      message: 'This username is already in use!',
-    }));
-  })
-  .catch(err=>{
-    next();
-  });
-})
+router.post('/register', registrateMiddle.profileAccountExistVerification);
+//old password confirmation
+router.post('/register', registrateMiddle.profileOldPwdConfirmation);
+//registration password encoding
+router.post('/register', registrateMiddle.profileNewPwdEncoding);
 //execute regisration
 router.post('/register', (req, res)=>{
   const newProf = {
     username: req.body.username,
-    password: req.body.password,
+    password: req.body.hashedPassword,
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     age: req.body.age,
