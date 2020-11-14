@@ -29,7 +29,7 @@ router.get('/:id', (req, res)=>{
     res.status(404);
     res.send({
       report: 'No such content to show!',
-      involvedId: req.param.id,
+      involvedId: 'id',
       message: 'Such user not have found!'
     })
   });
@@ -42,7 +42,7 @@ router.put('/:id', profMiddle.profileAccountExistVerification);
 router.put('/:id', profMiddle.profileOldPwdConfirmation);
 router.put('/:id', profMiddle.profileNewPwdEncoding);
 router.put('/:id', (req, res)=>{
-  modelProfile.updateProfilePassword(req.param.id, req.body.newHashedPassword)
+  modelProfile.updateProfilePassword(req.params.id, req.newHashedPassword)
   .then(result=>{
     res.status(200);
     res.send(JSON.stringify(result));
@@ -51,7 +51,7 @@ router.put('/:id', (req, res)=>{
     res.status(404);
     res.send({
       report: 'No such content to update!',
-      involvedId: req.param.id,
+      involvedId: 'id',
       message: 'Such user not have found!'
     })
   });
@@ -61,8 +61,10 @@ router.put('/:id', (req, res)=>{
 
 
 // DELETE the user account //
+router.delete('/:id', profMiddle.profileAccountExistVerification)
+router.delete('/:id', profMiddle.profileOldPwdConfirmation);
 router.delete('/:id', (req, res)=>{
-  modelProfile.deleteProfile()
+  modelProfile.deleteProfile(req.params.id)
   .then(result=>{
     res.status(200);
     res.send(JSON.stringify(result));
@@ -71,7 +73,7 @@ router.delete('/:id', (req, res)=>{
     res.status(404);
     res.send({
       report: 'No such content to delete!',
-      involvedId: req.param.id.toString(),
+      involvedId: 'id',
       message: 'Such user not have found!'
     })
   });

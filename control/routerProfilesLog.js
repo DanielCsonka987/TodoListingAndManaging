@@ -1,9 +1,7 @@
 const router = require('express').Router();
 
 const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
-const logDataContentRev = require('../middleware/loginManagers.js').loginDatasRevision;
-const profileExistRev = require('../middleware/loginManagers.js').loginProfileRevision;
-const logPwdRev = require('../middleware/loginManagers.js').loginPasswordRevision;
+const loginMiddle = require('../middleware/loginManagers.js');
 
 const createSessionCookie = require('../utils/sessionCookieAttribs.js');
 
@@ -11,9 +9,9 @@ const createSessionCookie = require('../utils/sessionCookieAttribs.js');
 router.all('/', apiResponseHeaders)
 
 // LOGIN //
-router.post('/login', logDataContentRev)
-router.post('/login', profileExistRev)
-router.post('/login', logPwdRev)
+router.post('/login', loginMiddle.loginDatasRevision)
+router.post('/login', loginMiddle.loginProfileExistenceRevision)
+router.post('/login', loginMiddle.loginPasswordRevision)
 //setting session cookie
 router.post('/login', async (req, res)=>{
   const cookieAttrib = await createSessionCookie();

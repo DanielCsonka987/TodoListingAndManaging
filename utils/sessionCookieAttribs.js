@@ -1,4 +1,4 @@
-const cookieAttributes = require('../config/appConfig.js').cookieDetails;
+const cookieAttributes = require('../config/appConfig.js').cookie_details;
 
 module.exports = ()=>{
   const properExpires_ms = new Date().getTime()

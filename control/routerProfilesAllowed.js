@@ -3,7 +3,7 @@ const router = require('express').Router();
 const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
 const cookieMiddle = require('../middleware/cookieManagers.js');
 const modelProfile = require('../model/profileProcesses.js');
-const registrateMiddle = require('../middleware/registerMangers.js');
+const registrateMiddle = require('../middleware/registerManagers.js');
 
 // API response common response configuration //
 router.all('/', apiResponseHeaders)
@@ -29,13 +29,11 @@ router.get('/', (req,res)=>{
 
 // REGISETER a new user //
 //registration input-content revision
-router.post('/register',registrateMiddle.profileUpdateContentVerification);
+router.post('/register',registrateMiddle.regDatasVerification);
 //registration username uniquity revision
-router.post('/register', registrateMiddle.profileAccountExistVerification);
-//old password confirmation
-router.post('/register', registrateMiddle.profileOldPwdConfirmation);
+router.post('/register', registrateMiddle.regProfilesCollisionScreen);
 //registration password encoding
-router.post('/register', registrateMiddle.profileNewPwdEncoding);
+router.post('/register', registrateMiddle.reqProfilePwdEncoding);
 //execute regisration
 router.post('/register', (req, res)=>{
   const newProf = {

@@ -2,8 +2,8 @@ const pwdChangeDataValidity = require('../utils/dataValidation/pwdChangeDatasVal
 const modelProfile = require('../model/profileProcesses.js');
 const pwdManager = require('../utils/passwordManagers.js');
 
-module.expots.profileUpdateContentVerification = (req, res, next)=>{
-  loginDataValidity(req.body)
+module.exports.profileUpdateContentVerification = (req, res, next)=>{
+  pwdChangeDataValidity(req.body)
   .then(result=>{
     next();
   })
@@ -34,23 +34,23 @@ module.exports.profileOldPwdConfirmation = (req, res, next)=>{
     if(err === 'incorrect'){
       res.status(400);  //BAD REQUEST
       res.send(JSON.stringify({
-        report: 'Old password missmatch!',
-        involvedId: 'oldpassword',
+        report: 'Old password is in missmatch!',
+        involvedId: 'old_password',
         message: 'Wrong actual password!!'
       }))
     } else {
       res.status(500);  //SERVER INTERNAL ERROR
       res.send(JSON.stringify({
         report: 'Old password verification error!',
-        involvedId: 'oldpassword',
-        message: 'Password update error!'
+        involvedId: 'old_password',
+        message: 'Password confirmation error!'
       }))
     }
   })
 }
 
 module.exports.profileNewPwdEncoding = (req, res, next)=>{
-  pwdManager.encodeThisPassword(req.body.password)
+  pwdManager.encodeThisPassword(req.body.new_password)
   .then(hashResult=>{
     req.newHashedPassword = hashResult;
     next();
@@ -60,7 +60,7 @@ module.exports.profileNewPwdEncoding = (req, res, next)=>{
     res.send(JSON.stringify({
       report: 'New password encription error!',
       involvedId: 'password',
-      message: 'Password update error!'
+      message: 'New password update error!'
     }));
   })
 }

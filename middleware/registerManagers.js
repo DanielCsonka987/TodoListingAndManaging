@@ -1,4 +1,4 @@
-const verifyProfile = require('../utils/dataValidation/profileDatasValidity.js').validation);
+const verifyProfile = require('../utils/dataValidation/registerDatasValidity.js').validation;
 const modelProfile = require('../model/profileProcesses.js');
 const pwdEncoder = require('../utils/passwordManagers.js').encodeThisPassword;
 
@@ -30,6 +30,7 @@ module.exports.reqProfilePwdEncoding = (req, res, next)=>{
   pwdEncoder(req.body.password)
   .then(hashResult =>{
     req.body.hashedPassword = hashResult;
+    next();
   })
   .catch(err=>{
     res.status(500);    //METHOD NOT ALLOWED

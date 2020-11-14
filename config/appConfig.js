@@ -9,8 +9,9 @@ module.exports = {
   encryption_saltrounds: 12,
   password_regexp: '^[0-9a-zA-Z]{4,40}$',
   mongodbid_regexp: '[0-9a-f]{24}',
+  true_false_regexp: '^true$|^false$',
 
-  cookieDetails: {
+  cookie_details: {
     sessionCookiePrefix: '',
     sessionCookieNameing: 'session',
     path: '/api/profiles/',

@@ -382,7 +382,7 @@ describe('Change password datas verification - positive/negative cases', functio
 
   it('Change user password with newpwd and oldpwd datas', function(){
     return ChangePwdVerif({
-      password: 'test',
+      new_password: 'test',
       old_password: 'test1'
     })
     .then(res=>{
@@ -407,13 +407,13 @@ describe('Change password datas verification - positive/negative cases', functio
     .catch(err=>{
       expect(err).to.be.a('object');
       expect(err.involvedId).to.be.a('string');
-      expect(err.involvedId).to.equal('password');
+      expect(err.involvedId).to.equal('new password');
     })
   })
 
   it('Change user password with no oldpwd', function(){
     return ChangePwdVerif({
-      password: 'test'
+      new_password: 'test'
     })
     .then(res=>{
       expect(res).to.be.a('undefined');
@@ -435,7 +435,7 @@ describe('Change password datas verification - positive/negative cases', functio
     .catch(err=>{
       expect(err).to.be.a('object');
       expect(err.involvedId).to.be.a('string');
-      expect(err.involvedId).to.equal('password');
+      expect(err.involvedId).to.equal('new password');
     })
   })
 })

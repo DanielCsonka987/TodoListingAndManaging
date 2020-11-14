@@ -10,7 +10,7 @@ module.exports.loginDatasRevision = function(req, res, next){
     res.send(JSON.stringify(err));
   });
 }
-module.exports.loginProfileRevision = function(req, res, next){
+module.exports.loginProfileExistenceRevision = function(req, res, next){
   modelProfile.findThisProfileByUsername(req.body.username)
   .then(result=>{
     req.loginUserId = result.report._id;  //for the cookie content

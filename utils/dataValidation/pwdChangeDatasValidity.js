@@ -2,7 +2,7 @@ const Joi = require('joi');
 const passwordRegexp = require('../../config/appConfig.js').password_regexp;
 
 const SchemaPwdChange = Joi.object({
-  password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
+  new_password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
   old_password: Joi.string().pattern(new RegExp(passwordRegexp)).required()
 });
 
@@ -14,9 +14,8 @@ module.exports = (pwdChangeData) =>{
       if(error.name){
 
         let errorCaused = error.details[0].context.label;
-        if(errorCaused === 'old_password'){
-          errorCaused = errorCaused.replace('_',' ');
-        }
+        errorCaused = errorCaused.replace('_',' ');
+
         reject({
           report: 'Validation error!',
           involvedId: errorCaused,
