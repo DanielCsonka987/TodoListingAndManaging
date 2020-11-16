@@ -5,6 +5,7 @@ const sessionCookieAttributes = require('../utils/sessionCookieAttribs.js');
 const sessionCookieName = sessionCookieAttributes().name;
 
 module.exports.existVerification = (req, res, next)=>{
+  console.log(req.params);
   if(req.cookies !== undefined){
     if(req.cookies[sessionCookieName] === req.params.id || req.cookies[sessionCookieName] !== undefined){
       next();

@@ -23,7 +23,6 @@ module.exports.loginProfileExistenceRevision = function(req, res, next){
   });
 }
 module.exports.loginPasswordRevision = function(req, res, next){
-  console.log(req.body.password+ '-'+ req.loginUserHashPwd)
   pwdVerify(req.body.password, req.loginUserHashPwd)
   .then(()=>{
     next();

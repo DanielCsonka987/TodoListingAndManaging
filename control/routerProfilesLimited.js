@@ -58,6 +58,8 @@ router.put('/:id', (req, res)=>{
 })
 
 
+//Possibly should be age/occupation update as well
+
 
 
 // DELETE the user account //

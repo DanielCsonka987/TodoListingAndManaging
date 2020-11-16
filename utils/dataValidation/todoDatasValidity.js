@@ -7,8 +7,12 @@ const SchemaTodo = Joi.object({
   notation: Joi.string().max(150)
 }).with('task', 'priority');
 
-validateTodoDatas = (todoData)=>{
+validateTodoDatas = (ownerId, todoData)=>{
   return new Promise((resolve, reject)=>{
+    console.log(ownerId);
+    console.log(todoData);
+    todoData.owner = ownerId;
+    console.log(todoData);
     const {error, value} = SchemaTodo.validate(todoData);
 
     if(error){

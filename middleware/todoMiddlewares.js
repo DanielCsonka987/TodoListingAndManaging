@@ -1,8 +1,8 @@
-const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js');
+const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js').todoValidation;
 const verifyState = require('../utils/dataValidation/todoStateDataValidity.js');
 
 module.exports.newContentVerification = (req, res, next)=>{
-  verifyTodo(req.body)
+  verifyTodo(req.params.id, req.body)
   .then(result=>{
     next();
   })
@@ -13,7 +13,7 @@ module.exports.newContentVerification = (req, res, next)=>{
 }
 
 module.exports.changeTodoStateVerification = (req, res, next)=>{
-  verifyState(req.body.state)
+  verifyState(req.body.status)
   .then(result=>{
     next();
   })

@@ -34,10 +34,10 @@ app.use(cookieparser());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(upload.array());
 
-app.use('/api/profiles', routerProfileAllowed); //GET ALL + REGISTER
-app.use('/api/profiles', routerProfileLog); //LOGIN + LOGUT
-app.use('/api/profiles/', routerLimitedProfile); //PROFILE GET+POST+PUT+DELETE
-app.use('/api/profiles/:id/todos', routerTodos);  //TODO PROCESSES
+app.use('/api', routerProfileAllowed); //GET ALL + REGISTER
+app.use('/api', routerProfileLog); //LOGIN + LOGUT
+app.use('/api', routerLimitedProfile); //PROFILE GET+POST+PUT+DELETE
+app.use('/api', routerTodos);  //TODO PROCESSES
 
 // ERROR handling //
 app.all('/', apiErrorHandler)
@@ -47,4 +47,4 @@ const server = app.listen(PORT, ()=>{
 });
 
 
-module.exports = server;
+module.exports = server;  //MOCHA testing purose

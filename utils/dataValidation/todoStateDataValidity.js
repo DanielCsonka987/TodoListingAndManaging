@@ -10,7 +10,7 @@ module.exports = (stateChangeInput)=>{
     if(error){
       reject({
         report: 'Todo state is not a permitted content!',
-        involvedId: 'state',
+        involvedId: 'status',
         mesasge: 'Todo state must be true or false!'
       });
     }else{

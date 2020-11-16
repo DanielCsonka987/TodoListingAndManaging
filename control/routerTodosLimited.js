@@ -7,19 +7,20 @@ const cookieMiddle = require('../middleware/cookieManagers.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
 
 // API response common response configuration //
-router.all('/', apiResponseHeaders)
-router.all('/:id', apiResponseHeaders)
+router.all('//:id/todos', apiResponseHeaders)
 
 // SESSION COOKIE AUTHENTICATION //
-router.all('/:id', cookieMiddle.existVerification);
-router.all('/:id', cookieMiddle.contentVerification);
+// router.all('/', cookieMiddle.existVerification);
+// router.all('/', cookieMiddle.contentVerification);
+router.all('/:id/todos', cookieMiddle.existVerification);
+router.all('/:id/todos', cookieMiddle.contentVerification);
 
 // SESSION COOKIE RENEWING //
-router.all('/:id', cookieMiddle.sessionCookieRenew);
+router.all('/:id/todos', cookieMiddle.sessionCookieRenew);
 
 // READ all todos of user
 router.get('/', (req,res)=>{
-  modelTodos.loadInProfileTodos(req.cookie.name)
+  modelTodos.loadInProfileTodos(req.params.id)
   .then(result=>{
     res.status(200);
     res.send(JSON.stringify(result));
@@ -32,9 +33,9 @@ router.get('/', (req,res)=>{
 
 
 // CREATE new todo //
-router.post('/', todoMiddle.newContentVerification);
-router.post('/', (req, res)=>{
-  modelTodos.createTodo(req.cookies.name, req.body)
+router.post('/:id/todos', todoMiddle.newContentVerification);
+router.post('/:id/todos', (req, res)=>{
+  modelTodos.createTodo(req.params.id, req.body)
   .then(result=>{
     res.status(200);
     res.send(JSON.stringify(result));
@@ -49,8 +50,10 @@ router.post('/', (req, res)=>{
 
 // UPDATE todos //
 //update status
-router.put('/:index/status', todoMiddle.changeTodoStateVerification);
-router.put('/:index/status', (req, res)=>{
+router.put('/:id/todos/:index/status', todoMiddle.changeTodoStateVerification);
+router.put('/:id/todos/:index/status', (req, res)=>{
+  console.log(req.body.status)
+  console.log(typeof(req.body.status))
   modelTodos.updateStateTodo(req.params.index, req.body.status)
   .then(result=>{
     res.status(200);
@@ -62,7 +65,7 @@ router.put('/:index/status', (req, res)=>{
   });
 })
 //update notation
-router.put('/:id/notation', (req, res)=>{
+router.put('/:id/todos/:index/notation', (req, res)=>{
   modelTodos.updateNotationTodo(req.params.index, req.body.notation)
   .then(result=>{
     res.status(200);
@@ -79,8 +82,9 @@ router.put('/:id/notation', (req, res)=>{
 // DELETE todos //
 //delete all todos
 // router.delete('/', profMiddle.profileAccountExistVerification)
-router.delete('/', profMiddle.profileOldPwdConfirmation)
-router.delete('/', (req,res)=>{
+router.delete('/:id/todos', profMiddle.profileAccountExistVerification)
+router.delete('/:id/todos', profMiddle.profileOldPwdConfirmation)
+router.delete('/:id/todos', (req,res)=>{
   modelTodos.deleteAllTodos(req.params.id)
   .then(result=>{
     res.status(200);
@@ -93,8 +97,9 @@ router.delete('/', (req,res)=>{
 })
 //delete single todo
 // router.delete('/:index', profMiddle.profileAccountExistVerification)
-router.delete('/:index', profMiddle.profileOldPwdConfirmation)
-router.delete('/:index', (req, res)=>{
+router.delete('/:id/todos/:index', profMiddle.profileAccountExistVerification)
+router.delete('/:id/todos/:index', profMiddle.profileOldPwdConfirmation)
+router.delete('/:id/todos/:index', (req, res)=>{
   modelTodos.deleteThisTodo(req.params.id, req.params.index)
   .then(result=>{
     res.status(200);
