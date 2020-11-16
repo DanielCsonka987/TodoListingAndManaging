@@ -2,11 +2,12 @@ const router = require('express').Router();
 
 const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
 const cookieMiddle = require('../middleware/cookieManagers.js');
+const loginMiddle = require('../middleware/loginManagers.js');
 const modelProfile = require('../model/profileProcesses.js');
-const registrateMiddle = require('../middleware/registerManagers.js');
 
 // API response common response configuration //
 router.all('/', apiResponseHeaders)
+router.all('/:id/login', apiResponseHeaders)
 
 // SESSION COOKIE RENEWING //
 router.all('/', cookieMiddle.sessionCookieRenew);
@@ -19,39 +20,32 @@ router.get('/', (req,res)=>{
     res.send(JSON.stringify(result));
   })
   .catch(err=>{
-    res.status(405);    //METHOD NOT ALLOWED
+    res.status(500);    //SERVER INTERNAL ERROR
     res.send(JSON.stringify(err));
   });
 })
 
+// LOGIN //
+router.post('/:id/login', loginMiddle.loginDatasRevision)
+router.post('/:id/login', loginMiddle.loginProfileExistenceRevision)
+router.post('/:id/login', loginMiddle.loginPasswordRevision)
+router.post('/:id/login', cookieMiddle.sessionCookieLoginCreation)
+router.post('/:id/login', (req, res)=>{
+  res.status(200);
+  res.send({
+    report: 'Access granted!',
+    message: doneMessages.login
+  });
+})
 
-
-
-// REGISETER a new user //
-//registration input-content revision
-router.post('/register',registrateMiddle.regDatasVerification);
-//registration username uniquity revision
-router.post('/register', registrateMiddle.regProfilesCollisionScreen);
-//registration password encoding
-router.post('/register', registrateMiddle.reqProfilePwdEncoding);
-//execute regisration
-router.post('/register', (req, res)=>{
-  const newProf = {
-    username: req.body.username,
-    password: req.body.hashedPassword,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    age: req.body.age,
-    occupation: req.body.occupation
-  }
-  modelProfile.createProfile(newProf)
-  .then(result=>{
-    res.status(201);    //CREATED
-    res.send(JSON.stringify(result));
-  })
-  .catch(err=>{
-    res.status(500);    //INTERNAL SERVER ERROR
-    res.send(JSON.stringify(err));
+// LOGOUT //
+// destroying session cookie
+router.get('/:id/logout', cookieMiddle.sessionCookieRemoval)
+router.get('/:id/logout', async(req,res)=>{
+  res.status(200);
+  res.send({
+    report: 'Access terminated!',
+    message: doneMessages.logout
   });
 })
 

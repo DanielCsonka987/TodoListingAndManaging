@@ -3,18 +3,23 @@ const modelProfile = require('../model/profileProcesses.js');
 const sessionCookieAttributes = require('../utils/sessionCookieAttribs.js');
 
 const sessionCookieName = sessionCookieAttributes().name;
+const errorMessage = require('../config/appConfig.js').front_error_messages;
 
 module.exports.existVerification = (req, res, next)=>{
-  console.log(req.params);
   if(req.cookies !== undefined){
     if(req.cookies[sessionCookieName] === req.params.id || req.cookies[sessionCookieName] !== undefined){
       next();
     } else {  //NO COOKIE VALUE OR NO SESSION COOKIE
+      // const actPathId = req.params.id;
+      // if(actPathId === 'register')
+      //   next();
+      // if(actPathId === 'login')
+      //   next();
       res.status(401)   //UNAUTHORIZED
       res.send(JSON.stringify({
         report: 'User interfering in another account!',
         involvedId: req.params.id,
-        message: 'Management is permitted only at your account!'
+        message: errorMessage.cookie_profile_mismatch
       }));
     }
   } else {  //NO COOKIE AT ALL
@@ -22,7 +27,7 @@ module.exports.existVerification = (req, res, next)=>{
     res.send(JSON.stringify({
       report: 'User session is not set!',
       involvedId: 'sessionCookie',
-      message: 'Please, log in to use such service!'
+      message: errorMessage.cookie_misses
     }));
   }
 }
@@ -43,7 +48,7 @@ module.exports.contentVerification = (req, res, next)=>{
     res.send(JSON.stringify({
       report: 'No cookie value to authenticate!',
       involvedId: '',
-      message: 'User not logged in!'
+      message: errorMessage.cookie_misses
     }));
   }
 }
@@ -63,9 +68,9 @@ function verifyStructureContentCookie (cookieContent){
           newReport = 'Unkonwn identifier';
         }
         const errorMesasge = {
-          report: `Problem occured - ${newReport}!`,
+          report: `Cookie value inappropiate - ${newReport}!`,
           involvedId: '',
-          message: 'Re-authentication is unsuccessful!'
+          message: errorMessage.cookie_revision
         }
         reject(errorMesasge)
       });
@@ -76,17 +81,59 @@ function verifyStructureContentCookie (cookieContent){
   });
 }
 
-module.exports.sessionCookieRenew = manageCookieRenew = (req, res, next)=>{
+function createSessionCookieAtResponseObj(res, value){
+  const cookieAttrib = sessionCookieAttributes();
+  res.cookie(cookieAttrib.name, value.toString(),
+    {
+      path: cookieAttrib.path,
+      expires: cookieAttrib.expireDate,
+      httpOnly: cookieAttrib.httpOnly,
+      secure: cookieAttrib.secure,
+      sameSite: cookieAttrib.sameSite
+    }
+  );
+}
+function removeSessionCookieAtResponseObj(res, value){
+  const cookieAttrib = sessionCookieAttributes();
+  res.cookie(cookieAttrib.name, value,
+    {
+      path: cookieAttrib.path,
+      expires: 0,
+      httpOnly: cookieAttrib.httpOnly,
+      secure: cookieAttrib.secure,
+      sameSite: cookieAttrib.sameSite
+    }
+  );
+}
+module.exports.sessionCookieRenew = (req, res, next)=>{
   if(req.cookies[sessionCookieName]){
-    const cookieAttrib = sessionCookieAttributes();
-    res.cookie(sessionCookieName,
-      req.cookies[sessionCookieName],
-      {
-        path: cookieAttrib.path,
-        expires: cookieAttrib.expireDate,
-        httpOnly: cookieAttrib.httpOnly
-      }
-    );
+    createSessionCookieAtResponseObj(res, req.cookies[sessionCookieName]);
+    // const cookieAttrib = sessionCookieAttributes();
+    // res.cookie(sessionCookieName,
+    //   req.cookies[sessionCookieName],
+    //   {
+    //     path: cookieAttrib.path,
+    //     expires: cookieAttrib.expireDate,
+    //     httpOnly: cookieAttrib.httpOnly,
+    //     secure: cookieAttrib.secure,
+    //     sameSite: cookieAttrib.sameSite
+    //   }
+    // );
   }
+  next();
+}
+
+module.exports.sessionCookieLoginCreation = (req, res, next)=>{
+  // const cookieAttrib = sessionCookieAttributes();
+  createSessionCookieAtResponseObj(res, req.loginUserId);
+  next();
+}
+module.exports.sessionCookieRegisterCreation = (res, idValue)=>{
+  // const cookieAttrib = sessionCookieAttributes();
+  createSessionCookieAtResponseObj(res, idValue);
+
+}
+module.exports.sessionCookieRemoval = (req, res, next)=>{
+  removeSessionCookieAtResponseObj(res, '');
   next();
 }

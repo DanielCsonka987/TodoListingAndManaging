@@ -1,6 +1,7 @@
 const pwdChangeDataValidity = require('../utils/dataValidation/pwdChangeDatasValidity.js');
 const modelProfile = require('../model/profileProcesses.js');
 const pwdManager = require('../utils/passwordManagers.js');
+const errorMessages = require('../config/appConfig.js').front_error_messages;
 
 module.exports.profileUpdateContentVerification = (req, res, next)=>{
   pwdChangeDataValidity(req.body)
@@ -25,6 +26,7 @@ module.exports.profileAccountExistVerification = (req, res, next)=>{
   })
 }
 
+//it is needed at password update, todo deletions
 module.exports.profileOldPwdConfirmation = (req, res, next)=>{
   pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)
   .then(()=>{
@@ -34,16 +36,16 @@ module.exports.profileOldPwdConfirmation = (req, res, next)=>{
     if(err === 'incorrect'){
       res.status(400);  //BAD REQUEST
       res.send(JSON.stringify({
-        report: 'Old password is in missmatch!',
+        report: 'Old password is wrong!',
         involvedId: 'old_password',
-        message: 'Wrong actual password!!'
+        message: errorMessages.password_update_revise
       }))
     } else {
       res.status(500);  //SERVER INTERNAL ERROR
       res.send(JSON.stringify({
-        report: 'Old password verification error!',
+        report: 'Password old-new inspection error!',
         involvedId: 'old_password',
-        message: 'Password confirmation error!'
+        message: errorMessages.authentication_unknown
       }))
     }
   })
@@ -60,7 +62,7 @@ module.exports.profileNewPwdEncoding = (req, res, next)=>{
     res.send(JSON.stringify({
       report: 'New password encription error!',
       involvedId: 'password',
-      message: 'New password update error!'
+      message: errorMessages.password_update_newHashing
     }));
   })
 }

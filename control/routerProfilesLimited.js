@@ -5,6 +5,8 @@ const cookieMiddle = require('../middleware/cookieManagers.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
 const modelProfile = require('../model/profileProcesses.js');
 
+const errorMessages = require('../config/appConfig.js').front_error_messages;
+
 // API response common response configuration //
 router.all('/:id', apiResponseHeaders)
 
@@ -27,11 +29,7 @@ router.get('/:id', (req, res)=>{
   })
   .catch(err=>{
     res.status(404);
-    res.send({
-      report: 'No such content to show!',
-      involvedId: 'id',
-      message: 'Such user not have found!'
-    })
+    res.send(JSON.stringify(err))
   });
 })
 
@@ -49,11 +47,7 @@ router.put('/:id', (req, res)=>{
   })
   .catch(err=>{
     res.status(404);
-    res.send({
-      report: 'No such content to update!',
-      involvedId: 'id',
-      message: 'Such user not have found!'
-    })
+    res.send(JSON.stringify(err))
   });
 })
 
@@ -73,12 +67,9 @@ router.delete('/:id', (req, res)=>{
   })
   .catch(err=>{
     res.status(404);
-    res.send({
-      report: 'No such content to delete!',
-      involvedId: 'id',
-      message: 'Such user not have found!'
-    })
+    res.send(JSON.stringify(err))
   });
 });
+
 
 module.exports = router;

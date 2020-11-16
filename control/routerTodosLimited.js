@@ -6,8 +6,10 @@ const todoMiddle = require('../middleware/todoMiddlewares.js');
 const cookieMiddle = require('../middleware/cookieManagers.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
 
+const errorMessages = require('../config/appConfig.js').front_error_messages;
+
 // API response common response configuration //
-router.all('//:id/todos', apiResponseHeaders)
+router.all('/:id/todos', apiResponseHeaders)
 
 // SESSION COOKIE AUTHENTICATION //
 // router.all('/', cookieMiddle.existVerification);

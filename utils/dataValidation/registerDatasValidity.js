@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const passwordRegexp = require('../../config/appConfig.js').password_regexp;
+const passwordRegexp = require('../../config/appConfig.js')
+  .validation_config.password_regexp;
 const SchemaRegister = Joi.object({
   username: Joi.string().min(4).max(80).required(),
   password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),

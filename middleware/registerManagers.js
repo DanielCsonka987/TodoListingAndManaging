@@ -2,6 +2,8 @@ const verifyProfile = require('../utils/dataValidation/registerDatasValidity.js'
 const modelProfile = require('../model/profileProcesses.js');
 const pwdEncoder = require('../utils/passwordManagers.js').encodeThisPassword;
 
+const errorMessages = require('../config/appConfig.js').front_error_messages;
+
 module.exports.regDatasVerification = (req, res, next)=>{
   verifyProfile(req.body)
   .then(result=>{ next()  })
@@ -17,8 +19,8 @@ module.exports.regProfilesCollisionScreen = (req, res, next)=>{
     res.status(405);    //METHOD NOT ALLOWED
     res.send(JSON.stringify({
       report: 'Username occupied!',
-      involvedId: req.body,
-      message: 'This username is already in use!',
+      involvedId: { username: req.body.username },
+      message: errorMessages.register_username_occupied
     }));
   })
   .catch(err=>{
@@ -35,9 +37,9 @@ module.exports.reqProfilePwdEncoding = (req, res, next)=>{
   .catch(err=>{
     res.status(500);    //METHOD NOT ALLOWED
     res.send(JSON.stringify({
-      report: 'Password encodin error!',
+      report: 'Password encoding error at registration!',
       involvedId: req.body.password,
-      message: 'Server function error!',
+      message: errorMessages.password_regOrUpdate_newHashing
     }));
   })
 }

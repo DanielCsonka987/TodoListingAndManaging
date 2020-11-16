@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const mongodbid = require('../../config/appConfig').mongodbid_regexp;
+const mongodbid = require('../../config/appConfig').validation_config.mongodbid_regexp;
+const errorMessages = require('../../config/appConfig').front_error_messages;
 const SchemaCookie = Joi.string().pattern(new RegExp(mongodbid))
   .max(24).required();
 
@@ -11,14 +12,14 @@ validationCookieContent = (cookieValue)=>{
       if(error.name === 'ValidationError'){
         reject({
           report: 'Bad cookie in structure or content!',
-          involvedId: cookieValue,
-          message: 'Authentication error!'
+          involvedId: {cookieContent: cookieValue},
+          message: errorMessages.authentication_unknown
         });
       }else{
         reject({
           report: 'Bad structured or cookie!',
-          involvedId: cookieValue,
-          message: 'Authentication error!'
+          involvedId: {cookieContent: cookieValue},
+          message: errorMessages.authentication_unknown
         });
       }
     }else{

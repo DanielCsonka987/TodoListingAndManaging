@@ -1,5 +1,7 @@
 const Joi = require('joi');
-const passwordRegexp = require('../../config/appConfig.js').password_regexp;
+const passwordRegexp = require('../../config/appConfig.js')
+  .validation_config.password_regexp;
+const errorMessages = require('../../config/appConfig.js').front_error_messages;
 
 const SchemaPwdChange = Joi.object({
   new_password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
@@ -19,15 +21,15 @@ module.exports = (pwdChangeData) =>{
         reject({
           report: 'Validation error!',
           involvedId: errorCaused,
-          message: 'Wrong new password or original password!'
+          message: errorMessages.password_new_old_mismatch
         });
 
 
       } else{
         reject({
           report: 'Unexpected error!',
-          involvedId: error.details,
-          message: 'Data verification error!'
+          involvedId: '',
+          message: errorMessages.password_new_old_mismatch
         });
       }
     } else {

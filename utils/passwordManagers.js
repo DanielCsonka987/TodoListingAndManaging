@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-const encryptRound = require('../config/appConfig.js').encryption_saltrounds;
+const encryptRound = require('../config/appConfig.js')
+  .validation_config.encryption_saltrounds;
 
 module.exports.encodeThisPassword = (newPassword)=>{
   return new Promise((resolve, reject)=>{

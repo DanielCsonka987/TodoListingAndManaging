@@ -1,9 +1,10 @@
-const verifyLogin = require('../utils/dataValidation/loginDatasValidity.js');
+const verifyLoginDatas = require('../utils/dataValidation/loginDatasValidity.js');
 const modelProfile = require('../model/profileProcesses.js');
-const pwdVerify = require('../utils/passwordManagers.js').verifyThisPassword;
+const pwdHashMatchVerify = require('../utils/passwordManagers.js').verifyThisPassword;
+const errorMessages = require('../config/appConfig.js').front_error_messages;
 
 module.exports.loginDatasRevision = function(req, res, next){
-  verifyLogin(req.body)
+  verifyLoginDatas(req.body)
   .then(res=>{ next() })
   .catch(err=>{
     res.status(400);   //BAD REQUEST
@@ -23,7 +24,7 @@ module.exports.loginProfileExistenceRevision = function(req, res, next){
   });
 }
 module.exports.loginPasswordRevision = function(req, res, next){
-  pwdVerify(req.body.password, req.loginUserHashPwd)
+  pwdHashMatchVerify(req.body.password, req.loginUserHashPwd)
   .then(()=>{
     next();
   })
@@ -31,17 +32,17 @@ module.exports.loginPasswordRevision = function(req, res, next){
     if(err === 'incorrect'){
       res.status(404);  //NOT FOUND
       res.send(JSON.stringify({
-        report: 'Authentication failed!',
+        report: 'Password authentication failed at login!',
         involvedId: '',
-        message: 'Wrong username or password!!'
+        message: errorMessages.password_login_validation
       }))
 
     } else {
       res.status(500);  //SERVER INTERNAL ERROR
       res.send(JSON.stringify({
-        report: 'Password inseption failed!',
+        report: 'Password hash verification error at login!',
         involvedId: 'username or password',
-        message: 'Authentication error!'
+        message: errorMessages.authentication_unknown
       }))
     }
   })

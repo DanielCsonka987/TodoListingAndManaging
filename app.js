@@ -7,11 +7,12 @@ const multer  = require('multer');
 const upload = multer();
 
 const PORT = process.env.PORT || 8080;
-const dbAccessUrl = require('./config/appConfig.js').dbaccess;
+const dbAccessUrl = require('./config/appConfig.js').db_access;
+const apiRouting = require('./config/appConfig.js').routing_paths;
 const routerProfileAllowed = require('./control/routerProfilesAllowed.js');
-const routerProfileLog = require('./control/routerProfilesLog.js');
+const apiPathsrouterProfileLReg = require('./control/routerProfilesLog.js');
 const routerLimitedProfile = require('./control/routerProfilesLimited.js');
-const routerTodos = require('./control/routerTodosLimited.js');
+const routerLimitedTodos = require('./control/routerTodosLimited.js');
 const apiErrorHandler = require('./middleware/commonAPIErrorHendler.js');
 
 mongoose.connect(dbAccessUrl, {useNewUrlParser: true, useUnifiedTopology: true} )
@@ -34,10 +35,10 @@ app.use(cookieparser());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(upload.array());
 
-app.use('/api', routerProfileAllowed); //GET ALL + REGISTER
-app.use('/api', routerProfileLog); //LOGIN + LOGUT
-app.use('/api', routerLimitedProfile); //PROFILE GET+POST+PUT+DELETE
-app.use('/api', routerTodos);  //TODO PROCESSES
+app.use(apiRouting.api_base, apiPathsrouterProfileLReg); // REGISTER
+app.use(apiRouting.api_base_profile, routerProfileAllowed); // GET ALL PROFILES + LOGIN + LOGUT
+app.use(apiRouting.api_base_profile, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
+app.use(apiRouting.api_base_profile, routerLimitedTodos);  // TODO PROCESSES
 
 // ERROR handling //
 app.all('/', apiErrorHandler)

@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const trueFalseDef = require('../../config/appConfig.js').true_false_regexp;
+const trueFalseDef = require('../../config/appConfig.js')
+  .validation_config.true_false_regexp;
 
 const SchemaTodoState = Joi.string().pattern(new RegExp(trueFalseDef)).required();
 
