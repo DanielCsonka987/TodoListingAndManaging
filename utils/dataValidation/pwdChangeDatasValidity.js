@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const passwordRegexp = require('../../config/appConfig.js')
   .validation_config.password_regexp;
-const errorMessages = require('../../config/appConfig.js').front_error_messages;
+const errorMessages = require('../../config/appMessages.js').front_error_messages;
 
 const SchemaPwdChange = Joi.object({
   new_password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),

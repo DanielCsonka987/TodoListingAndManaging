@@ -3,18 +3,13 @@ const modelProfile = require('../model/profileProcesses.js');
 const sessionCookieAttributes = require('../utils/sessionCookieAttribs.js');
 
 const sessionCookieName = sessionCookieAttributes().name;
-const errorMessage = require('../config/appConfig.js').front_error_messages;
+const errorMessage = require('../config/appMessages.js').front_error_messages;
 
 module.exports.existVerification = (req, res, next)=>{
   if(req.cookies !== undefined){
     if(req.cookies[sessionCookieName] === req.params.id || req.cookies[sessionCookieName] !== undefined){
       next();
-    } else {  //NO COOKIE VALUE OR NO SESSION COOKIE
-      // const actPathId = req.params.id;
-      // if(actPathId === 'register')
-      //   next();
-      // if(actPathId === 'login')
-      //   next();
+    } else {
       res.status(401)   //UNAUTHORIZED
       res.send(JSON.stringify({
         report: 'User interfering in another account!',
@@ -35,14 +30,16 @@ module.exports.existVerification = (req, res, next)=>{
 module.exports.contentVerification = (req, res, next)=>{
   const cookieContentToAnalyze = req.cookies[sessionCookieName];
   if(cookieContentToAnalyze){
-    verifyStructureContentCookie(cookieContentToAnalyze)  //structural and DB revision
-    .then(result=>{
+    verifySessionCookie(cookieContentToAnalyze)  //structural and DB revision
+    .then(possGoodCookieId =>{
+      req.possGoodIdFromCookie = possGoodCookieId;
       next();
     })
-    .catch(err=>{
-      res.status(401);   //UNAUTHORIZED
-      res.send(JSON.stringify(err))
-    });
+    .catch((err)=>{
+      err.message = errorMessages.authentication_unknown
+      res.status(401);    //UNAUTHORIZED
+      res.send(JSON.stringify(err));
+    })
   } else {  //NOT ACCEPTABLE VALUE IN SESSION COOKIE
     res.status(401);   //UNAUTHORIZED
     res.send(JSON.stringify({
@@ -54,32 +51,19 @@ module.exports.contentVerification = (req, res, next)=>{
 }
 
 
-function verifyStructureContentCookie (cookieContent){
-  return new Promise((resolve, reject)=>{
-    verifySessionCookie(cookieContent)
-    .then(result=>{
-      modelProfile.findThisProfileById(cookieContent)
-      .then(res=>{ resolve() })
-      .catch((err)=>{
-        let newReport = '';
-        if(err.report === 'MongoDB error!'){
-          newReport = 'Connection issue';
-        } else {
-          newReport = 'Unkonwn identifier';
-        }
-        const errorMesasge = {
-          report: `Cookie value inappropiate - ${newReport}!`,
-          involvedId: '',
-          message: errorMessage.cookie_revision
-        }
-        reject(errorMesasge)
-      });
-    })
-    .catch(err=>{
-      reject(err);
-    });
-  });
+module.exports.contentDBRevision = (req, res, next)=>{
+  modelProfile.findThisProfileById_detailed(req.possGoodIdFromCookie)
+  .then(result=>{
+    req.oldHashedPwd = result.report.password;  //SAVING IN CASE OF INPUT old_password REVISION
+    next();
+  }).catch(err=>{
+    err.message = errorMessage.cookie_misses;
+    res.status(401);    //UNAUTHORIZED
+    res.send(JSON.stringify(err));
+  })
 }
+
+
 
 function createSessionCookieAtResponseObj(res, value){
   const cookieAttrib = sessionCookieAttributes();
@@ -105,34 +89,28 @@ function removeSessionCookieAtResponseObj(res, value){
     }
   );
 }
+
+module.exports.sessionCookieRegisterCreation = (req, res, next)=>{
+  const newUserId = req.justCreatedUserMessage.report.id;
+  createSessionCookieAtResponseObj(res, newUserId);
+  res.status(200);
+  res.write(JSON.stringify(req.justCreatedUserMessage));
+  next();
+}
+
 module.exports.sessionCookieRenew = (req, res, next)=>{
   if(req.cookies[sessionCookieName]){
     createSessionCookieAtResponseObj(res, req.cookies[sessionCookieName]);
-    // const cookieAttrib = sessionCookieAttributes();
-    // res.cookie(sessionCookieName,
-    //   req.cookies[sessionCookieName],
-    //   {
-    //     path: cookieAttrib.path,
-    //     expires: cookieAttrib.expireDate,
-    //     httpOnly: cookieAttrib.httpOnly,
-    //     secure: cookieAttrib.secure,
-    //     sameSite: cookieAttrib.sameSite
-    //   }
-    // );
   }
   next();
 }
 
 module.exports.sessionCookieLoginCreation = (req, res, next)=>{
-  // const cookieAttrib = sessionCookieAttributes();
   createSessionCookieAtResponseObj(res, req.loginUserId);
   next();
 }
-module.exports.sessionCookieRegisterCreation = (res, idValue)=>{
-  // const cookieAttrib = sessionCookieAttributes();
-  createSessionCookieAtResponseObj(res, idValue);
 
-}
+
 module.exports.sessionCookieRemoval = (req, res, next)=>{
   removeSessionCookieAtResponseObj(res, '');
   next();

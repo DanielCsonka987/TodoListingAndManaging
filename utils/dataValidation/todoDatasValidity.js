@@ -10,10 +10,7 @@ const SchemaTodo = Joi.object({
 
 validateTodoDatas = (ownerId, todoData)=>{
   return new Promise((resolve, reject)=>{
-    console.log(ownerId);
-    console.log(todoData);
     todoData.owner = ownerId;
-    console.log(todoData);
     const {error, value} = SchemaTodo.validate(todoData);
 
     if(error){
@@ -29,7 +26,7 @@ validateTodoDatas = (ownerId, todoData)=>{
         else if(errorAnswer.involvedId === 'priority')
           errorAnswer.message = 'Missing priority indicator!';
         else
-          errorAnswer.message = 'Missing some value!';
+          errorAnswer.message = 'Some value is problematic!';
         reject(errorAnswer);
 
       } else {

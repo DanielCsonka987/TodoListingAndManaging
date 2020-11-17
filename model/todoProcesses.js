@@ -3,11 +3,11 @@ const TodoSchema = require('./todoItem.js');
 
 const reportProcessResult = require('./createModelAnswer.js').forInformativeObj;
 const collectionTodoResult = require('./createModelAnswer.js').forTodoCollect;
-const singleTodoResult = require('./createModelAnswer.js').forProfileObj;
+const singleTodoResult = require('./createModelAnswer.js').forTodoObj;
 const errorResult = require('./createModelAnswer.js').forErrorObj;
 
-const errorMessages = require('../config/appConfig.js').front_error_messages;
-const doneMessages = require('../config/appConfig.js').front_success_messages;
+const errorMessages = require('../config/appMessages.js').front_error_messages;
+const doneMessages = require('../config/appMessages.js').front_success_messages;
 
 module.exports.loadInProfileTodos = (profileId)=>{
   return new Promise((resolve, reject)=>{
@@ -42,7 +42,7 @@ module.exports.createTodo = (profileId, todo)=>{
 }
 
 module.exports.updateStateTodo = (todoId, todoStatus)=>{
-  let newStatus = todoStatus? 'Finished':'Proceeding'
+  const newStatus = todoStatus==='true'? 'Finished':'Proceeding';
   return new Promise((resolve, reject)=>{
     TodoSchema.updateOne({_id: todoId}, { status: newStatus,
        lastModfingDate: Date.now()}, (err, rep)=>{
@@ -134,9 +134,9 @@ module.exports.deleteAllTodos = (profileId)=>{
           {profile: profileId}, errorMessages.model_delete) );
       }
       if(rep.n === 0){
-        reject( errorResult('No target to delete!',
-          {profile: profileId}, errorMessages.model_delete ) );
-      }else if(rep.n === rep.deletedCount){
+        resolve( reportProcessResult('No todo target to delete!',
+          {profile: profileId, deletedTodo: rep.deletedCount}, doneMessages.delete ) );
+      } else if(rep.n === rep.deletedCount){
         resolve( reportProcessResult( {profile: profileId, deletedTodo: rep.deletedCount},
           doneMessages.delete) );
       }else{

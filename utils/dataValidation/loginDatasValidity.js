@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const passwordRegexp = require('../../config/appConfig.js')
   .validation_config.password_regexp;
-const errorMessages = require('../../config/appConfig.js').front_error_messages;
+const errorMessages = require('../../config/appMessages.js').front_error_messages;
 
 const SchemaLogin = Joi.object({
   username: Joi.string().min(4).max(80).required(),

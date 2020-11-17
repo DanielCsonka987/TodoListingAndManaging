@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 8080;
 const dbAccessUrl = require('./config/appConfig.js').db_access;
 const apiRouting = require('./config/appConfig.js').routing_paths;
 const routerProfileAllowed = require('./control/routerProfilesAllowed.js');
-const apiPathsrouterProfileLReg = require('./control/routerProfilesLog.js');
 const routerLimitedProfile = require('./control/routerProfilesLimited.js');
 const routerLimitedTodos = require('./control/routerTodosLimited.js');
 const apiErrorHandler = require('./middleware/commonAPIErrorHendler.js');
@@ -35,8 +34,7 @@ app.use(cookieparser());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(upload.array());
 
-app.use(apiRouting.api_base, apiPathsrouterProfileLReg); // REGISTER
-app.use(apiRouting.api_base_profile, routerProfileAllowed); // GET ALL PROFILES + LOGIN + LOGUT
+app.use(apiRouting.api_base_profile, routerProfileAllowed); // GET ALL PROFILES + REG + LOGIN + LOGUT
 app.use(apiRouting.api_base_profile, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
 app.use(apiRouting.api_base_profile, routerLimitedTodos);  // TODO PROCESSES
 

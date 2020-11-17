@@ -1,7 +1,9 @@
 const verifyLoginDatas = require('../utils/dataValidation/loginDatasValidity.js');
 const modelProfile = require('../model/profileProcesses.js');
 const pwdHashMatchVerify = require('../utils/passwordManagers.js').verifyThisPassword;
-const errorMessages = require('../config/appConfig.js').front_error_messages;
+
+const doneMessages = require('../config/appMessages.js').front_success_messages;
+const errorMessages = require('../config/appMessages.js').front_error_messages;
 
 module.exports.loginDatasRevision = function(req, res, next){
   verifyLoginDatas(req.body)
@@ -22,6 +24,20 @@ module.exports.loginProfileExistenceRevision = function(req, res, next){
     res.status(500);  //SERVER INTERNAL ERROR
     res.send(JSON.stringify(err));
   });
+}
+
+module.exports.pathQueryRevisionWithExistingProf = (req, res, next)=>{
+  if(req.loginUserId.toString() === req.params.id){
+    next();
+  }else{
+    res.status(400)
+    res.send(JSON.stringify({
+      report: 'No match between path and user IDs!',
+      involvedId: {pathID: req.params.id},
+      message: errorMessages.cookie_profile_mismatch
+    }))
+  }
+
 }
 module.exports.loginPasswordRevision = function(req, res, next){
   pwdHashMatchVerify(req.body.password, req.loginUserHashPwd)

@@ -16,9 +16,9 @@ function singleTodoConverter(rawTodo){
     status: rawTodo.status,
     notation: rawTodo.notation,
 
-    updateStatus: `${apiPaths.api_base_profile}/${rawTodo.owner}/${apiPaths.api_todo}/${rawTodo._id}/status`,
-    updateNotation: `${apiPaths.api_base_profile}/${rawTodo.owner}/${apiPaths.api_todo}/${rawTodo._id}/notation`,
-    deleteTodo: `${apiPaths.api_base_profile}/${rawTodo.owner}/${apiPaths.api_todo}/${rawTodo._id}`
+    updateStatus: `${apiPaths.api_base_profile}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/status`,
+    updateNotation: `${apiPaths.api_base_profile}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/notation`,
+    deleteTodo: `${apiPaths.api_base_profile}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}`
   }
   return publishable;
 }
@@ -30,6 +30,9 @@ module.exports.forTodoCollect = (rawArrayTodoFromDB, msg)=>{
   return {report: publishableTodos, message: msg}
 }
 
+module.exports.forTodoObj = (rawTodo)=>{
+  return singleTodoConverter(rawTodo);
+}
 
 module.exports.forProfileObj = (rawProf, msg)=>{
   let name = rawProf.first_name;
@@ -43,7 +46,7 @@ module.exports.forProfileObj = (rawProf, msg)=>{
     occupation: rawProf.occupation,
 
     deleteProfile: `${apiPaths.api_base_profile}/${rawProf._id}`,
-    logoutProfile: `${apiPaths.api_base_profile}/${rawProf._id}/${apiPaths.api_logout}`
+    logoutProfile: `${apiPaths.api_base_profile}/${rawProf._id}${apiPaths.api_logout}`
   }
   return {report: publishable, message: msg };
 }
@@ -56,7 +59,7 @@ module.exports.forProfileCollect = (rawArrayProfileFromDB, msg)=>{
       id: item._id,
       username: item.username,
 
-      loginProfile: `${apiPaths.api_base_profile}/${item._id}/${apiPaths.api_login}`
+      loginProfile: `${apiPaths.api_base_profile}/${item._id}${apiPaths.api_login}`
     }
   });
   return { report: publishableProfiles, message: msg };

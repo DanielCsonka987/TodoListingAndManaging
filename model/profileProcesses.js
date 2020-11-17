@@ -6,8 +6,8 @@ const collectionProfileResult = require('./createModelAnswer.js').forProfileColl
 const singleProfileResult = require('./createModelAnswer.js').forProfileObj;
 const errorResult = require('./createModelAnswer.js').forErrorObj;
 
-const errorMessages = require('../config/appConfig.js').front_error_messages;
-const doneMessages = require('../config/appConfig.js').front_success_messages;
+const errorMessages = require('../config/appMessages.js').front_error_messages;
+const doneMessages = require('../config/appMessages.js').front_success_messages;
 
 module.exports.loadInProfiles = ()=>{
   return new Promise((resolve, reject)=>{
@@ -40,8 +40,24 @@ module.exports.findThisProfileById = (profileId)=>{
   });
 };
 
+// LOGIN and LIMITED process - cookie revising if it is existing account //
+module.exports.findThisProfileById_detailed = (profileId)=>{
+  return new Promise((resolve, reject)=>{
+    ProfileSchema.findOne({_id: profileId}, (err, doc)=>{
+
+      if(err){
+        reject( errorResult( `DB error! ${err.name}` ,  profileId,
+          errorMessages.model_read) );
+      }
+      if(doc) resolve( reportProcessResult(doc, doneMessages.read) );
+      else {
+        reject( errorResult( 'No such user in DB!',
+          {profile: profileId}, errorMessages.model_read) );
+      }
+    });
+  });
+};
 // REGISTARTION process - revising username collision //
-// LOGIN and LIMITED process - revising if it is existing account //
 module.exports.findThisProfileByUsername = (profileUsername)=>{
   return new Promise((resolve, reject)=>{
     ProfileSchema.findOne({username: profileUsername}, (err, doc)=>{

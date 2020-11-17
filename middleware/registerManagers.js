@@ -2,7 +2,7 @@ const verifyProfile = require('../utils/dataValidation/registerDatasValidity.js'
 const modelProfile = require('../model/profileProcesses.js');
 const pwdEncoder = require('../utils/passwordManagers.js').encodeThisPassword;
 
-const errorMessages = require('../config/appConfig.js').front_error_messages;
+const errorMessages = require('../config/appMessages.js').front_error_messages;
 
 module.exports.regDatasVerification = (req, res, next)=>{
   verifyProfile(req.body)
