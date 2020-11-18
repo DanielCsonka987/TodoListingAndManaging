@@ -16,13 +16,13 @@ module.exports = (loginData)=>{
       if(error.name){
         reject({
           report: 'Validation error!',
-          involvedId: 'username or password',
+          involvedId: { field: ['username', 'password'], input: ''},
           message: errorMessages.password_login_validation
         });
       }else{
         reject({
-          report: 'Login verification error!',
-          involvedId: '',
+          report: `Login verification error - ${error.name}!`,
+          involvedId: {field: '', input: ''},
           message: errorMessages.password_login_validation
         });
       }

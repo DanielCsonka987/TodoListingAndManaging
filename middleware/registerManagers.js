@@ -1,4 +1,4 @@
-const verifyProfile = require('../utils/dataValidation/registerDatasValidity.js').validation;
+const verifyProfile = require('../utils/dataValidation/registerDatasValidity.js');
 const modelProfile = require('../model/profileProcesses.js');
 const pwdEncoder = require('../utils/passwordManagers.js').encodeThisPassword;
 

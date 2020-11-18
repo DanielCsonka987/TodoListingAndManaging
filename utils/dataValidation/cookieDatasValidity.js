@@ -4,8 +4,7 @@ const errorMessages = require('../../config/appMessages.js').front_error_message
 const SchemaCookie = Joi.string().pattern(new RegExp(mongodbid))
   .max(24).required();
 
-
-validationCookieContent = (cookieValue)=>{
+module.exports = (cookieValue)=>{
   return new Promise((resolve, reject)=>{
     const {error, value} = SchemaCookie.validate(cookieValue);
     if(error){
@@ -13,11 +12,13 @@ validationCookieContent = (cookieValue)=>{
         reject({
           report: 'Bad cookie in structure or content!',
           involvedId: {cookieContent: cookieValue},
+          message: errorMessages.authentication_unknown
         });
       }else{
         reject({
           report: 'Bad structured or cookie!',
           involvedId: {cookieContent: cookieValue},
+          message: errorMessages.authentication_unknown
         });
       }
     }else{
@@ -25,5 +26,3 @@ validationCookieContent = (cookieValue)=>{
     }
   });
 }
-
-module.exports = validationCookieContent;

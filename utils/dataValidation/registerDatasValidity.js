@@ -11,7 +11,7 @@ const SchemaRegister = Joi.object({
   age: Joi.number().integer().min(5).max(120)
 }).with('password', 'password_repeat');
 
-validateProfileDatas = (profileData)=>{
+module.exports = (profileData)=>{
   return new Promise((resolve, reject)=>{
     const {error, value} = SchemaRegister.validate(profileData);
 
@@ -24,26 +24,26 @@ validateProfileDatas = (profileData)=>{
 
         let errorAnswer = {
           report: 'Validation error!',
-          involvedId: problematicField
+          involvedId: { field: problematicField, input: profileData[problematicField] }
         }
 
-        if(errorAnswer.involvedId === 'username')
+        if(errorAnswer.involvedId.field === 'username')
           errorAnswer.message = 'The chosen username is not permitted!';
-        else if(errorAnswer.involvedId === 'password')
+        else if(errorAnswer.involvedId.field === 'password')
           errorAnswer.message = 'The chosen password is not permitted!';
-        else if(errorAnswer.involvedId === 'password_repeat')
+        else if(errorAnswer.involvedId.field === 'password_repeat')
           errorAnswer.message = 'No match between the password and its confirmation!';
         else {
 
-          let involvedKey = errorAnswer.involvedId.replace('_','');
+          let involvedKey = problematicField.replace('_','');
           errorAnswer.message = `This ${involvedKey} is not permitted!`;
         }
         reject(errorAnswer);
 
       } else {
         reject({
-          report: 'Unexpected error!',
-          involvedId: error.details,
+          report: `Unexpected error - ${error.name}!`,
+          involvedId: {field: '' , input: ''},
           message: 'Data verification error!'
         });
       }
@@ -61,6 +61,3 @@ testValidateProfileDatas = (profileData)=>{
       return resolve(value);
   });
 }
-
-module.exports.validation = validateProfileDatas;
-module.exports.testValidation = testValidateProfileDatas;

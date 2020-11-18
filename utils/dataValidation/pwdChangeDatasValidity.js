@@ -15,20 +15,18 @@ module.exports = (pwdChangeData) =>{
     if(error){
       if(error.name){
 
-        let errorCaused = error.details[0].context.label;
-        errorCaused = errorCaused.replace('_',' ');
-
+        const problematicId = error.details[0].context.label;
+        // const errorCaused = errorCaused.replace('_',' ');
         reject({
           report: 'Validation error!',
-          involvedId: errorCaused,
+          involvedId: {field: problematicId, input: pwdChangeData[problematicId]},
           message: errorMessages.password_new_old_mismatch
         });
 
-
       } else{
         reject({
-          report: 'Unexpected error!',
-          involvedId: '',
+          report: `Unexpected error - ${error.name}!`,
+          involvedId: {field: '', input: ''},
           message: errorMessages.password_new_old_mismatch
         });
       }

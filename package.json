@@ -10,6 +10,7 @@
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
     "test_profiles": "mocha ./test/model/profileProcesses.test.js",
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
+    "test_pwd": "mocha ./test/utils/pwdManager.test.js",
     "test_regapi": "mocha ./test/service/registerApi.test.js",
     "test_loginapi": "mocha ./test/service/loginApi.test.js",
     "test_profapi": "mocha ./test/service/profileApi.test.js",

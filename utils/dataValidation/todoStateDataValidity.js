@@ -10,9 +10,9 @@ module.exports = (stateChangeInput)=>{
 
     if(error){
       reject({
-        report: 'Todo state is not a permitted content!',
-        involvedId: 'status',
-        mesasge: 'Todo state must be true or false!'
+        report: 'Validation error!',
+        involvedId: {field: 'status', input: stateChangeInput },
+        message: 'Todo state must be true or false!'
       });
     }else{
       resolve(value);

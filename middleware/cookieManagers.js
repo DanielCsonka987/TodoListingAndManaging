@@ -36,7 +36,6 @@ module.exports.contentVerification = (req, res, next)=>{
       next();
     })
     .catch((err)=>{
-      err.message = errorMessages.authentication_unknown
       res.status(401);    //UNAUTHORIZED
       res.send(JSON.stringify(err));
     })
@@ -93,7 +92,7 @@ function removeSessionCookieAtResponseObj(res, value){
 module.exports.sessionCookieRegisterCreation = (req, res, next)=>{
   const newUserId = req.justCreatedUserMessage.report.id;
   createSessionCookieAtResponseObj(res, newUserId);
-  res.status(200);
+  res.status(201);
   res.write(JSON.stringify(req.justCreatedUserMessage));
   next();
 }

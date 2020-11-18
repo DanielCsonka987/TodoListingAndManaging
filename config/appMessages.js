@@ -11,7 +11,7 @@ module.exports.front_error_messages = {
   cookie_revision: 'Session cookie re-authentication is unsuccessful!',
 
   //profile password authentication (profile middle) - profile/todo steps
-  password_new_old_mismatch: 'Wrong new password or original password!',
+  password_new_old_mismatch: 'Wrong new or original password!',
   password_update_revise: 'Wrong given password!',
   //profile password update and registering new user
   password_regOrUpdate_newHashing: 'Password encription error!',

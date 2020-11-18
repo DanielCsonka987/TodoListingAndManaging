@@ -1,4 +1,4 @@
-const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js').todoValidation;
+const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js');
 const verifyState = require('../utils/dataValidation/todoStateDataValidity.js');
 const modelTodos = require('../model/todoProcesses.js')
 
