@@ -68,7 +68,7 @@ module.exports.findThisProfileByUsername = (profileUsername)=>{
       }
       if(doc) resolve( reportProcessResult(doc, doneMessages.read) ); //all content needed!!
       else {
-        reject( reportProcessResult( [], 'No content to show!' ) );
+        resolve( reportProcessResult( {}, 'No content to show!' ) );
       }
     });
   });

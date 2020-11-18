@@ -16,15 +16,24 @@ module.exports.regDatasVerification = (req, res, next)=>{
 module.exports.regProfilesCollisionScreen = (req, res, next)=>{
   modelProfile.findThisProfileByUsername(req.body.username)
   .then(result =>{
-    res.status(405);    //METHOD NOT ALLOWED
-    res.send(JSON.stringify({
-      report: 'Username occupied!',
-      involvedId: { username: req.body.username },
-      message: errorMessages.register_username_occupied
-    }));
+    if(Object.keys(result.report).length === 0){   // NO RESULT
+      next();
+    }else{
+      res.status(405);    //METHOD NOT ALLOWED
+      res.send(JSON.stringify({
+        report: 'Username occupied!',
+        involvedId: { username: req.body.username },
+        message: errorMessages.register_username_occupied
+      }));
+    }
   })
   .catch(err=>{
-    next();
+    res.status(500);    //METHOD NOT ALLOWED
+    res.send(JSON.stringify({
+      report: 'Error at username collision inseption!',
+      involvedId: {field: 'username', input: req.body.username },
+      message: errorMessages.password_regOrUpdate_newHashing
+    }));
   });
 }
 
@@ -38,7 +47,7 @@ module.exports.reqProfilePwdEncoding = (req, res, next)=>{
     res.status(500);    //METHOD NOT ALLOWED
     res.send(JSON.stringify({
       report: 'Password encoding error at registration!',
-      involvedId: req.body.password,
+      involvedId: {field: 'password', input: req.body.password },
       message: errorMessages.password_regOrUpdate_newHashing
     }));
   })

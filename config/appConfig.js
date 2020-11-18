@@ -14,7 +14,7 @@ module.exports = {
   },
 
   routing_paths: {
-    api_base_profile: '/api',
+    api_base_path: '/api',
 
     api_login: '/login',
     api_logout: '/logout',

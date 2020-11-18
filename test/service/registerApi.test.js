@@ -34,7 +34,7 @@ after(function(){
 })
 
 describe('Register on api', function(){
-  it('Register with normal datas', function(){
+  it('Register with normal datas - only positive case', function(){
     return new Promise((resolve, reject)=>{
       chai.request(api).keepOpen()
       .post('/api/register')
@@ -44,12 +44,15 @@ describe('Register on api', function(){
         expect(err).to.be.a('null');
         expect(res).to.have.status(201);
         expect(res.body).to.be.a('object');
+        expect(res.header['set-cookie']).to.be.a('array');
         const sessionCookie = res.header['set-cookie'][0];
         expect(sessionCookie.includes('session')).to.be.true;
 
         const resJSON = JSON.parse(res.text);
         expect(resJSON).to.be.a('object');
         expect(resJSON).to.not.be.empty;
+        expect(resJSON.report).to.be.a('object');
+        expect(resJSON.report.id).to.be.a('string');
         expect(resJSON.message).to.equal('Creation done!');
         resolve();
       })
@@ -213,7 +216,7 @@ describe('Register on api', function(){
         expect(err).to.be.a('null');
         expect(res.status).to.equal(400);
         expect(res.header['set-cookie']).to.be.a('undefined');
-        
+
         const resJSON = JSON.parse(res.text);
         expect(resJSON).to.be.a('object');
         expect(resJSON).to.not.be.empty;
