@@ -12,7 +12,7 @@ module.exports.profileUpdateContentVerification = (req, res, next)=>{
   })
   .catch(err=>{
     res.status(400);  //BAD REQUEST
-    res.send(JSON.strigify(err));
+    res.send(JSON.stringify(err));
   });
 }
 
@@ -39,13 +39,13 @@ module.exports.profileOldPwdConfirmation = (req, res, next)=>{
       res.status(400);  //BAD REQUEST
       res.send(JSON.stringify({
         report: 'Old password is wrong!',
-        involvedId: 'old_password',
+        involvedId: {field: 'old_password', input: req.body.old_password},
         message: errorMessages.password_update_revise
       }))
     } else {
       res.status(500);  //SERVER INTERNAL ERROR
       res.send(JSON.stringify({
-        report: 'Password old-new inspection error!',
+        report: 'Password inspection error!',
         involvedId: 'old_password',
         message: errorMessages.authentication_unknown
       }))
@@ -63,7 +63,7 @@ module.exports.profileNewPwdEncoding = (req, res, next)=>{
     res.status(500);  //SERVER INTERNAL ERROR
     res.send(JSON.stringify({
       report: 'New password encription error!',
-      involvedId: 'password',
+      involvedId: {field: 'new_password', input: req.body.new_password},
       message: errorMessages.password_update_newHashing
     }));
   })
@@ -139,8 +139,7 @@ module.exports.profileDeletion = (req, res, next) =>{
     modelProfile.deleteProfile(req.params.id)
     .then(resultProfile=>{
       resultProfile.report.deletedTodo =  resultTodo.message.deletedTodo;
-      res.status(200);
-      res.write(JSON.stringify(resultProfile));
+      req.justRemovedUserMessage = resultProfile;
       next();
     })
     .catch(err=>{

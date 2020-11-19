@@ -96,7 +96,12 @@ module.exports.sessionCookieRegisterCreation = (req, res, next)=>{
   res.write(JSON.stringify(req.justCreatedUserMessage));
   next();
 }
-
+module.exports.sessionCookieDeletionRemoval = (req, res, next)=>{
+  removeSessionCookieAtResponseObj(res, '');
+  res.status(200);
+  res.write(JSON.stringify(req.justRemovedUserMessage));
+  next();
+}
 module.exports.sessionCookieRenew = (req, res, next)=>{
   if(req.cookies[sessionCookieName]){
     createSessionCookieAtResponseObj(res, req.cookies[sessionCookieName]);

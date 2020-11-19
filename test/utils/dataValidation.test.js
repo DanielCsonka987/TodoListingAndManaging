@@ -417,6 +417,20 @@ describe('Change password datas verification - positive/negative cases', functio
       expect(err.involvedId.field).to.equal('new_password');
     })
   })
+  it('Change user password with empty newpwd', function(){
+    return ChangePwdVerif({
+      new_password: '',
+      old_password: 'test1'
+    })
+    .then(res=>{
+      expect(res).to.be.a('undefined');
+    })
+    .catch(err=>{
+      expect(err).to.be.a('object');
+      expect(err.involvedId).to.be.a('object');
+      expect(err.involvedId.field).to.equal('new_password');
+    })
+  })
 })
 
 describe('Todo status verification - positive/negative cases', function(){

@@ -31,6 +31,7 @@ router.put('/:id', (req, res)=>{
 // DELETE the user account //
 router.delete('/:id', profMiddle.profileOldPwdConfirmation);
 router.delete('/:id', profMiddle.profileDeletion);
+router.delete('/:id', cookieMiddle.sessionCookieDeletionRemoval)
 router.delete('/:id', (req, res)=>{
   res.send();
 });
