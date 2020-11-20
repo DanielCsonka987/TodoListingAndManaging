@@ -30,8 +30,8 @@ module.exports.forTodoCollect = (rawArrayTodoFromDB, msg)=>{
   return {report: publishableTodos, message: msg}
 }
 
-module.exports.forTodoObj = (rawTodo)=>{
-  return singleTodoConverter(rawTodo);
+module.exports.forTodoObj = (rawTodo, msg)=>{
+  return { report: singleTodoConverter(rawTodo), message: msg };
 }
 
 module.exports.forProfileObj = (rawProf, msg)=>{

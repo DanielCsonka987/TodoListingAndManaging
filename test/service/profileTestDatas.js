@@ -8,6 +8,16 @@ module.exports.registGoodProfile = {
   'occupation': 'stranger'
 }
 
+module.exports.registAnotherProfile = {
+  'username': 'ALady',
+  'password': 'pwdText',
+  'password_repeat': 'pwdText',
+  'first_name': 'Alina',
+  'last_name': 'LadyCat',
+  'age': 21,
+  'occupation': 'lady'
+}
+
 module.exports.registFaultyProfiles = [
   {
     'password': 'pwdText',
