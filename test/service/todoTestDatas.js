@@ -16,6 +16,11 @@ module.exports.properTodos = [
     'task': 'Upload this to the GitHub and Heroku',
     'priority': 6,
     'notation': 'Otherwise no mean to do this'
+  },
+  {
+    'task': 'Always do the best',
+    'priority': 10,
+    'notation': 'Otherwise no mean to do this'
   }
 ]
 

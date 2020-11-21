@@ -138,7 +138,7 @@ module.exports.profileDeletion = (req, res, next) =>{
 
     modelProfile.deleteProfile(req.params.id)
     .then(resultProfile=>{
-      resultProfile.report.deletedTodo =  resultTodo.message.deletedTodo;
+      resultProfile.report.deletedTodo =  resultTodo.report.deletedTodo;
       req.justRemovedUserMessage = resultProfile;
       next();
     })

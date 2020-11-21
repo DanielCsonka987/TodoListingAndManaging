@@ -18,6 +18,7 @@ router.post('/:id/todos', (req, res)=>{
 
 // UPDATE todos //
 //update status
+router.put('/:id/todos/:index/status', todoMiddle.changeTodoStateVerification)
 router.put('/:id/todos/:index/status', todoMiddle.updateTodoStatus)
 router.put('/:id/todos/:index/status', (req, res)=>{
   res.send();

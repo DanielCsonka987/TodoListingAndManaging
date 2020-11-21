@@ -463,9 +463,6 @@ describe('Update todo', function(){
       })
     })
   })
-
-
-
   it('Login, first user first todo\'s status faulty updating', function(){
     setTimeout(()=>{}, 200);
     let agent = chai.request.agent(api);
@@ -485,23 +482,18 @@ describe('Update todo', function(){
       .type('form')
       .send({ 'status': 'wrongInput' })
       .then(nextRes=>{
-        // expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.status(400);
         expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
         expect(nextRes.text).to.be.a('string');
-        console.log(nextRes.text);
         const nextJSON = JSON.parse(nextRes.text);
         expect(nextJSON).to.be.a('object');
-        expect(nextJSON.report).to.be.a('object')
-        expect(nextJSON.report.field).to.be.a('string');
-        expect(nextJSON.report.input).to.equal('wrongInput');
+        expect(nextJSON.report).to.be.a('string')
+        expect(nextJSON.report).to.equal('Validation error!');
         expect(nextJSON.message).to.be.a('string');
         expect(nextJSON.message).to.equal('Todo state must be true or false!');
       })
     })
   })
-
-
-
 })
 
 describe('Delete todo', function(){
@@ -520,13 +512,13 @@ describe('Delete todo', function(){
       expect(res).to.have.cookie('session', justRegisterdUserId_1);
 
       return agent.keepOpen()
-      .delete(`/api/${todoIdThatNeedToProcess_1}/todos/${todoIdThatNeedToProcess_1}/`)
+      .delete(`/api/${justRegisterdUserId_1}/todos/${todoIdThatNeedToProcess_1}/`)
       .type('form')
       .send({
         'old_password': newUserTest.password
        })
       .then(nextRes=>{
-        console.log(nextRes.text);
+        // console.log(nextRes.text);
         expect(nextRes).to.have.status(200);
         expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
         expect(nextRes.text).to.be.a('string');
@@ -534,13 +526,330 @@ describe('Delete todo', function(){
         const nextJSON = JSON.parse(nextRes.text);
         expect(nextJSON).to.be.a('object');
         expect(nextJSON.report).to.be.a('object')
-        expect(nextJSON.report.profile).to.be.a('string');
-        expect(nextJSON.report.profile).to.equal(justRegisterdUserId_1);
         expect(nextJSON.report.todo).to.be.a('string');
         expect(nextJSON.report.todo).to.equal(todoIdThatNeedToProcess_1);
         expect(nextJSON.message).to.be.a('string');
-        expect(nextJSON.message).to.equal('Todo state must be true or false!');
+        expect(nextJSON.message).to.equal('Deletion done!');
       })
     })
   })
+  it('Login, second user and delete first todo - no password 1', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_2}/login`)
+    .type('form')
+    .send({
+      'username': anotherUserTest.username,
+      'password': anotherUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_2);
+
+      return agent.keepOpen()
+      .delete(`/api/${justRegisterdUserId_2}/todos/${todoIdThatNeedToProcess_2}/`)
+      .type('form')
+      .send({
+        'old_password': ''
+       })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_2);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string')
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+  it('Login, second user and delete first todo - bad password 2', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_2}/login`)
+    .type('form')
+    .send({
+      'username': anotherUserTest.username,
+      'password': anotherUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_2);
+
+      return agent.keepOpen()
+      .delete(`/api/${justRegisterdUserId_2}/todos/${todoIdThatNeedToProcess_2}/`)
+      .type('form')
+      .send({
+        'old_password': 'notTheGoodPasswordForSure'
+       })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_2);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string')
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('notTheGoodPasswordForSure');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+
+  it('Login, first user delete all its 1 todos - no password', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_1}/login`)
+    .type('form')
+    .send({
+      'username': newUserTest.username,
+      'password': newUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_1);
+      return agent
+      .delete(`/api/${justRegisterdUserId_1}/todos/`)
+      .type('form')
+      .send({
+        'old_password': ''
+       })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string');
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+  it('Login, first user delete all its 1 todos - wrong password', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_1}/login`)
+    .type('form')
+    .send({
+      'username': newUserTest.username,
+      'password': newUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_1);
+      return agent
+      .delete(`/api/${justRegisterdUserId_1}/todos/`)
+      .type('form')
+      .send({
+        'old_password': 'notTheGoodPasswordForSure'
+       })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string');
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('notTheGoodPasswordForSure');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+
+  it('Login, first user, add 1 and delete all its 2 todos', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_1}/login`)
+    .type('form')
+    .send({
+      'username': newUserTest.username,
+      'password': newUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_1);
+
+      return agent.keepOpen()
+      .post(`/api/${justRegisterdUserId_1}/todos/`)
+      .type('form')
+      .send(properTodos[4])
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(201);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
+
+        return agent
+        .delete(`/api/${justRegisterdUserId_1}/todos/`)
+        .type('form')
+        .send({
+          'old_password': newUserTest.password
+         })
+        .then(thirdRes=>{
+          expect(thirdRes).to.have.status(200);
+          expect(thirdRes).to.have.cookie('session', justRegisterdUserId_1);
+          expect(thirdRes.text).to.be.a('string');
+
+          const thirdJSON = JSON.parse(thirdRes.text);
+          expect(thirdJSON).to.be.a('object');
+          expect(thirdJSON.report).to.be.a('object')
+          expect(thirdJSON.report.profile).to.be.a('string');
+          expect(thirdJSON.report.profile).to.equal(justRegisterdUserId_1);
+          expect(thirdJSON.report.deletedTodo).to.be.a('number');
+          expect(thirdJSON.report.deletedTodo).to.equal(2);
+          expect(thirdJSON.message).to.be.a('string');
+          expect(thirdJSON.message).to.equal('Deletion done!');
+        })
+      })
+    })
+  })
+  it('Login, second user and delete its profile with all 2 todos', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_2}/login`)
+    .type('form')
+    .send({
+      'username': anotherUserTest.username,
+      'password': anotherUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_2);
+
+      return agent
+      .delete(`/api/${justRegisterdUserId_2}/`)
+      .type('form')
+      .send({
+        'old_password': anotherUserTest.password
+       })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(200);
+        expect(nextRes).to.have.cookie('session', '');
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('object')
+        expect(nextJSON.report.profile).to.be.a('string');
+        expect(nextJSON.report.profile).to.equal(justRegisterdUserId_2);
+        expect(nextJSON.report.deletedTodo).to.be.a('number');
+        expect(nextJSON.report.deletedTodo).to.equal(2);
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Deletion done!');
+      })
+    })
+  })
+
+  it('Login, first user profile deletion attempt - no password', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_1}/login`)
+    .type('form')
+    .send({
+      'username': newUserTest.username,
+      'password': newUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_1);
+
+      return agent.keepOpen()
+      .delete(`/api/${justRegisterdUserId_1}/`)
+      .type('form')
+      .send({
+        'old_password': ''
+      })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string');
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+  it('Login, first user profile deletion attempt - wrong password', function(){
+    setTimeout(()=>{}, 200);
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+    .post(`/api/${justRegisterdUserId_1}/login`)
+    .type('form')
+    .send({
+      'username': newUserTest.username,
+      'password': newUserTest.password
+    })
+    .then(res=>{
+      expect(res).to.have.status(200);
+      expect(res).to.have.cookie('session', justRegisterdUserId_1);
+
+      return agent.keepOpen()
+      .delete(`/api/${justRegisterdUserId_1}/`)
+      .type('form')
+      .send({
+        'old_password': 'notTheGoodPasswordForSure'
+      })
+      .then(nextRes=>{
+        expect(nextRes).to.have.status(400);
+        expect(nextRes).to.have.cookie('session', justRegisterdUserId_1);
+        expect(nextRes.text).to.be.a('string');
+
+        const nextJSON = JSON.parse(nextRes.text);
+        expect(nextJSON).to.be.a('object');
+        expect(nextJSON.report).to.be.a('string');
+        expect(nextJSON.report).to.equal('Old password is wrong!');
+        expect(nextJSON.involvedId).to.be.a('object');
+        expect(nextJSON.involvedId.field).to.be.a('string');
+        expect(nextJSON.involvedId.field).to.equal('old_password');
+        expect(nextJSON.involvedId.input).to.be.a('string');
+        expect(nextJSON.involvedId.input).to.equal('notTheGoodPasswordForSure');
+        expect(nextJSON.message).to.be.a('string');
+        expect(nextJSON.message).to.equal('Wrong given password!');
+      })
+    })
+  })
+
 })
