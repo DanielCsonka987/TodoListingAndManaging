@@ -2,12 +2,12 @@ const expect = require('chai').expect;
 const assert = require('chai').assert;
 const mongoose = require('mongoose');
 
-const dbaccess = require('../../config/appConfig.js').dbaccess;
+const dbaccess = require('../../config/appConfig.js').db_access;
 const ProfileSchema = require('../../model/profileItem.js');
 const ProfileProcesses = require('../../model/profileProcesses.js');
 
 let profileTestDatas = require('./profileTestDatas').profiles;
-let additionalPerson = require('./profileTestDatas').newProfile;
+let additionalPerson = require('./profileTestDatas').newProfiles;
 
 before(()=>{
   return new Promise((resolve, reject)=>{
@@ -43,7 +43,7 @@ describe('Profile processes test - positive set', ()=>{
     return ProfileProcesses.loadInProfiles()
     .then((readInfo)=>{
       // console.log(readInfo);
-      expect(readInfo).to.not.be.a('null');
+      expect(readInfo).to.be.a('object');
       expect(readInfo.report).to.be.a('array');
       expect(readInfo.report).to.not.be.empty;
       expect(readInfo.report.length).to.equal(5);
@@ -51,95 +51,105 @@ describe('Profile processes test - positive set', ()=>{
       expect(readInfo.message).to.equal('Reading done!');
       expect(readInfo.report[1].username).to.equal(profileTestDatas[1].username);
     })
-    .catch(err=>{ console.log('Error happened ', err) });
+    .catch(err=>{ expect(err).to.be.a('undefined')  });
   });
 
   it('Create new profile', ()=>{
-    return ProfileProcesses.createProfile(additionalPerson)
+    return ProfileProcesses.createProfile(additionalPerson[0])
     .then((createInfo)=>{
-      expect(createInfo).to.not.be.a('null');
+      expect(createInfo).to.be.a('object');
       expect(createInfo.report).to.not.be.a('null');
-      expect(createInfo.report._id).to.not.be.a('null');
+      expect(createInfo.report.id).to.not.be.a('null');
       expect(createInfo.message).to.be.a('string');
       expect(createInfo.message).to.equal('Creation done!');
-      additionalPerson = createInfo.report;
+      additionalPerson[0] = createInfo.report;
     })
     .then(()=>{
-      ProfileProcesses.loadInProfiles()
+      return ProfileProcesses.loadInProfiles()
       .then((readInfo)=>{
-        expect(readInfo).to.not.be.a('null');
+        expect(readInfo).to.be.a('object');
         expect(readInfo.report).to.be.a('array');
         expect(readInfo.report).to.not.be.empty;
-        let createdFilter = readInfo.report
-          .filter(item=> item._id.equals(additionalPerson._id) );
+        const createdFilter = readInfo.report.filter(item=> item.id.equals(additionalPerson[0].id) );
         expect(createdFilter).to.not.be.empty;
         expect(createdFilter.length).to.equal(1);
       })
-      .catch((err)=>{ console.log('Readback error ', err) });
     })
-    .catch((err)=>{ console.log('Error happened ', err) });
+    .catch((err)=>{expect(err).to.be.a('undefined') });
   })
 
-  it('Reading single profile by id', ()=>{
-    return ProfileProcesses.findThisProfileById(additionalPerson._id)
+  it('Reading single profile by id detailed', ()=>{
+    return ProfileProcesses.findThisProfileById_detailed(additionalPerson[0].id)
     .then(readInfo=>{
-      expect(readInfo).to.not.be.a('null');
-      expect(readInfo.report).to.not.be.a('null');
+      expect(readInfo).to.be.a('object');
+      expect(readInfo.report).to.be.a('object');
       expect(readInfo.report._id).to.not.be.a('null');
-      expect(readInfo.report._id.toString())
-        .to.equal(additionalPerson._id.toString());
-      expect(readInfo.report.username.toString())
-        .to.equal(additionalPerson.username.toString());
+      expect(readInfo.report._id.toString()).to.equal(additionalPerson[0].id.toString());
+      expect(readInfo.report.username.toString()).to.equal(additionalPerson[0].username.toString());
       expect(readInfo.message).to.be.a('string');
       expect(readInfo.message).to.equal('Reading done!');
     })
-    .catch((errirInfo)=>{ console.log('Error happened ', err) });
+    .catch((err)=>{ expect(err).to.be.a('undefined') });
+  });
 
+  it('Reading single profile by id publicable', ()=>{
+    return ProfileProcesses.findThisProfileById_detailed(additionalPerson[0].id)
+    .then(readInfo=>{
+      expect(readInfo).to.be.a('object');
+      expect(readInfo.report).to.be.a('object');
+      expect(readInfo.report.id).to.be.a('string');
+      expect(readInfo.report.id.toString()).to.equal(additionalPerson[0].id.toString());
+      expect(readInfo.report.username.toString()).to.equal(additionalPerson[0].username.toString());
+      expect(readInfo.message).to.be.a('string');
+      expect(readInfo.message).to.equal('Reading done!');
+    })
+    .catch((errirInfo)=>{ expect(err).to.be.a('undefined')  });
   });
 
   it('Reading single profile by username', ()=>{
-    return ProfileProcesses.findThisProfileByUsername(additionalPerson.username)
+    return ProfileProcesses.findThisProfileByUsername(additionalPerson[0].username)
     .then(readInfo=>{
-      expect(readInfo).to.not.be.a('null');
-      expect(readInfo.report).to.not.be.a('null');
-      expect(readInfo.report._id).to.not.be.a('null');
-      expect(readInfo.report._id.toString())
-        .to.equal(additionalPerson._id.toString());
+      expect(readInfo).to.be.a('object');
+      expect(readInfo.report).to.be.a('object');
+      expect(readInfo.report.id).to.be.a('string');
+      expect(readInfo.report.id).to.equal(additionalPerson[0].id.toString());
       expect(readInfo.message).to.be.a('string');
       expect(readInfo.message).to.equal('Reading done!');
     })
-    .catch((err)=>{ console.log('Error happened ', err) });
+    .catch((err)=>{ expect(err).to.be.a('undefined')  });
   });
 
   it('Update password', ()=>{
-    return ProfileProcesses.updateProfilePassword(additionalPerson._id, 'planning')
+    return ProfileProcesses.updateProfilePassword(additionalPerson[0].id, 'planning')
     .then((updateInfo)=>{
-      expect(updateInfo).to.not.be.a('null');
-      expect(updateInfo.report).to.not.be.a('null');
+      expect(updateInfo).to.be.a('object');
+      expect(updateInfo.report).to.be.a('object');
+      expect(updateInfo.report.profile).to.be.a('object');  //_bsontype, id
+      expect(updateInfo.report.profile).to.equal(additionalPerson[0].id);
       expect(updateInfo.message).to.be.a('string');
-      expect(updateInfo.message).to.equal('Update done!');
+      expect(updateInfo.message).to.equal('Updating done!');
     })
     .then(()=>{
-      ProfileProcesses.loadInProfiles()
+      return ProfileProcesses.loadInProfiles()
       .then(readInfo=>{
-        expect(readInfo).to.not.be.a('null');
+        expect(readInfo).to.be.a('object');
         expect(readInfo.report).to.be.a('array');
         expect(readInfo.report).to.not.be.empty;
-        let updateProfile = readInfo.report
-          .filter(item => item._id.equals(additionalPerson._id));
+        const updateProfile = readInfo.report.filter(item => item.id.equals(additionalPerson[0].id));
         expect(updateProfile).to.not.be.empty;
-        expect(updateProfile[0].password).to.equals('planning');
+        expect(updateProfile[0].username).to.equal(additionalPerson[0].username);
       })
-      .catch((err)=>{ console.log('Readback error ', err) });
     })
-    .catch((err)=>{ console.log('Error happened ', err) });
+    .catch((err)=>{ expect(err).to.be.a('undefined')  });
   })
 
   it('Delete existing profile', ()=>{
-    return ProfileProcesses.deleteProfile(additionalPerson._id)
+    return ProfileProcesses.deleteProfile(additionalPerson[0].id)
     .then((deletionInfo)=>{
       expect(deletionInfo).to.not.be.a('null');
-      expect(deletionInfo.report).to.not.be.a('null');
+      expect(deletionInfo.report).to.be.a('object');
+      expect(deletionInfo.report.profile).to.be.a('object');  //_bsontype, id
+      expect(deletionInfo.report.profile).to.equal(additionalPerson[0].id);
       expect(deletionInfo.message).to.be.a('string');
       expect(deletionInfo.message).to.equal('Deletion done!');
     })
@@ -149,17 +159,14 @@ describe('Profile processes test - positive set', ()=>{
         expect(readInfo).to.not.be.a('null');
         expect(readInfo.report).to.be.a('array');
         expect(readInfo.report).to.not.be.empty;
-        let deletedFilter = readInfo.report
-          .filter(item=> item._id.equals(additionalPerson._id) );
+        const deletedFilter = readInfo.report.filter(item=> item.id.equals(additionalPerson[0].id) );
         expect(deletedFilter).to.be.empty;
       })
-      .catch((err)=>{ console.log('Readback error ', err) });
     })
-    .catch( err=>{console.log('Error happened ',err)});
+    .catch( err=>{ expect(err).to.be.a('undefined') });
   })
 
 });
-
 
 describe('Profile processes test - negatve set', ()=>{
 
@@ -169,28 +176,28 @@ describe('Profile processes test - negatve set', ()=>{
       expect(res).to.be.a('undefined');
     })
     .catch((errorInfo)=>{
-      expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.involvedId).to.not.be.a('null');
-      expect(errorInfo.report).to.not.be.a('null');
-      expect(errorInfo.report.explanation).to.be.a('string');
-      expect(errorInfo.report.explanation).to
-        .equal('No proper query answer is created!');
+      expect(errorInfo).to.be.a('object');
+      expect(errorInfo.report).to.be.a('string');
+      expect(errorInfo.report).to.equal('No proper query answer is created!');
+      expect(errorInfo.involvedId).to.be.a('object');
+      expect(errorInfo.involvedId.profile).to.be.a('string');
+      expect(errorInfo.involvedId.profile).to.equal('123456789012');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('Read malfunction!');
-    });
+      expect(errorInfo.message).to.equal('Reading unsuccessful!');
+    })
   })
 
   it('Profile seeking with non-existing username', ()=>{
     return ProfileProcesses.findThisProfileByUsername('stgToTest')
     .then((res)=>{
-      expect(res).to.be.a('undefined');
+      expect(res).to.be.a('object');
+      expect(res.report).to.be.a('object');
+      expect(Object.keys(res.report).length).to.equal(0);
+      expect(res.message).to.be.a('string');
+      expect(res.message).to.equal('No content to show!');
     })
     .catch((errorInfo)=>{
-      expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.report).to.be.a('array');
-      expect(errorInfo.report).to.be.empty;
-      expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('No content to show!');
+      expect(errorInfo).to.be.a('undefined');
     });
   })
 
@@ -203,10 +210,13 @@ describe('Profile processes test - negatve set', ()=>{
       expect(res).to.be.a('undefined');
     })
     .catch((errorInfo)=>{
-      expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo).to.be.a('object');
+      expect(errorInfo.report).to.be.a('string'); //DB error! ...
+      expect(errorInfo.involvedId).to.be.a('object');
+      expect(errorInfo.involvedId.profile).to.be.a('string');
+      expect(errorInfo.involvedId.profile).to.equal('stg');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('MongoDB error!');
+      expect(errorInfo.message).to.equal('Creation unsuccessful!');
     });
   });
 
@@ -220,10 +230,13 @@ describe('Profile processes test - negatve set', ()=>{
       expect(res).to.be.a('undefined');
     })
     .catch((errorInfo)=>{
-      expect(errorInfo).to.not.be.a('null');
-      expect(errorInfo.report).to.not.be.a('null');
+      expect(errorInfo).to.be.a('object');
+      expect(errorInfo.report).to.be.a('string'); //DB error! ...
+      expect(errorInfo.involvedId).to.be.a('object');
+      expect(errorInfo.involvedId.profile).to.be.a('string');
+      expect(errorInfo.involvedId.profile).to.equal('st');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('MongoDB error!');
+      expect(errorInfo.message).to.equal('Creation unsuccessful!');
     });
   });
 
@@ -233,12 +246,13 @@ describe('Profile processes test - negatve set', ()=>{
       expect(res).to.be.a('undefined');
     })
     .catch(errorInfo =>{
-      expect(errorInfo).to.be.not.a('null');
-      expect(errorInfo.report).to.not.be.a('null');
-      expect(errorInfo.report.explanation).to.be.a('string');
-      expect(errorInfo.report.explanation).to.equal('No target to update!');
+      expect(errorInfo).to.be.a('object');
+      expect(errorInfo.report).to.be.a('string');
+      expect(errorInfo.report).to.equal('No target to update!');
+      expect(errorInfo.involvedId).to.be.a('object');
+      expect(errorInfo.involvedId.profile).to.be.a('string');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('Update unsuccessful!');
+      expect(errorInfo.message).to.equal('Updating unsuccessful!');
     });
   })
 
@@ -248,12 +262,14 @@ describe('Profile processes test - negatve set', ()=>{
       expect(res).to.be.a('undefined');
     })
     .catch(errorInfo=>{
-      expect(errorInfo).to.be.not.a('null');
-      expect(errorInfo.report).to.not.be.a('null');
-      expect(errorInfo.report.explanation).to.be.a('string');
-      expect(errorInfo.report.explanation).to.equal('No target to delete!');
+      expect(errorInfo).to.be.a('object');
+      expect(errorInfo.report).to.be.a('string');
+      expect(errorInfo.report).to.equal('No target to delete!');
+      expect(errorInfo.involvedId).to.be.a('object');
+      expect(errorInfo.involvedId.profile).to.be.a('string');
+      expect(errorInfo.involvedId.profile).to.equal('123456789012');
       expect(errorInfo.message).to.be.a('string');
-      expect(errorInfo.message).to.equal('Deletion unsucessful!');
+      expect(errorInfo.message).to.equal('Deletion unsuccessful!');
     })
   })
 

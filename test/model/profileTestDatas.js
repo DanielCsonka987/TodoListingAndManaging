@@ -42,21 +42,21 @@ module.exports.profiles = [
   }
 ];
 
-module.exports.newProfile = {
-  first_name: 'James',
-  last_name: 'McCoy',
-  username: 'mcco',
-  password: '$2y$12$OzPYUkXUymu0GqlV8rExWey1JdRVqS1eyrLJaTmgkmOpYnj8SJjl.', //machine
-  age: 23,
-  occupation: 'engeneer'
-};
-
-//at todo processes testing
-module.exports.newProfSchema = new ProfileSchema({
-  first_name: 'Steve',
-  last_name: 'Jobs',
-  username: 'apple',
-  password: 'donotforget',
-  age: 56,
-  occupation: 'bussinessman'
-});
+module.exports.newProfiles = [
+  {
+    first_name: 'James',
+    last_name: 'McCoy',
+    username: 'mcco',
+    password: '$2y$12$OzPYUkXUymu0GqlV8rExWey1JdRVqS1eyrLJaTmgkmOpYnj8SJjl.', //machine
+    age: 23,
+    occupation: 'engeneer'
+  },
+  {
+    first_name: 'Steve',
+    last_name: 'Jobs',
+    username: 'apple',
+    password: '$2y$12$dkXxR65XhJ4/3ACPnw9POOVHFIiUc2/nnRtQ9bvT6ECe53nyUy5EO',  //donotforget
+    age: 56,
+    occupation: 'bussinessman'
+  }
+]

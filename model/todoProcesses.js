@@ -32,7 +32,7 @@ module.exports.createTodo = (profileId, todo)=>{
           errorMessages.model_create) );
       }
       if(newtodo._id && newtodo.owner){
-        resolve( singleTodoResult(newtodo, doneMessages.read) );
+        resolve( singleTodoResult(newtodo, doneMessages.create) );
       }else{
         reject( errorResult('No id or owner created!', '',
           errorMessages.model_create) );

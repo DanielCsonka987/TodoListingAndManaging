@@ -12,7 +12,7 @@ function singleTodoConverter(rawTodo){
     id: rawTodo._id,
     owner: rawTodo.owner,
     task: rawTodo.task,
-    priorty: rawTodo.priority,
+    priority: rawTodo.priority,
     status: rawTodo.status,
     notation: rawTodo.notation,
 

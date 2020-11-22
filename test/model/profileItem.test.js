@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').dbaccess;
+const dbaccess = require('../../config/appConfig.js').db_access;
 const ProfileSchema = require('../../model/profileItem.js');
 
 let profileTestDatas = require('./profileTestDatas.js').profiles;
@@ -82,7 +82,7 @@ describe('Model Profile CRUD operations', ()=>{
         (error, report)=>{
           expect(error).to.be.a('null');
           expect(report).to.not.be.a('null');
-          assert.equal(report.deletedCount, 1, 'Deletion doesnt occured '+ report);
+          assert.equal(report.deletedCount, 1, 'Deletion doesnt occured');
       }).catch(err=>{ console.log(err) });
     });
 

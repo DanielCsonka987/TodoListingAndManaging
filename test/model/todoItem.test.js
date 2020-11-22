@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').dbaccess;
+const dbaccess = require('../../config/appConfig.js').db_access;
 const TodoSchema = require('../../model/todoItem.js');
 const ProfileSchema = require('../../model/profileItem.js');
 
@@ -75,6 +75,7 @@ describe('Model TodoItem CRUD operations', ()=>{
     });
     it('Delete existing Todo',()=>{
       return TodoSchema.deleteOne({notation: 'JS Healthcare-revisor'}, (err, rep)=>{
+        console.log(err);
         expect(err).to.be.a('null');
         expect(rep).to.not.be.a('null');
         assert.equal(rep.deletedCount, 1, 'Deletion process failed');

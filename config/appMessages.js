@@ -1,8 +1,8 @@
 module.exports.front_error_messages = {
   //models/daos
-  model_read: 'Reading unfuccessful!',
-  model_create: 'Creation unfuccessful!',
-  model_update: 'Updating unfuccessful!',
+  model_read: 'Reading unsuccessful!',
+  model_create: 'Creation unsuccessful!',
+  model_update: 'Updating unsuccessful!',
   model_delete: 'Deletion unsuccessful!',
 
   //cookie middleware
