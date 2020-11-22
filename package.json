@@ -5,6 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "dev": "nodemon app.js",
+    "seedDB": "node ./model/dbSeeder.js",
+
     "test_modelProf": "mocha ./test/model/profileItem.test.js",
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
@@ -14,8 +17,7 @@
     "test_regapi": "mocha ./test/service/registerApi.test.js",
     "test_logapi": "mocha ./test/service/loginApi.test.js",
     "test_profapi": "mocha ./test/service/profileApi.test.js",
-    "test_todoapi": "mocha ./test/service/todoApi.test.js",
-    "dev": "nodemon app.js"
+    "test_todoapi": "mocha ./test/service/todoApi.test.js"
   },
   "author": "DanielCsonka",
   "license": "ISC",
