@@ -6,7 +6,7 @@ const dbaccess = require('../../config/appConfig.js').db_access;
 const ProfileSchema = require('../../model/profileItem.js');
 
 let profileTestDatas = require('./profileTestDatas.js').profiles;
-let additionalPerson = require('./profileTestDatas.js').newProfile;
+let additionalPersons = require('./profileTestDatas.js').newProfiles;
 
 describe('Model Profile CRUD operations', ()=>{
 
@@ -34,54 +34,57 @@ describe('Model Profile CRUD operations', ()=>{
   });
 
   describe('Reading processes', ()=>{
+
     it('Read in one doc test', ()=>{
       return ProfileSchema.findOne({first_name: profileTestDatas[2].first_name},
         (error, doc) =>{
           expect(error).to.be.a('null');
-          expect(doc).to.not.be.a('null');
+          expect(doc).to.be.a('object');
           assert.equal(doc.last_name, profileTestDatas[2].last_name,
             'Single readed doc is failed');
       }).catch(err=>{ console.log(err) });
     });
+
     it('Read in all doc test', ()=>{
       return ProfileSchema.find((error, docs)=>{
         expect(error).to.be.a('null');
         assert.equal(docs.length, 5, 'Not all docs are fetched ' + docs.length+ '/5');
       }).catch(err=>{ console.log(err) });
     });
-
   });
 
   describe('Manipulate processes', ()=>{
+
     it('Creation one additional test', ()=>{
       return new Promise((resolve, reject)=>{
-        let newProfile = new ProfileSchema(additionalPerson);
+        let newProfile = new ProfileSchema(additionalPersons[0]);
         newProfile.save(error=>{
           expect(error).to.be.a('null');
-          ProfileSchema.findOne({first_name: additionalPerson.first_name},
+          ProfileSchema.findOne({first_name: additionalPersons[0].first_name},
             (error, doc)=>{
               expect(error).to.be.a('null');
-              expect(doc).to.not.be.a('null');
-              assert.equal(doc.last_name, 'McCoy',
-                'The created doc is not proper' + doc);
+              expect(doc).to.be.a('object');
+              assert.equal(doc.last_name, 'McCoy', 'The created doc is not proper');
               resolve();
           });
         });
       }).catch(err=>{ console.log(err) });
     });
+
     it('Update the last added doc test', ()=>{
       return ProfileSchema.updateOne({first_name: profileTestDatas[3].first_name},
         {age: 21}, (error, report)=>{
           expect(error).to.be.a('null');
-          expect(report).to.not.be.a('null');
+          expect(report).to.be.a('object');
           assert.equal(report.nModified, 1, 'Update doesnt occured '+ report);
       }).catch(err=>{ console.log(err) });
     });
+
     it('Remove the last added doc test', ()=>{
-      return ProfileSchema.deleteOne({first_name: additionalPerson.first_name},
+      return ProfileSchema.deleteOne({first_name: additionalPersons[0].first_name},
         (error, report)=>{
           expect(error).to.be.a('null');
-          expect(report).to.not.be.a('null');
+          expect(report).to.be.a('object');
           assert.equal(report.deletedCount, 1, 'Deletion doesnt occured');
       }).catch(err=>{ console.log(err) });
     });
