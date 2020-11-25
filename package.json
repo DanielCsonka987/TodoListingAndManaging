@@ -4,10 +4,9 @@
   "description": "javascript node/express-api and react-front to practice webapp creation",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node server.js",
     "dev": "nodemon server.js",
     "seedDB": "node ./model/dbSeeder.js",
-
     "test_modelProf": "mocha ./test/model/profileItem.test.js",
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
     "test_todos": "mocha ./test/model/todoProcesses.test.js",

@@ -15,6 +15,8 @@ function singleTodoConverter(rawTodo){
     priority: rawTodo.priority,
     status: rawTodo.status,
     notation: rawTodo.notation,
+    start: rawTodo.startingDate,
+    update: rawTodo.lastModfingDate,
 
     updateStatus: `${apiPaths.api_base_path}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/status`,
     updateNotation: `${apiPaths.api_base_path}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/notation`,
