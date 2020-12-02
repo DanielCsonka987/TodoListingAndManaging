@@ -4,12 +4,12 @@ class TodoItem extends Component{
   constructor(props){
     super(props);
     this.state = {
-      task: props.task,
-      notation: props.notation,
-      priority: props.prioroty,
-      status: props.status,
-      startDate: props.start,
-      updateDate: props.update,
+      task: this.props.task,
+      notation: this.props.notation,
+      priority: this.props.prioroty,
+      status: this.props.status,
+      startDate: this.props.start,
+      updateDate: this.props.update,
     }
   }
 

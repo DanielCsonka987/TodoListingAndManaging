@@ -2,37 +2,26 @@ import React, { Component } from 'react';
 import ProfileItem from './ProfileItem.js';
 
 class ProfileList extends Component {
-  constructor(prop){
-    super();
-    this.state = {
-      profiles: [],
-      loadSuccess: true,
-      loadMessage: ''
-    }
+  constructor(props){
+    super(props);
   }
 
-  FuncLogin(event){
-    console.log(event)
-  }
-
-  componentDidMount() {
-    fetch('/api/')
-    .then(resp => resp.json())
-    .then(prof =>{
-      this.setState({profiles: prof.report, loadMessage: prof.message})
-    })
-    .catch(err=>{
-      this.setState({loadSuccess: false, loadMessage: 'Fail'})
-    })
-  }
   render() {
     return (
       <div>
-      <p>{this.state.loadMessage}</p>
-      {this.state.profiles.map((item) => {
-        return <ProfileItem key={item.id} username={item.username}
-         userLoginPath={item.loginProfile}
-         funcLogin={this.FuncLogin} loginState='false' />
+      <p>Accounts in the system:</p>
+      {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
+      {this.props.profileContent.map((item) => {
+        return <ProfileItem key={item.id}
+          funcLogin={this.props.funcLogin}
+          funcLogout={this.props.funcLogut}
+          funcChangePwd={this.props.funcChangePwd}
+          funcDelAccount={this.props.funcDelAccount}
+
+          username={item.username}
+          userLoginPath={item.loginProfile}
+          loginState='false'
+        />
       })
       }
     </div>

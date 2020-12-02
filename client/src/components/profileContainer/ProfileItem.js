@@ -38,9 +38,9 @@ class ProfileItem extends Component {
             <p className='userDetail'>Fullname: {this.state.userName}</p>
             <p className='userDetail'>Age: {this.state.userAge}</p>
             <p className='userDetail'>Occupation: {this.state.userOccupation}</p>
-            <p classNAme='userDetail userPwdLine'> New password: <input type='password' onChange={this.registerPwd}/>
+            <p className='userDetail userPwdLine'> New password: <input type='password' onChange={this.registerPwd}/>
             </p>
-            <p classname='userError'>{this.state.userError}</p>
+            <p className='userError'>{this.state.userError}</p>
             <div className='userButtons'>
               <button onClick={this.props.funcPwdChange.bind(this, this.state)}>Change password</button>
               <button onClick={this.props.funcProfDel.bind(this, this.state)}>Delete accout</button>
@@ -51,7 +51,7 @@ class ProfileItem extends Component {
         <div>
           <p className='userDetail userPwdLine'>Password: <input type='password' onChange={this.registerPwd} />
           </p>
-          <p classname='userError'>{this.state.userError}</p>
+          <p className='userError'>{this.state.userError}</p>
           <div className='userButtons'>
             <button onClick={this.props.funcLogin.bind(this, this.state)}>Login</button>
           </div>
