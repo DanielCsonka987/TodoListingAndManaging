@@ -1,14 +1,14 @@
 const Joi = require('joi');
-const passwordRegexp = require('../../config/appConfig.js')
-  .validation_config.password_regexp;
+const usernamedRegexp = require('../../config/appConfig.js')
+  .validation_config.username_regexp;
 const SchemaRegister = Joi.object({
-  username: Joi.string().min(4).max(80).required(),
-  password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
+  username: Joi.string().pattern(new RegExp(usernamedRegexp)).required(),
+  password: Joi.string().min(4).max(40).required(),
   password_repeat: Joi.ref('password'),
   first_name: Joi.string().max(80).required(),
   last_name: Joi.string().max(80),
   occupation: Joi.string().max(50),
-  age: Joi.number().integer().min(5).max(120)
+  age: Joi.number().integer().min(5).max(999)
 }).with('password', 'password_repeat');
 
 module.exports = (profileData)=>{

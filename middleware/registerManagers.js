@@ -5,6 +5,15 @@ const pwdEncoder = require('../utils/passwordManagers.js').encodeThisPassword;
 const errorMessages = require('../config/appMessages.js').front_error_messages;
 
 module.exports.regDatasVerification = (req, res, next)=>{
+  if(req.body.last_name === ''){
+    delete req.body['last_name'];
+  }
+  if(req.body.age === '0'){
+    delete req.body['age'];
+  }
+  if(req.body.occupaton === ''){
+    delete req.body['occupation'];
+  }
   verifyProfile(req.body)
   .then(result=>{ next()  })
   .catch(err=>{

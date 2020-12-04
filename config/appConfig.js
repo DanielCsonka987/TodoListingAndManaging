@@ -8,7 +8,7 @@ module.exports = {
 
   validation_config: {
     encryption_saltrounds: 12,
-    password_regexp: '^[0-9a-zA-Z]{4,40}$',
+    username_regexp: '^[a-zA-Z0-9_.]{4,40}$',
     mongodbid_regexp: '[0-9a-f]{24}',
     true_false_regexp: '^true$|^false$',
   },

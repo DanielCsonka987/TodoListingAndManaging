@@ -6,6 +6,11 @@ class ProfileList extends Component {
     super(props);
   }
 
+  manageDelAcc(){
+
+  }
+
+
   render() {
     return (
       <div>
@@ -16,11 +21,10 @@ class ProfileList extends Component {
           funcLogin={this.props.funcLogin}
           funcLogout={this.props.funcLogut}
           funcChangePwd={this.props.funcChangePwd}
-          funcDelAccount={this.props.funcDelAccount}
+          funcDelAccount={this.manageDelAcc}
 
           username={item.username}
           userLoginPath={item.loginProfile}
-          loginState='false'
         />
       })
       }

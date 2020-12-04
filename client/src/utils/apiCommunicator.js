@@ -6,9 +6,10 @@ module.exports = (apiPath, method, input)=>{
   if(!method){
     return { answer: { message: 'Front development error - no method!' }};
   }
-  const init = assembleTheInit(method);
+  let init = assembleTheInit(method);
   if(input){
     init.body = input;
+    console.log(init.body);
   }
 
   return fetch(apiPath, init)

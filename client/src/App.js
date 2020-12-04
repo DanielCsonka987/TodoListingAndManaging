@@ -35,7 +35,21 @@ class App extends Component {
 
   }
 
-  registerProc(){
+  registerProc(datas, event ){
+    userInputRevise.registerInput(datas)
+    .then(ajaxBody=>{
+      apiConn('/api/register', 'POST', ajaxBody)
+      .then(res=>{
+        console.log(res);
+      })
+      .catch(err=>{
+
+      });
+    })
+    .catch(errorMesage=>{
+      datas.informMessge = errorMesage;
+      console.log('Error at reviser: ' +errorMesage)
+    })
 
   }
   profileUpdate(){
@@ -65,7 +79,7 @@ class App extends Component {
         </header>
         <aside className='profiles'>
           <Register
-            funcReg={this.registerProc}
+            funcRegister={this.registerProc}
           />
           <ProfileList
             funcLogin={this.loginProc}

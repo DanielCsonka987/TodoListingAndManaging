@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-// import LoggedInInput from 'LoggedInInput.js';
-// import LoggedOutImput from 'LoggedOutImput.js';
+import DetailsLoggedIn from './DetailsLoggedIn.js';
+import DetailsLoggedOut from './DetailsLoggedOut.js';
 
 
 class ProfileItem extends Component {
@@ -8,23 +8,32 @@ class ProfileItem extends Component {
     super(props);
     this.state = {
       username: this.props.username,
-      // userFullname: props.fullname,
-      // userAge: props.age,
-      // userOccupation: props.occupation,
-      // userManagePath: props.manageProfile,
-      // userLogoutPath: props.logoutProfile,
-
       userLoginPath: this.props.loginPath,
-      typedPassword: '',
 
-      userLoggedIn: this.props.loginState,
-      userError: ''
+      // managed by funcLogin-funcLogout
+      userFullname: props.fullname,
+      userAge: props.age,
+      userOccupation: props.occupation,
+      userManagePath: props.manageProfile,
+      userLogoutPath: props.logoutProfile,
+      userError: '',
+      userLoggedIn: false,
+
+      userChangePwdPath: '',
+      userDeletAccount: ''
+
+
     }
   }
 
-  registerPwd(event){
-    const {value} = event.target;
-    this.setState( { typedPassword: value })
+  manageLogin(){
+
+  }
+  manageLogOut(){
+
+  }
+  managePwdChange(){
+
   }
 
 
@@ -34,28 +43,15 @@ class ProfileItem extends Component {
         <p>Username: <span className='profUsername'>{this.state.username}</span></p>
 
         { this.state.loginState ?
-          <div>
-            <p className='userDetail'>Fullname: {this.state.userName}</p>
-            <p className='userDetail'>Age: {this.state.userAge}</p>
-            <p className='userDetail'>Occupation: {this.state.userOccupation}</p>
-            <p className='userDetail userPwdLine'> New password: <input type='password' onChange={this.registerPwd}/>
-            </p>
-            <p className='userError'>{this.state.userError}</p>
-            <div className='userButtons'>
-              <button onClick={this.props.funcPwdChange.bind(this, this.state)}>Change password</button>
-              <button onClick={this.props.funcProfDel.bind(this, this.state)}>Delete accout</button>
-              <button onClick={this.props.funcLogOut.bind(this, this.state)}>Logout</button>
-            </div>
-          </div>
+          <DetailsLoggedIn
+            funcLogout={this.manageLogOut}
+            funcChangePwd={this.managePwdChange}
+            funcDelAccount={this.props.funcDelAccount}
+          />
         :
-        <div>
-          <p className='userDetail userPwdLine'>Password: <input type='password' onChange={this.registerPwd} />
-          </p>
-          <p className='userError'>{this.state.userError}</p>
-          <div className='userButtons'>
-            <button onClick={this.props.funcLogin.bind(this, this.state)}>Login</button>
-          </div>
-        </div>
+          <DetailsLoggedOut
+            funcLogin={this.manageLogin}
+          />
         }
 
       </div>
