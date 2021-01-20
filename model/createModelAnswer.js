@@ -1,9 +1,12 @@
-const apiPaths = require('../config/appConfig.js').routing_paths;
+const paths = require('../config/appConfig.js').routing_paths;
 
 //Normal obj, that passes in reading or persisting process
 module.exports.forInformativeObj = (itemToReport, msg)=>{
   return {report: itemToReport, message: msg}
 }
+
+
+
 
 
 // FOR TODOS //
@@ -18,9 +21,12 @@ function singleTodoConverter(rawTodo){
     start: rawTodo.startingDate,
     update: rawTodo.lastModfingDate,
 
-    updateStatus: `${apiPaths.api_base_path}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/status`,
-    updateNotation: `${apiPaths.api_base_path}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}/notation`,
-    deleteTodo: `${apiPaths.api_base_path}/${rawTodo.owner}${apiPaths.api_todo}/${rawTodo._id}`
+    updateStatus: `${paths.basePath}${rawTodo.owner}
+        ${paths.todoPostfix}/${rawTodo._id}${paths.updateStatusPostfix}`,
+    updateNotation: `${paths.basePath}${rawTodo.owner}
+        ${paths.todoPostfix}/${rawTodo._id}${paths.updateNotationPostfix}`,
+    deleteTodo: `${paths.basePath}${rawTodo.owner}
+        ${paths.todoPostfix}/${rawTodo._id}`
   }
   return publishable;
 }
@@ -36,21 +42,39 @@ module.exports.forTodoObj = (rawTodo, msg)=>{
   return { report: singleTodoConverter(rawTodo), message: msg };
 }
 
+
+
+
+// FOR PROFILES //
 module.exports.forProfileObj = (rawProf, msg)=>{
+  return {report: createProfileResult(rawProf, false), message: msg };
+}
+
+module.exports.forProfileCreation = (rawProf, msg)=>{
+  return {report: createProfileResult(rawProf, true), message: msg };
+}
+
+function createProfileResult(rawProf, isItForCreation){
+
   let name = rawProf.first_name;
   if(rawProf.last_name)
     name += ` ${rawProf.last_name}`;
   const publishable = {
     id: rawProf._id,
-    username: rawProf.username,
     fullname: name,
     age: rawProf.age,
     occupation: rawProf.occupation,
 
-    manageProfile: `${apiPaths.api_base_path}/${rawProf._id}`,
-    logoutProfile: `${apiPaths.api_base_path}/${rawProf._id}${apiPaths.api_logout}`
+    manageProfile: `${paths.basePath}${rawProf._id}`,
+    logoutProfile: `${paths.basePath}${rawProf._id}${paths.logoutPostfix}`,
+    gettingTodos: `${paths.basePath}${rawProf._id}${paths.todoPostfix}`
+
   }
-  return {report: publishable, message: msg };
+  if(isItForCreation){
+    publishable.username = rawProf.username
+    publishable.loginProfile= `${paths.basePath}${item._id}${paths.loginPostfix}`
+  }
+  return publishable;
 }
 
 
@@ -61,11 +85,14 @@ module.exports.forProfileCollect = (rawArrayProfileFromDB, msg)=>{
       id: item._id,
       username: item.username,
 
-      loginProfile: `${apiPaths.api_base_path}/${item._id}${apiPaths.api_login}`
+      loginProfile: `${paths.basePath}/${item._id}${paths.loginPostfix}`
     }
   });
   return { report: publishableProfiles, message: msg };
 }
+
+
+
 
 
 // FOR ERROR CASES

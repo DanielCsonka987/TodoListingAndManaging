@@ -3,109 +3,154 @@ import React, {Component} from 'react';
 import Register from './components/generals/RegisterForm.js'
 import ProfileList from './components/profileContainer/ProfileList.js';
 import TodoList from './components/todoContainer/TodoList.js';
-import apiConn from './utils/apiCommunicator.js';
-import userInputRevise from './utils/reviseFormContent.js';
+import AbourContent from ',/generals/AboutContent.js'
+import ErrorHandler from './generals/ErrorHandler.js'
+
+import { doAjaxSending, 
+  assembleRegisDatas, 
+  assembleProfileDeletDatas } from './utils/apiMessenger.js';
+import { disconnect } from 'mongoose';
 
 class App extends Component {
   constructor(){
-    super();
+    super()
+    this.registerProc = this.registerProc.bind(this)
+    this.removalProc = this.removalProc.bind(this)
+    this.halndleLoginOccured = this.halndleLoginOccured(this);
+    this.halndleLogoutOccured = this.halndleLogoutOccured(this);
+
     this.state = {
-      loggedInUser: '',
+      loadMessage: '',
+      aUserLoggedIn: false,
+      loggedInUser: { },
+
       profiles: [],
-      todos: [],
-      loadingMessage: ''
+      todos: {}
     }
   }
 
   componentDidMount(){
-    apiConn('/api', 'GET', '')
+    doAjaxSending('/api', 'GET', '')
     .then(res=>{
-      this.setState({profiles: res.report, loadingMessage: res.message});
-      // console.log(this.state.profiles);
+      if(res.report.length === 0){
+        this.setState({ loadMessage: res.message})
+      }else{
+        this.setState({profiles: res.report });
+      }
     })
     .catch(err=>{
-      this.setState({ loadingMessage: err.message +'Site fail at initialization!'})
+      console.log(err.report)
+      this.setState({ loadMessage: err.message })
     })
   }
-
-  loginProc(event){
-
+  halndleLoginOccured(todos){
+    this.setState({
+      aUserLoggedIn: datas.id,
+      loggedInUser: datas,
+      todos: todos
+    })
   }
-  logoutProc(){
+  halndleLogoutOccured(){
 
+    // -- remove profile element
+
+    this.setState({
+      aUserLoggedIn: false,
+      loggedInUser: {},
+      todos: {}
+    })
   }
+  registerProc(datas){
+    const ajaxBody = assembleRegisDatas(datas);
+    doAjaxSending('/api/register', 'POST', ajaxBody)
+    .then(res=>{
+      const newUser = {
+        id: res.report.id,
+        username: datas.username,
+        loginProfile: res.report.loginProfile
+      }
+      // -- adding new user to pool --
 
-  registerProc(datas, event ){
-    userInputRevise.registerInput(datas)
-    .then(ajaxBody=>{
-      apiConn('/api/register', 'POST', ajaxBody)
-      .then(res=>{
-        console.log(res);
+      const loginUserInfos ={
+        fullname: res.report.fullname,
+        age: res.report.age,
+        occupation: res.report.occupation,
+        manageProfile: res.report.manageProfile,
+        logoutProfile: res.report.logoutProfile,
+        gettingTodos: res.report.gettingTodos
+      }
+
+      this.setState({
+        aUserLoggedIn: res.report.id,
+        loggedInUser: loginUserInfos,
+        todos: {
+          message: 'No todos in system yet!'
+        }
+    })
+    })
+    .catch(err=>{
+      this.setState({registerMessage: err.message});
+    });
+
+    
+  }
+  removalProc(datas){
+    const ajaxBody = assembleProfileDeletDatas(datas)
+    doAjaxSending(this.state.loggedInUser.manageProfile, 'DELETE', ajaxBody)
+    .then(res=>{
+      
+    // -- user removal at profiles pool --
+
+      this.setState({ 
+        loadMessage: res.message,
+        aUserLoggedIn: false,
+        loggedInUser: {} 
       })
-      .catch(err=>{
-
-      });
+    }).catch(error=>{
+      this.setState({ loadMessage: error.message })
     })
-    .catch(errorMesage=>{
-      datas.informMessge = errorMesage;
-      console.log('Error at reviser: ' +errorMesage)
-    })
-
-  }
-  profileUpdate(){
-
-  }
-  profileDelete(){
-
-  }
-
-  createTodo(){
-
-  }
-  updateTodo(){
-
-  }
-  deleteTodo(){
-
   }
 
   render(){
-    return (
-      <div className="App">
-        <header className="App-header">
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-        </header>
-        <aside className='profiles'>
+
+    let regArea, sideAreaContent = '';
+    if(this.state.aUserLoggedIn){
+      regArea = 
+        <ErrorHandler location='register area'>
           <Register
             funcRegister={this.registerProc}
           />
-          <ProfileList
-            funcLogin={this.loginProc}
-            funcLogout={this.logoutProc}
-            funcChangePwd={this.profileUpdate}
-            funcDelAccount={this.profileDelete}
+        </ErrorHandler>
+      sideAreaContent = <AbourContent />
+    } else {
+      sideAreaContent = <TodoList todoContent={this.state.todos} />
+    }
 
-            isLoggedIn={this.state.loggedInUser}
-            loadMessage={this.state.loadingMessage}
-            profileContent={this.state.profiles}
-          />
-        </aside>
-        <aside className='todos'>
-        { this.state.loggedInUser?
-            <TodoList
-              funcNewTodo={this.createTodo}
-              funcUpdateTodo={this.updateTodo}
-              funcDeleteTodo={this.deleteTodo}
+    return (
+      <div className="App">
+        <header className="">
+          <p>
+            
+          </p>
+        </header>
+        <main className='mainApp'>
+          <ErrorHandler location='main area' >
+            { regArea }
+            <ErrorHandler location='profile area'>
+              <ProfileList
+                loadMessage={this.state.loadMessage}
+                allProfilesContent={this.state.profiles}
+                loggedInUser={this.state.loggedInUser}
 
-              todoContent={this.state.todos}
-            /> : ''
-        }
-        </aside>
-        <aside className='about'>
-        </aside>
-        <footer></footer>
+                funcUserChooseUserCard={this.userChosenUserCard}
+              />
+              { sideAreaContent }
+            </ErrorHandler>
+          </ErrorHandler>
+        </main>
+        <footer>
+
+        </footer>
       </div>
     );
   }

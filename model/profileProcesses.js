@@ -4,6 +4,7 @@ const ProfileSchema = require('./profileItem.js');
 const reportProcessResult = require('./createModelAnswer.js').forInformativeObj;
 const collectionProfileResult = require('./createModelAnswer.js').forProfileCollect;
 const singleProfileResult = require('./createModelAnswer.js').forProfileObj;
+const createNewProfileResult = require('./createModelAnswer.js').forProfileCreation;
 const errorResult = require('./createModelAnswer.js').forErrorObj;
 
 const errorMessages = require('../config/appMessages.js').front_error_messages;
@@ -82,7 +83,7 @@ module.exports.createProfile = (newProfile) =>{
         reject( errorResult( `DB error! ${err.name}` , {profile: newProfile.username},
           errorMessages.model_create) );
       }
-      if(doc) resolve( singleProfileResult(doc, doneMessages.create) );
+      if(doc) resolve( createNewProfileResult(doc, doneMessages.create) );
       else { reject( errorResult( 'No proper query answer is created!',
         {profile: newProfile.username}, errorMessages.model_create) );
       }

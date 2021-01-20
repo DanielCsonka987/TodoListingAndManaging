@@ -1,5 +1,5 @@
-const React, { Component } from 'react';
-
+import { React, Component } from 'react'
+import { FormInputUnit } from '../generals/FormInputUnit.js'
 class TodoItem extends Component{
   constructor(props){
     super(props);
@@ -35,10 +35,13 @@ class TodoItem extends Component{
           <span className='todoItemLeft'>Priority: {this.state.priority}</span>
           <span className='todoItemRight'>Status: </span>
           <span className='todoChange'>
-          <button className='todoChange'></button>
           </span>
         </p>
+        <p>this.props</p>
+        <button className='todoChange'>Change it's details</button>
       </div>
     )
   }
 }
+
+export default TodoItem

@@ -14,13 +14,12 @@ module.exports = {
   },
 
   routing_paths: {
-    api_base_path: '/api',
-
-    api_login: '/login',
-    api_logout: '/logout',
-    api_todo: '/todos',
-    api_update_status: '/status',
-    api_update_notation: '/notation'
+    basePath: '/api/',
+    loginPostfix: '/login',
+    logoutPostfix: '/logout',
+    todoPostfix: '/todos',
+    updateStatusPostfix: '/status',
+    updateNotationPostfix: '/notation'
   },
   cookie_details: {
     sessionCookiePrefix: '',

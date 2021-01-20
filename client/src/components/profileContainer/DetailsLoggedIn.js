@@ -1,32 +1,38 @@
 import React, {Component} from 'react';
+import FromInputUnit from '../generals/FormInputUnit'
 
-class DetailsLoggedIn extends Component{
-  constructor(props){
-    super(props);
-    this.state={
-      userName: '',
-      userAge: '',
-      userOccupation: '',
-    }
-  }
+const DetailsLoggedIn = (props)=>{
 
-  render(){
-    return(
-      <div>
-        <p className='userDetail'>Fullname: {this.state.userName}</p>
-        <p className='userDetail'>Age: {this.state.userAge}</p>
-        <p className='userDetail'>Occupation: {this.state.userOccupation}</p>
-        <p className='userDetail userPwdLine'> New password: <input type='password' onChange={this.registerPwd}/>
-        </p>
-        <p className='cardErrorMessage'>{this.state.userError}</p>
-        <div className='userButtons'>
-          <button onClick={this.props.funcPwdChange.bind(this, this.state)}>Change password</button>
-          <button onClick={this.props.funcProfDel.bind(this, this.state)}>Delete accout</button>
-          <button onClick={this.props.funcLogOut.bind(this, this.state)}>Logout</button>
+  return(
+    <div>
+        <p className='userDetail'>Fullname: {props.fullname}</p>
+        <p className='userDetail'>Age: {props.age}</p>
+        <p className='userDetail'>Occupation: {props.occupation}</p>
+        <div className='userPwdChange'>
+        <FromInputUnit 
+            label='Old password:'
+            type='password' name='password' id='old_password'
+            onChange={props.funcInputChange}
+          />
+          <FromInputUnit 
+            label='New password:'
+            type='password' name='password' id='new_password'
+            onChange={props.funcInputChange}
+          />
+          <FromInputUnit 
+            label='New password again:'
+            type='password' name='password' id='password_repeat'
+            onChange={props.funcInputChange}
+          />
         </div>
-      </div>
-    )
-  }
+        <div className='userButtons'>
+          <button onClick={props.funcPwdChange}>Change password</button>
+          <button onClick={props.funcProfDel}>Delete accout</button>
+          <button onClick={props.funcLogOut}>Logout</button>
+        </div>
+    </div>
+  )
+  
 }
 
 export default DetailsLoggedIn
