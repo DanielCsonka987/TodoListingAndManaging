@@ -3,43 +3,47 @@ const router = require('express').Router();
 const todoMiddle = require('../middleware/todoMiddlewares.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
 
+const paths = require('../config/appConfig').routing_paths
+
 // READ all todos of user
-router.get('/:id/todos', todoMiddle.readAllTodos)
-router.get('/:id/todos', (req,res)=>{
+router.get('/:id'+paths.todoPostfix, 
+  todoMiddle.readAllTodos, 
+  (req,res)=>{
   res.send();
 })
 
 // CREATE new todo //
-router.post('/:id/todos', todoMiddle.newContentVerification);
-router.post('/:id/todos', todoMiddle.createNewTodo)
-router.post('/:id/todos', (req, res)=>{
+router.post('/:id'+paths.todoPostfix, 
+  todoMiddle.newContentVerification, todoMiddle.createNewTodo,
+  (req, res)=>{
   res.send();
 })
 
 // UPDATE todos //
 //update status
-router.put('/:id/todos/:index/status', todoMiddle.changeTodoStateVerification)
-router.put('/:id/todos/:index/status', todoMiddle.updateTodoStatus)
-router.put('/:id/todos/:index/status', (req, res)=>{
+router.put('/:id'+ paths.todoPostfix +'/:index'+ paths.updateStatusPostfix, 
+  todoMiddle.changeTodoStateVerification, todoMiddle.updateTodoStatus,
+  (req, res)=>{
   res.send();
 })
 //update notation
-router.put('/:id/todos/:index/notation', todoMiddle.updateTodoNotation)
-router.put('/:id/todos/:index/notation', (req, res)=>{
+router.put('/:id'+ paths.todoPostfix +'/:index'+ paths.updateNotationPostfix, 
+  todoMiddle.updateTodoNotation, 
+  (req, res)=>{
   res.send();
 })
 
 // DELETE todos //
 //delete all todos
-router.delete('/:id/todos', profMiddle.profileOldPwdConfirmation)
-router.delete('/:id/todos', todoMiddle.allTodoRemoval)
-router.delete('/:id/todos', (req,res)=>{
+router.delete('/:id'+ paths.todoPostfix, 
+  profMiddle.profileOldPwdConfirmation, todoMiddle.allTodoRemoval,
+  (req,res)=>{
   res.send();
 })
 //delete single todo
-router.delete('/:id/todos/:index', profMiddle.profileOldPwdConfirmation)
-router.delete('/:id/todos/:index', todoMiddle.singleTodoRemoval)
-router.delete('/:id/todos/:index', (req, res)=>{
+router.delete('/:id'+ paths.todoPostfix +'/:index', 
+  profMiddle.profileOldPwdConfirmation, todoMiddle.singleTodoRemoval,
+  (req, res)=>{
   res.send();
 })
 

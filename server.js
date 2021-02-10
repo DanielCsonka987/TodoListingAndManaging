@@ -34,9 +34,9 @@ app.use(cookieparser());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(upload.array());
 
-app.use(apiRouting.api_base_path, routerProfileAllowed); // GET ALL PROFILES + REG + LOGIN + LOGUT
-app.use(apiRouting.api_base_path, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
-app.use(apiRouting.api_base_path, routerLimitedTodos);  // TODO PROCESSES
+app.use(apiRouting.basePath, routerProfileAllowed); // GET ALL PROFILES + REG + LOGIN + LOGUT
+app.use(apiRouting.basePath, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
+app.use(apiRouting.basePath, routerLimitedTodos);  // TODO PROCESSES
 
 // ERROR handling //
 app.all('/', apiErrorHandler)

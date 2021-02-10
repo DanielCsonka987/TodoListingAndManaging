@@ -6,6 +6,49 @@ module.exports.forInformativeObj = (itemToReport, msg)=>{
 }
 
 
+// FOR PROFILES //
+module.exports.forProfileObj = (rawProf, msg)=>{
+  return {report: createProfileResult(rawProf, false), message: msg };
+}
+module.exports.forProfileCreation = (rawProf, msg)=>{
+  return {report: createProfileResult(rawProf, true), message: msg };
+}
+function createProfileResult(rawProf, isItForCreation){
+  let name = rawProf.first_name;
+  if(rawProf.last_name)
+    name += ` ${rawProf.last_name}`;
+  const publishable = {
+    id: rawProf._id,
+    fullname: name,
+    age: rawProf.age,
+    occupation: rawProf.occupation,
+
+    manageProfile: `${paths.basePath}${rawProf._id}`,
+    logoutProfile: `${paths.basePath}${rawProf._id}${paths.logoutPostfix}`,
+    getAddTodos: `${paths.basePath}${rawProf._id}${paths.todoPostfix}`
+
+  }
+  if(isItForCreation){
+    publishable.username = rawProf.username
+    publishable.loginProfile= `${paths.basePath}${rawProf._id}${paths.loginPostfix}`
+  }
+  return publishable;
+}
+
+// FOR PROFILES //
+module.exports.forProfileCollect = (rawArrayProfileFromDB, msg)=>{
+  const publishableProfiles = rawArrayProfileFromDB.map((item) => {
+    return {
+      id: item._id,
+      username: item.username,
+
+      loginProfile: `${paths.basePath}${item._id}${paths.loginPostfix}`
+    }
+  });
+  return { report: publishableProfiles, message: msg };
+}
+
+
 
 
 
@@ -30,65 +73,14 @@ function singleTodoConverter(rawTodo){
   }
   return publishable;
 }
-
 module.exports.forTodoCollect = (rawArrayTodoFromDB, msg)=>{
   const publishableTodos = rawArrayTodoFromDB.map((item) => {
     return singleTodoConverter(item);
   });
   return {report: publishableTodos, message: msg}
 }
-
 module.exports.forTodoObj = (rawTodo, msg)=>{
   return { report: singleTodoConverter(rawTodo), message: msg };
-}
-
-
-
-
-// FOR PROFILES //
-module.exports.forProfileObj = (rawProf, msg)=>{
-  return {report: createProfileResult(rawProf, false), message: msg };
-}
-
-module.exports.forProfileCreation = (rawProf, msg)=>{
-  return {report: createProfileResult(rawProf, true), message: msg };
-}
-
-function createProfileResult(rawProf, isItForCreation){
-
-  let name = rawProf.first_name;
-  if(rawProf.last_name)
-    name += ` ${rawProf.last_name}`;
-  const publishable = {
-    id: rawProf._id,
-    fullname: name,
-    age: rawProf.age,
-    occupation: rawProf.occupation,
-
-    manageProfile: `${paths.basePath}${rawProf._id}`,
-    logoutProfile: `${paths.basePath}${rawProf._id}${paths.logoutPostfix}`,
-    gettingTodos: `${paths.basePath}${rawProf._id}${paths.todoPostfix}`
-
-  }
-  if(isItForCreation){
-    publishable.username = rawProf.username
-    publishable.loginProfile= `${paths.basePath}${item._id}${paths.loginPostfix}`
-  }
-  return publishable;
-}
-
-
-// FOR PROFILES //
-module.exports.forProfileCollect = (rawArrayProfileFromDB, msg)=>{
-  const publishableProfiles = rawArrayProfileFromDB.map((item) => {
-    return {
-      id: item._id,
-      username: item.username,
-
-      loginProfile: `${paths.basePath}/${item._id}${paths.loginPostfix}`
-    }
-  });
-  return { report: publishableProfiles, message: msg };
 }
 
 

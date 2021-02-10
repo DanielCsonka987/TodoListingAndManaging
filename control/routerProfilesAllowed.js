@@ -8,7 +8,7 @@ const registrateMiddle = require('../middleware/registerManagers.js');
 const modelProfile = require('../model/profileProcesses.js');
 
 const doneMessages = require('../config/appMessages.js').front_success_messages;
-
+const paths = require('../config/appConfig').routing_paths
 // COMMON API response common response configuration //
 router.all('/*', apiResponseHeaders)
 
@@ -16,46 +16,65 @@ router.all('/*', apiResponseHeaders)
 router.all('/*', cookieMiddle.sessionCookieRenew);
 
 // READ all user //
-router.get('/', profMiddle.readAllProfiles);
-router.get('/', (req,res)=>{
+router.get('/', 
+  profMiddle.readAllProfiles, 
+  (req,res)=>{
   res.send();
 })
 
+
+// LOGGED IN STATE REVISON //
+router.get(paths.logRevisPostfix, 
+  cookieMiddle.reviseLoggedInState,
+  (req, res)=>{
+    res.status(200);
+    res.send();
+})
+
+
 // REGISETER a new user //
 // with creating session cookie
-router.post('/register',registrateMiddle.regDatasVerification);
-router.post('/register', registrateMiddle.regProfilesCollisionScreen);
-router.post('/register', registrateMiddle.reqProfilePwdEncoding);
-router.post('/register', profMiddle.createNewProfile);
-router.post('/register', cookieMiddle.sessionCookieRegisterCreation);
-router.post('/register', (req, res)=>{
+router.post(paths.registerPostfix, 
+  registrateMiddle.regDatasVerification, 
+  registrateMiddle.regProfilesCollisionScreen,
+  registrateMiddle.reqProfilePwdEncoding, 
+  profMiddle.createNewProfile,
+  cookieMiddle.sessionCookieRegisterCreation,
+  (req, res)=>{
   res.send();
 })
 
 
 // LOGIN //
-router.post('/:id/login', loginMiddle.loginDatasRevision)
-router.post('/:id/login', loginMiddle.loginProfileExistenceRevision)
-router.post('/:id/login', loginMiddle.pathQueryRevisionWithExistingProf)
-router.post('/:id/login', loginMiddle.loginPasswordRevision)
-router.post('/:id/login', cookieMiddle.sessionCookieLoginCreation)
-router.post('/:id/login', (req, res)=>{
-  res.status(200);
-  res.send({
-    report: 'Access granted!',
-    message: doneMessages.login
-  });
+router.post('/:id'+ paths.loginPostfix, 
+  loginMiddle.loginDatasRevision, 
+  loginMiddle.loginProfileExistenceRevision,
+  loginMiddle.pathQueryRevisionWithExistingProf, 
+  loginMiddle.loginPasswordRevision,
+  cookieMiddle.sessionCookieLoginCreation,
+  (req, res)=>{
+  modelProfile.findThisProfileById(req.params.id)
+  .then(result=>{
+    result.message = doneMessages.login;
+    res.status(200).send(
+      JSON.stringify(result)
+    );
+  })
+  .catch(err=>{
+    res.status(500).send(JSON.stringify(err));
+  })
 })
 
 // LOGOUT //
 // with destroying session cookie
-router.get('/:id/logout', cookieMiddle.sessionCookieRemoval)
-router.get('/:id/logout', (req,res)=>{
-  res.status(200);
-  res.send({
-    report: 'Access terminated!',
-    message: doneMessages.logout
-  });
+router.get('/:id'+paths.logoutPostfix, 
+  cookieMiddle.sessionCookieRemoval,
+  (req,res)=>{
+    res.status(200);
+    res.send(JSON.stringify({
+      report: 'Access terminated!',
+      message: doneMessages.logout
+  }));
 })
 
 module.exports = router;

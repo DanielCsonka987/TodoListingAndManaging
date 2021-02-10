@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const ProfileSchema = require('./profileItem.js');
 
 const reportProcessResult = require('./createModelAnswer.js').forInformativeObj;

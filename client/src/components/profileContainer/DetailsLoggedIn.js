@@ -11,18 +11,18 @@ const DetailsLoggedIn = (props)=>{
         <div className='userPwdChange'>
         <FromInputUnit 
             label='Old password:'
-            type='password' name='password' id='old_password'
-            onChange={props.funcInputChange}
+            type='password' name='old_password' id='old_password'
+            value={props.oldPwd} funcChange={props.funcInputChange}
           />
           <FromInputUnit 
             label='New password:'
-            type='password' name='password' id='new_password'
-            onChange={props.funcInputChange}
+            type='password' name='new_password' id='new_password'
+            value={props.newPwd} funcChange={props.funcInputChange}
           />
           <FromInputUnit 
             label='New password again:'
-            type='password' name='password' id='password_repeat'
-            onChange={props.funcInputChange}
+            type='password' name='password_repeat' id='password_repeat'
+            value={props.repPwd} funcChange={props.funcInputChange}
           />
         </div>
         <div className='userButtons'>

@@ -62,7 +62,27 @@ module.exports.contentDBRevision = (req, res, next)=>{
   })
 }
 
-
+module.exports.reviseLoggedInState = (req, res, next) =>{
+  const cookieContentToAnalyze = req.cookies[sessionCookieName];
+  if(cookieContentToAnalyze){
+    res.write(JSON.stringify({
+      report: { 
+        loggedInState: true,
+        getUserId: cookieContentToAnalyze
+      },
+      message: 'You are still logged in!'
+    }))
+    next();
+  }else{
+    res.write(JSON.stringify({
+      report: { 
+        loggedInState: false 
+      },
+      message: 'No login state!'
+    }))
+    next();
+  }
+}
 
 function createSessionCookieAtResponseObj(res, value){
   const cookieAttrib = sessionCookieAttributes();
@@ -89,6 +109,8 @@ function removeSessionCookieAtResponseObj(res, value){
   );
 }
 
+
+// PROFILE REGISERT-DELETION final step//
 module.exports.sessionCookieRegisterCreation = (req, res, next)=>{
   const newUserId = req.justCreatedUserMessage.report.id;
   createSessionCookieAtResponseObj(res, newUserId);
@@ -102,6 +124,8 @@ module.exports.sessionCookieDeletionRemoval = (req, res, next)=>{
   res.write(JSON.stringify(req.justRemovedUserMessage));
   next();
 }
+
+
 module.exports.sessionCookieRenew = (req, res, next)=>{
   if(req.cookies[sessionCookieName]){
     createSessionCookieAtResponseObj(res, req.cookies[sessionCookieName]);
@@ -109,12 +133,11 @@ module.exports.sessionCookieRenew = (req, res, next)=>{
   next();
 }
 
+
 module.exports.sessionCookieLoginCreation = (req, res, next)=>{
   createSessionCookieAtResponseObj(res, req.loginUserId);
   next();
 }
-
-
 module.exports.sessionCookieRemoval = (req, res, next)=>{
   removeSessionCookieAtResponseObj(res, '');
   next();

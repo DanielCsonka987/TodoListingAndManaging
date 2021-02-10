@@ -15,8 +15,10 @@ module.exports = {
 
   routing_paths: {
     basePath: '/api/',
+    registerPostfix: '/register',
     loginPostfix: '/login',
     logoutPostfix: '/logout',
+    logRevisPostfix: '/revise',
     todoPostfix: '/todos',
     updateStatusPostfix: '/status',
     updateNotationPostfix: '/notation'

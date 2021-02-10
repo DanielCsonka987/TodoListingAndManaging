@@ -4,28 +4,14 @@ import ProfileItem from './ProfileItem.js';
 class ProfileList extends Component {
   constructor(props){
     super(props);
-
-    this.handleCardFocus = this.handleCardFocus.bind(this)
     this.handleUserLogin = this.handleUserLogin.bind(this)
     this.handleUserLogout = this.handleUserLogout.bind(this)
-
-    this.state = {
-      cardOnFocus: -1,
-      cardLoggedIn: -1
-    }
   }
-
-  handleCardFocus(userid){
-    this.setState({ cardOnFocus: userid })
-  }
-
-  handleUserLogin(userid, todos){
-    this.setState({ cardLoggedIn: userid})
-    this.props.halndleLoginOccured(todos)
+  handleUserLogin(user, todos){
+    this.props.funcLogin(user, todos)
   }
   handleUserLogout(){
-    this.setState({cardLoggedIn: -1})
-    this.props.halndleLogoutOccured()
+    this.props.funcLogout()
   }
   render() {
 
@@ -34,25 +20,26 @@ class ProfileList extends Component {
         <p className='titleText'>Accounts in the system:</p>
         {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
         {this.props.allProfilesContent.map((item, index) => {
-          
-          const isThisInFocus = this.cardOnFocus===item.id
-          const isThisLoggedIn = this.cardLoggedIn===item.id
+        const loggedId = typeof this.props.loggedUser === 'object' ?
+          this.props.loggedUser.id : '';
+         
           return <ProfileItem key={index}
             userid={item.id}
             username={item.username}
             loginProfile={item.loginProfile}
-            userExtraDatas={ isThisLoggedIn? 
-              this.props.loggedInUser: ''}
+            
+            userExtraDatas={ loggedId===item.id? 
+              this.props.loggedUser : '' }
 
-            cardOnFocus={isThisInFocus}
-            cardLoggedIn={isThisLoggedIn}
+            cardOnFocus={this.props.actCardFocus===item.id}
+            cardLoggedIn={loggedId !== ''}
 
-            funcCardChoosing={this.handleCardFocus}
+            funcCardFocus={this.props.funcCartInFocus}
             funcLoginProc={this.handleUserLogin}
             funcLogoutProc={this.handleUserLogout}
             funcCardRemoval={this.props.funcCardRemoval}
           />
-        })
+          })
         }
     </div>
     )

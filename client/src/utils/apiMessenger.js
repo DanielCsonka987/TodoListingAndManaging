@@ -1,23 +1,48 @@
 module.exports.doAjaxSending = (apiPath, method, input)=>{
   if(!apiPath){
-    return { answer: { message: 'Front development error - no path!' }};
+    return { message: 'Front development error - no path!' };
   }
   if(!method){
-    return { answer: { message: 'Front development error - no method!' }};
+    return { message: 'Front development error - no method!' };
   }
   let init = smblTheInit(method);
   if(input){
     init.body = input;
-    console.log(init.body);
+    //console.log(init.body);
   }
 
   return fetch(apiPath, init)
   .then(apiResponse=>{
-    return apiResponse.json();
+    //console.log(apiResponse)
+    if(apiResponse.ok){
+      return apiResponse.json();
+    }
+    // Backend => intput validation error / Login revise error /
+    // Register process error /
+    // Cookie content error / DB Error occured
+    if(apiResponse.involvedId){ 
+      console.log(`${apiResponse.report} ${apiResponse.involvedId}`)
+      // These are well consumed by Front app
+      if(apiResponse.involvedId.todos || apiResponse.involvedId.profile ||
+        apiResponse.involvedId.field){
+        return { 
+          report: apiResponse.involvedId,
+          message: apiResponse.mesage
+        }
+      }else{
+        return { 
+          report: '',
+          message: apiResponse.mesage
+        }
+      }
+    }
+    return {
+      message: 'Application error!'
+    }
   })
   .catch(err=>{
     console.log(err);
-    return { report: 'Application loader error!'}
+    return { message: 'Application loader error!'}
   })
 }
 function smblTheInit(met){
@@ -42,56 +67,44 @@ function smblTheInit(met){
 // PROFILE DATA ASSEMBLERS //
 module.exports.smblRegisDatas = (datas) =>{
   let dataCont = '';
-  dataCont += 'username=' + datas.username + '&';
-  dataCont += 'password=' + datas.password + '&';
-  dataCont += 'password_repeat=' + datas.password_repeat + '&';
-  dataCont += 'first_name=' + datas.first_name + '&';
- 
-  if(datas.last_name === ''){
-    dataCont += 'last_name=&';
-  }else{
-    dataCont += 'last_name=' + datas.last_name + '&';
-  }
-  if(datas.age === ''){
-    dataCont += 'age=0&';
-  }else{
-    dataCont += 'age=' + datas.age + '&';
-  }
-  dataCont += 'occupation=' + datas.occupaton;
-
+  dataCont += `username=${datas.username}&`;
+  dataCont += `password=${datas.password}&`;
+  dataCont += `password_repeat=${datas.password_repeat}&`;
+  dataCont += `first_name=${datas.first_name}&`;
+  dataCont += (datas.last_name === '')? 
+    `last_name=&` : `last_name=${datas.last_name}&`;
+  dataCont += (datas.age === '')? `age=0&` : `age=${datas.age}&`;
+  dataCont += `occupation=${datas.occupaton}`;
   return dataCont;
 }
-module.exports.smblLoginDatas = (datas) =>{
+module.exports.smblLoginDatas = (unm, pwd) =>{
   let dataCont = '';
-  dataCont += 'username=', datas.username
-  dataCont += 'password=', datas.password;
+  dataCont += `username=${unm}&`;
+  dataCont += `password=${pwd}`;
   return dataCont;
 }
-module.exports.smblPwdChangeDatas = (datas)=>{
+module.exports.smblPwdChangeDatas = (oldpwd, newpwd)=>{
   let dataCont = '';
-  dataCont += 'old_password=' + datas.old_password;
-  dataCont += 'new_password=' + datas.new_password;
+  dataCont += `old_password=${oldpwd}&`;
+  dataCont += `new_password=${newpwd}`;
   return dataCont;
 }
-module.exports.smblProfDeletDatas = (datas)=>{
-  let dataCont = 'old_password=' + datas.old_password
-  return dataCont;
+module.exports.smblProfDeletDatas = (oldpwd)=>{
+  return `old_password=${oldpwd}`;
 }
 
 
 // TODO DATAS ASSEMBLERS //
 module.exports.smblNewTodoDatas = (datas)=>{
   let dataCont = '';
-
+  dataCont += `task=${datas.task}&`;
+  dataCont += `priority=${datas.priority}&`;
+  dataCont += `notation=${datas.notation}`;
   return dataCont;
 }
 module.exports.smblStateChangeTodoDatas = (datas)=>{
-  let dataCont = '';
-
-  return dataCont;
+  return `status=${datas.status}`;
 }
 module.exports.smblNotationChangeTodoDatas = (datas)=>{
-  let dataCont = '';
-
-  return dataCont;
+  return `notation=${datas.notation}`;
 }

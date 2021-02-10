@@ -6,7 +6,7 @@ class RegisterForm extends Component{
   constructor(props){
     super(props);
     this.handleChange = this.handleChange.bind(this)
-    this.handleClick = this.handleClick.bind(this)
+    this.handleRegisterClick = this.handleRegisterClick.bind(this)
     this.state ={
       username: '',
       password: '',
@@ -30,27 +30,38 @@ class RegisterForm extends Component{
     this.setState({ [name]: value })
   }
 
-  handleClick(event){
-    regInputRevise(this.state)
-    .then(()=>{
-      this.props.funcRegister(this.state)
-    })
-    .catch((error)=>{
-      this.setState({registerMessage: error})
-    })
+  async handleRegisterClick(){
+    try{
+      await regInputRevise(this.state)
+      console.log('Its not error')
+      //this.props.funcRegister(this.state)
+      
+    }catch(err){
+      console.log('Its error')
+      this.setState({registerMessage: err})
+    }
   }
 
   render(){
 
-    const errormesage= this.props.profileMessage ||
-      this.state.registerMessage;
-    //const errormesage= this.state.registerMessage;
+    let errormessages = '';
+    if(this.state.registerMessage.length > 0){
+      errormessages = this.state.registerMessage.map((item, index)=>{
+        return <div className=''>
+          <p className=''>item.msg</p><a href={`#${item.field}`}>Jump there!</a>
+        </div>
+      })
+    }else{
+      errormessages = this.props.regServMsg
+    }
+
+    //const errormessages= this.state.registerMessage;
     return (
       <div>
         <p className='cardTitle'>Filling the fields with * are required!</p>
         <FormInputUnit
           label='Username*:'
-          type='text' name='username' id='usern'
+          type='text' name='username' id='username'
           value={this.state.username}
           funcChange={this.handleChange}
         >
@@ -60,7 +71,7 @@ class RegisterForm extends Component{
 
         <FormInputUnit
           label='Password*:'
-          type='password' name='password' id='pwd'
+          type='password' name='password' id='password'
           value={this.state.password}
           funcChange={this.handleChange}
         >
@@ -70,7 +81,7 @@ class RegisterForm extends Component{
 
         <FormInputUnit
           label='Password again*:'
-          type='password' name='password_repeat' id='repeat'
+          type='password' name='password_repeat' id='password_repeat'
           value={this.state.passpassword_repeatword}
           funcChange={this.handleChange}
         >
@@ -79,7 +90,7 @@ class RegisterForm extends Component{
 
         <FormInputUnit
           label='Firstname*:'
-          type='text' name='first_name' id='first'
+          type='text' name='first_name' id='first_name'
           value={this.state.first_name}
           funcChange={this.handleChange}
         >
@@ -87,7 +98,7 @@ class RegisterForm extends Component{
         </FormInputUnit>
         <FormInputUnit
           label='Lastname:'
-          type='text' name='last_name' id='last'
+          type='text' name='last_name' id='last_name'
           value={this.state.last_name}
           funcChange={this.handleChange}
         >
@@ -105,18 +116,18 @@ class RegisterForm extends Component{
 
         <FormInputUnit
           label='Occupation:'
-          type='text' name='occupation' id='occup'
-          value={this.state.age}
+          type='text' name='occupation' id='occupation'
+          value={this.state.occupation}
           funcChange={this.handleChange}
         >
           Not mandatory!
         </FormInputUnit>
 
 
-        <p className='cardErrorMessage'>{errormesage}</p>
+        <p className='cardErrorMessage'>{errormessages}</p>
 
         <div className='userButtons'>
-          <button onClick={this.handleClick}>
+          <button onClick={this.handleRegisterClick}>
             Register</button>
         </div>
       </div>
