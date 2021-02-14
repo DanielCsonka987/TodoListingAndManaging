@@ -1,5 +1,7 @@
 const usernameTest = new RegExp('^[a-zA-Z0-9_.]{4,80}$');
+const { clientException } = require('./errorObject')
 
+// for RegisterForm //
 module.exports.regInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
     let errors = []
@@ -30,39 +32,57 @@ module.exports.regInputRevise = (datas)=>{
     if(reviseAgeMissmatch(datas.age)){
       errors.push({ 
         field: 'age', 
-        msg: `Age is not proper!${datas.age}`
+        msg: `${datas.age} as age is not proper!`
       });
     }
-    if(errors.lengt === 0){
+    if(errors.length === 0){
       resolve();
-    }else{}
-      reject(errors)
     }
+    reject(clientException(errors))
   })
 }
+
+
+// for ProfileItem //
 module.exports.loginInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
     if(revisePwdOutRange(datas.password)){
-      reject('Password is not acceptable!')
+      reject( clientException('Password is not acceptable!')  )
     }
     resolve();
   })
 }
 module.exports.pwdChangeInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = [];
     if(revisePwdOutRange(datas.old_password)){
-      reject('Previous password is not acceptable!')
+      errors.push({ 
+        field: 'old_password', 
+        msg: 'Previous password is not acceptable!'
+      })
+    }
+    if(revisePwdOutRange(datas.new_password)){
+      errors.push({ 
+        field: 'new_password', 
+        msg: 'New password is not acceptable!'
+      })
     }
     if(revisePwdsMissmatch(datas.new_password, datas.password_repeat)){
-      reject('New passwords are not matching!');
+      errors.push({ 
+        field:'password_repeat', 
+        msg: 'New passwords are not matching!'
+      });
     }
-    resolve();
+    if(errors.length === 0){
+      resolve()
+    }
+    reject( clientException(errors) )
   })
 }
 module.exports.deleteProfInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
     if(revisePwdOutRange(datas.old_password)){
-      reject('Password is not acceptable!')
+      reject( clientException('Password is not acceptable!') )
     }
     resolve();
   })
@@ -80,11 +100,14 @@ function revisePwdsMissmatch(pwd1, pwd2){
   return pwd1.normalize() !==  pwd2.normalize();
 }
 function reviseAgeMissmatch(age){
-  return datas.age !== '' && datas.age > 6;
+  if(age !== ''){
+    return (age > 6)? false : true;
+  }
+  return false;
 }
 
 
-
+// for TodoItem //
 
 module.exports.todoInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{

@@ -6,6 +6,8 @@ import TodoList from './components/todoContainer/TodoList.js';
 import AbourContent from './components/generals/AboutContent.js'
 import ErrorHandler from './components/generals/ErrorHandler.js'
 
+import interpretSessionStore from './utils/interpretSessionStore'
+import interpretProblems from './utils/interpretProblems'
 import { doAjaxSending, 
   smblRegisDatas, smblProfDeletDatas, smblNewTodoDatas,
   smblStateChangeTodoDatas, smblNotationChangeTodoDatas  } from './utils/apiMessenger.js';
@@ -14,6 +16,8 @@ class App extends Component {
   constructor(props){
     super()
     this.handleCardFocus = this.handleCardFocus.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleAPIError = this.handleAPIError.bind(this)
     this.saveDatasToLocalSession = this.saveDatasToLocalSession.bind(this)
     this.removeLocalSession = this.removeLocalSession.bind(this)
     
@@ -33,16 +37,28 @@ class App extends Component {
 
     this.state = {
       loadMessage: '',
-      loggedUser: '',
-      profiles: [],
-
+      registerServerMessage: '',
+      todoMessage: {ident: '', msg: ''},
+      
       cardOnFocusId: -1,
 
-      todoMessage: {ident: '', msg: ''},
+      loggedUser: '',
+      profiles: [],
       todos: ''
     }
   }
-
+  
+  componentDidCatch(error, info){
+    console.log(error)
+    console.log(info)
+  }
+  handleInputChange(event){
+    const { name, value } = event.target;
+    this.setState({ [name]: value})
+  }
+  handleAPIError(err){
+    interpretProblems(err, 'loadMessage', this.handleInputChange)
+  }
   async componentDidMount(){
     try{
       const systemProfiles = await doAjaxSending('/api', 'GET', '');
@@ -54,34 +70,27 @@ class App extends Component {
         // REVISE LOGGED IN STATUS AND REGENERATE IN NEED
         const profLogIdRev = await doAjaxSending('/api/revise', 'GET', '');
         if(profLogIdRev.report.loggedInState){
-          const userDet = await {
-            id: sessionStorage.getItem('profId'),
-            fullname: sessionStorage.getItem('profFullname'),
-            age: sessionStorage.getItem('profAge'),
-            occupation: sessionStorage.getItem('profOccup'),
-            manageProfile: sessionStorage.getItem('profManage'),
-            logoutProfile: sessionStorage.getItem('profLogout'),
-            getAddTodos: sessionStorage.getItem('profTodos')
-          }
-          if(userDet.id === profLogIdRev.report.getUserId){
-            const refreshTodos = await doAjaxSending(userDet.getAddTodos, 'GET', '')
+
+          //APP STATE RESTORATION - details of LoggedInUser restoration
+          await interpretSessionStore(profLogIdRev.report,
+             'loggedUser', this.handleInputChange)
+
+          if(this.state.loggedUser.id === profLogIdRev.report.getUserId){
+            const refreshTodos = await doAjaxSending(
+              this.state.loggedUser.getAddTodos, 'GET', '')
+
             this.setState({
-              cardOnFocusId: userDet.id,
-              loggedUser: userDet,
+              cardOnFocusId: profLogIdRev.report.getUserId,
               todos: refreshTodos.report
-            });
-          } else{
-            this.handleLogout()
+            })
+          }else{  // NO MATCH BETWEEN ID OF COOKIE AND SESSION
+            this.handleLoginProc();
           }
         }
       }
       
     }catch(err){
-      if(err){
-        this.setState({ loadMessage: err.message })
-      }else{
-        this.setState({ loadMessage: 'No server online!' })
-      }
+      this.handleAPIError(err)
     }
   }
   handleCardFocus(userid){
@@ -90,6 +99,8 @@ class App extends Component {
         cardOnFocusId: userid === this.state.cardOnFocusId?
          '' : userid})
     }
+    // ProfileItem / TodoItem messages needs to be ersed!
+
   }
 
   // LOGIN-OUT EVENTS, PROCESSES //
@@ -110,23 +121,10 @@ class App extends Component {
     this.removeLocalSession()
   }
   saveDatasToLocalSession(datas){
-    sessionStorage.setItem('profId', datas.id);
-    sessionStorage.setItem('profFullname', datas.fullname)
-    sessionStorage.setItem('profAge', datas.age)
-    sessionStorage.setItem('profOccup', datas.occupation)
-    sessionStorage.setItem('profManage', datas.manageProfile)
-    sessionStorage.setItem('profLogout', datas.logoutProfile)
-    sessionStorage.setItem('profTodos', datas.getAddTodos)
-
+    interpretSessionStore(datas)
   }
   removeLocalSession(){
-    sessionStorage.removeItem('profId')
-    sessionStorage.removeItem('profFullname')
-    sessionStorage.removeItem('profAge')
-    sessionStorage.removeItem('profOccup')
-    sessionStorage.removeItem('profManage')
-    sessionStorage.removeItem('profLogout')
-    sessionStorage.removeItem('profTodos')
+    interpretSessionStore();
   }
 
   // PROFILE EVENTS, PROCESSES //
@@ -153,15 +151,12 @@ class App extends Component {
           profiles: [...this.state.profiles, newUserToList],
           cardOnFocusId: newUserToList.id,
           loggedUser: loginUserInfos,
-          todos: {}
+          todos: {},
+          registerServerMessage: ''
         })
       }
     }catch(err){
-      if(err.involvedId){
-        err.involvedId.msg = err.message
-        this.setState({registerServerMessage: err.involvedId}); 
-      }
-      this.setState({registerServerMessage: err.message}); 
+      this.handleAPIError(err)
     }
   }
   async removeProfProc(pwd, profid){
@@ -171,17 +166,13 @@ class App extends Component {
         'DELETE', ajaxBody)
       if(profDelRes.report.profile){
         this.setState({ 
-          profiles: [...this.state.profiles.filter(p=>p.id===profid.id)],
+          profiles: [...this.state.profiles.filter(p=>p.id!==profid)],
           loadMessage: profDelRes.message,
           loggedUser: ''
         })
       }
     }catch(err){
-      if(typeof err === 'string'){
-        this.setState({ loadMessage: err.message })
-      }else{
-        console.log(err)
-      }
+      this.handleAPIError(err)
     }
   }
 

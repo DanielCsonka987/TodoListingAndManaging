@@ -1,3 +1,5 @@
+const { serverException, systemError } = require('./errorObject')
+
 module.exports.doAjaxSending = (apiPath, method, input)=>{
   if(!apiPath){
     return { message: 'Front development error - no path!' };
@@ -10,39 +12,41 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
     init.body = input;
     //console.log(init.body);
   }
-
   return fetch(apiPath, init)
-  .then(apiResponse=>{
-    //console.log(apiResponse)
-    if(apiResponse.ok){
-      return apiResponse.json();
-    }
-    // Backend => intput validation error / Login revise error /
-    // Register process error /
-    // Cookie content error / DB Error occured
-    if(apiResponse.involvedId){ 
-      console.log(`${apiResponse.report} ${apiResponse.involvedId}`)
-      // These are well consumed by Front app
-      if(apiResponse.involvedId.todos || apiResponse.involvedId.profile ||
-        apiResponse.involvedId.field){
-        return { 
-          report: apiResponse.involvedId,
-          message: apiResponse.mesage
-        }
-      }else{
-        return { 
-          report: '',
-          message: apiResponse.mesage
-        }
-      }
-    }
-    return {
-      message: 'Application error!'
+  .then(async apiResp => {
+    const msg = await apiResp.text();
+    try{
+      const res = JSON.parse(msg);
+      return res;
+    }catch(err){  // SERVER CRUSHED ex 404 or 500 - front developing problem //
+      let serverProblem = 'App error! ';
+      serverProblem += (apiResp.status === 404)?'No such service!': ''
+      serverProblem += (apiResp.status === 500)?'Crucial server error!': ''
+      throw new Error(systemError(serverProblem))
     }
   })
-  .catch(err=>{
-    console.log(err);
-    return { message: 'Application loader error!'}
+  .then(apiJSONResult =>{
+    // Backend => intput validation error / Login revise error /
+    // Register process error / Cookie content error / DB Error occured
+
+    //console.log(apiJSONResult)
+    if('involvedId' in apiJSONResult){
+      if(apiJSONResult.involvedId){
+        // FIELD, PROFILE, TODO, string-type USER MISTAKE //
+        throw new Error(serverException(apiJSONResult.involvedId,
+          apiJSONResult.message));
+      }else{  // UNCHATEGORISED ERROR TYPE //
+        console.log(apiJSONResult)
+        throw new Error(systemError('Application error HANDLE IT!'));
+      }
+    }else{ 
+      return apiJSONResult;
+    }
+  })
+  .catch(err=>{ 
+    //console.log(err.message)
+    throw new Error(err.message) 
+    
   })
 }
 function smblTheInit(met){

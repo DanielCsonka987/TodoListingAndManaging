@@ -2,18 +2,19 @@ import React, { Component } from 'react'
 
 import DetailsLoggedIn from './DetailsLoggedIn'
 import DetailsLoggedOut from './DetailsLoggedOut'
+import ShowProblems from '../generals/ShowProblems'
 
-import { loginInputRevise, 
-  pwdChangeInputRevise, 
-  deleteProfInputRevise } 
-  from '../../utils/inputRevise.js'
-
+import { loginInputRevise,  pwdChangeInputRevise, 
+  deleteProfInputRevise }  from '../../utils/inputRevise.js'
 import { doAjaxSending, 
   smblLoginDatas, smblPwdChangeDatas } from '../../utils/apiMessenger.js'
+
+import interpretProblems from '../../utils/interpretProblems'
 
 class ProfileItem extends Component {
   constructor(props){
     super(props)
+    this.handleAPIError = this.handleAPIError.bind(this)
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleCardFocus = this.handleCardFocus.bind(this)
@@ -21,7 +22,7 @@ class ProfileItem extends Component {
     this.handleLogOut = this.handleLogOut.bind(this);
     this.handlePwdChange = this.handlePwdChange.bind(this);
     this.handleAccountDel = this.handleAccountDel.bind(this)
-
+    this.handleCancelModify = this.handleCancelModify.bind(this)
     this.state = {
       userid: props.userid,
       username: props.username,
@@ -30,7 +31,9 @@ class ProfileItem extends Component {
       old_password: '',
       new_password: '',
       password_repeat: '',
-      profileMessage: '',
+      loggedInInputModeChange: 'none',
+
+      profileMessage: ''
 
     }
   } 
@@ -41,7 +44,9 @@ class ProfileItem extends Component {
   handleCardFocus(){
     this.props.funcCardFocus(this.state.userid);
   }
-
+  handleAPIError(err){
+    interpretProblems(err, 'profileMessage', this.handleInputChange)
+  }
   async handleLogin(){
     try{
       await loginInputRevise(this.state);
@@ -52,14 +57,10 @@ class ProfileItem extends Component {
       const loginRes = await doAjaxSending(this.props.loginProfile, 'POST', ajaxBody);
       this.setState({password: '', profileMessage: loginRes.message})
       const todoRes = await doAjaxSending(loginRes.report.gettingTodos, 'GET', '');
-
       this.props.funcLoginProc(loginRes.report, todoRes.report);
+
     }catch(err){
-      if(typeof err === 'string'){
-        this.setState({ profileMessage: err })
-      }else{
-        console.log(err)
-      }
+      this.handleAPIError(err);
     }
 
   }
@@ -67,88 +68,101 @@ class ProfileItem extends Component {
     try{
       const ajaxBody = '';
       const logoutRes = await doAjaxSending(this.props.userExtraDatas.logoutProfile, 'GET', ajaxBody)
+
       this.props.funcLogoutProc(this.state.userid)
       this.setState({ profileMessage: logoutRes.message });
     }catch(err){
-      if(typeof err === 'string'){
-        this.setState({ profileMessage: err.message });
-      }else{
-        console.log(err)
-      }
+      this.handleAPIError(err);
     }
   }
   async handlePwdChange(){
     try{
-      await pwdChangeInputRevise(this.state)
-      const ajaxBody = smblPwdChangeDatas(
-        this.state.old_password, this.state.new_password
-      );
-      const changeRes = doAjaxSending(this.props.loggedInUserExtraDatas.manageProfile,
-         'POST', ajaxBody)
-      if(!changeRes.error){
+      if(this.state.loggedInInputModeChange === 'pwd'){
+        await pwdChangeInputRevise(this.state)
+        const ajaxBody = smblPwdChangeDatas(
+          this.state.old_password, this.state.new_password
+        );
+        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.manageProfile,
+           'PUT', ajaxBody)
         this.setState({ 
           password: '', password_repeat: '',
-          profileMessage: changeRes.message
+          profileMessage: pwdChangeRes.message,
+          loggedInInputModeChange: 'none'
         })
-      }
-
-    }catch(err){
-      if(typeof err === 'string'){
-        this.setState({ profileMessage: err.message})
       }else{
-        console.log(err);
+        this.setState({ loggedInInputModeChange: 'pwd'  })
       }
+    }catch(err){
+      this.handleAPIError(err)
     }
-
-    
   }
   async handleAccountDel(){
     try{
-      await deleteProfInputRevise(this.state)
-      this.props.funcCardRemoval(this.state.old_password, this.state.userid);
-    }catch(err){
-      if(typeof err === 'string'){
-        this.setState({ profileMessage: err.message})
+      if(this.state.loggedInInputModeChange === 'del'){
+        await deleteProfInputRevise(this.state)
+        this.props.funcCardRemoval(this.state.old_password, this.state.userid);
+        this.setState({
+          old_password: '',
+          loggedInInputModeChange: 'none'
+        })
       }else{
-        console.log(err);
+        this.setState({ loggedInInputModeChange: 'del' })
       }
+    }catch(err){
+      this.handleAPIError(err);
     }
   }
-
+  handleCancelModify(){
+    this.setState({
+      old_password: '',
+      new_password: '',
+      password_repeat: '',
+      loggedInInputModeChange: 'none',
+      profileMessage: ''
+    })
+  }
   render(){
 
-    const loggedOutContent = <DetailsLoggedOut
-      pwd={this.state.password}
-      funcInputChange={this.handleInputChange}
+    const loggedOutContent = <>
+      <DetailsLoggedOut
+        pwd={this.state.password}
+        funcInputChange={this.handleInputChange}
 
-      funcLogin={this.handleLogin}
-    />;      
+        funcLogin={this.handleLogin}
+      />
+      <ShowProblems messageContent={this.state.profileMessage} />
+    </>      
 
-    const loggedInContent = <DetailsLoggedIn
-      datas={ typeof this.props.userExtraDatasAtReg ==='object'?
-        this.props.userExtraDatasAtReg: ''}
-      oldPwd={this.state.old_password}
-      newPwd={this.state.new_pawwsord}
-      repPwd={this.state.password_repeat}
-      funcInputChange={this.handleInputChange}
+    const loggedInContent = <>
+      <DetailsLoggedIn
+        extraDatas={ typeof this.props.userExtraDatas ==='object'?
+          this.props.userExtraDatas: ''}
+        oldPwd={this.state.old_password}
+        newPwd={this.state.new_password}
+        repPwd={this.state.password_repeat}
+        inputModeChange={this.state.loggedInInputModeChange}
+        funcInputChange={this.handleInputChange}
 
-      funcPwdChange={this.handlePwdChange}
-      funcProfDel={this.handleAccountDel}
-      funcLogOut={this.handleLogOut}
-    />;
+        funcPwdChange={this.handlePwdChange}
+        funcProfDel={this.handleAccountDel}
+        funcCancelModify={this.handleCancelModify}
+        funcLogOut={this.handleLogOut}
+      />
+      <ShowProblems messageContent={this.state.profileMessage} />
+    </>
 
     const cardState = this.state.cardOnFocus? 
       'cardUserActive' : 'cardUserInactive'
+
     return (
       <div className={cardState}>
         <p onClick={this.handleCardFocus}>
           Username: <span className='profUsername'>{this.state.username}</span>
         </p>
         { this.props.cardOnFocus? 
-            this.props.cardLoggedIn?  loggedInContent : loggedOutContent
+            this.props.cardLoggedIn? loggedInContent : loggedOutContent
             : ''
         }
-        <p className='cardProfileMessage'>{this.state.profileMessage}</p>
       </div>
     )
   }

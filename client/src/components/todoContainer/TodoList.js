@@ -3,10 +3,6 @@ import TodoItem from './TodoItem.js'
 import TodoInput from './TodoInput'
 
 class TodoList extends Component{
-    constructor(props){
-        super(props)
-    }
-
     render(){
 
         const message = this.props.todoMessage;
@@ -31,7 +27,6 @@ class TodoList extends Component{
             todos = <div>Error occured!</div>
         }
 
-         
         return (
             <div className='todoList'>
                 <div className='todoDetails'>

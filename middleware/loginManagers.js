@@ -58,7 +58,7 @@ module.exports.loginPasswordRevision = function(req, res, next){
       res.status(400);  //NOT FOUND
       res.send(JSON.stringify({
         report: 'Password authentication failed at login!',
-        involvedId: '',
+        involvedId: 'username or password',
         message: errorMessages.password_login_validation
       }))
 
