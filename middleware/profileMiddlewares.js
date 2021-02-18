@@ -16,7 +16,8 @@ module.exports.profileUpdateContentVerification = (req, res, next)=>{
   });
 }
 
-module.exports.profileAccountExistVerification = (req, res, next)=>{
+/*
+module.exports.profileAccountExistVerificationAndHashPwdGetting = (req, res, next)=>{
   modelProfile.findThisProfileById_detailed(req.params.id)
   .then(result =>{
     req.oldHashedPwd = result.report.password;
@@ -27,9 +28,11 @@ module.exports.profileAccountExistVerification = (req, res, next)=>{
     res.send(JSON.stringify(err));
   })
 }
+*/
 
 //it is needed at password update, todo deletions
 module.exports.profileOldPwdConfirmation = (req, res, next)=>{
+  console.log(req.oldHashedPwd)
   pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)
   .then(()=>{
     next();
@@ -82,6 +85,7 @@ module.exports.createNewProfile = (req, res, next)=>{
     age: req.body.age,
     occupation: req.body.occupation
   }
+  //console.log(newProf)
   modelProfile.createProfile(newProf)
   .then(result=>{
     req.justCreatedUserMessage = result;

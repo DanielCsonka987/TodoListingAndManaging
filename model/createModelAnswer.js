@@ -64,12 +64,9 @@ function singleTodoConverter(rawTodo){
     start: rawTodo.startingDate,
     update: rawTodo.lastModfingDate,
 
-    updateStatus: `${paths.basePath}${rawTodo.owner}
-        ${paths.todoPostfix}/${rawTodo._id}${paths.updateStatusPostfix}`,
-    updateNotation: `${paths.basePath}${rawTodo.owner}
-        ${paths.todoPostfix}/${rawTodo._id}${paths.updateNotationPostfix}`,
-    deleteTodo: `${paths.basePath}${rawTodo.owner}
-        ${paths.todoPostfix}/${rawTodo._id}`
+    updateStatus: `${paths.basePath}${rawTodo.owner}${paths.todoPostfix}/${rawTodo._id}${paths.updateStatusPostfix}`,
+    updateNotation: `${paths.basePath}${rawTodo.owner}${paths.todoPostfix}/${rawTodo._id}${paths.updateNotationPostfix}`,
+    deleteTodo: `${paths.basePath}${rawTodo.owner}${paths.todoPostfix}/${rawTodo._id}`
   }
   return publishable;
 }

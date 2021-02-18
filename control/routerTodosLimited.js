@@ -42,7 +42,7 @@ router.delete('/:id'+ paths.todoPostfix,
 })
 //delete single todo
 router.delete('/:id'+ paths.todoPostfix +'/:index', 
-  profMiddle.profileOldPwdConfirmation, todoMiddle.singleTodoRemoval,
+  todoMiddle.singleTodoRemoval,
   (req, res)=>{
   res.send();
 })

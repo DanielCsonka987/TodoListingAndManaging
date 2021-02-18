@@ -54,6 +54,7 @@ module.exports.contentDBRevision = (req, res, next)=>{
   modelProfile.findThisProfileById_detailed(req.possGoodIdFromCookie)
   .then(result=>{
     req.oldHashedPwd = result.report.password;  //SAVING IN CASE OF INPUT old_password REVISION
+    //console.log(req.oldHashedPwd)
     next();
   }).catch(err=>{
     err.message = errorMessage.cookie_misses;

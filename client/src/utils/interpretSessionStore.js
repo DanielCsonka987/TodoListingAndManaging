@@ -11,7 +11,7 @@ async function interpretSessionStore(datas, parentSessionContainer, parentStateS
                 logoutProfile: sessionStorage.getItem('profLogout'),
                 getAddTodos: sessionStorage.getItem('profTodos')
               }
-              
+              //console.log(userDet)
             parentStateSetter({
                 target: {
                     name: parentSessionContainer,
@@ -20,6 +20,7 @@ async function interpretSessionStore(datas, parentSessionContainer, parentStateS
             })
 
         }else{  //LOGIN PROCESS
+            //console.log(datas)
             sessionStorage.setItem('profId', datas.id);
             sessionStorage.setItem('profFullname', datas.fullname)
             sessionStorage.setItem('profAge', datas.age)
@@ -35,6 +36,7 @@ async function interpretSessionStore(datas, parentSessionContainer, parentStateS
         sessionStorage.removeItem('profOccup')
         sessionStorage.removeItem('profManage')
         sessionStorage.removeItem('profLogout')
+        sessionStorage.removeItem('profTodos')
     }
 }
 

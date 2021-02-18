@@ -3,7 +3,7 @@ const verifyState = require('../utils/dataValidation/todoStateDataValidity.js');
 const modelTodos = require('../model/todoProcesses.js')
 
 module.exports.newContentVerification = (req, res, next)=>{
-  verifyTodo(req.params.id, req.body)
+  verifyTodo(req.body)
   .then(result=>{
     next();
   })

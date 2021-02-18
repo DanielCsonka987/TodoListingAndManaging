@@ -4,10 +4,16 @@ const cookieMiddle = require('../middleware/cookieManagers.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
 
 // SESSION COOKIE AUTHENTICATION //
+router.all('/:id', 
+  cookieMiddle.existVerification,
+  cookieMiddle.contentVerification,
+  cookieMiddle.contentDBRevision); //Prof existence authent, hashPwd stored!
+  
 router.all('/:id/*', 
   cookieMiddle.existVerification,
   cookieMiddle.contentVerification,
-  cookieMiddle.contentDBRevision); //Prof existence authent
+  cookieMiddle.contentDBRevision); //Prof existence authent, hashPwd stored!
+
 
 // COMMON processes that needs user authentication //
 
@@ -21,7 +27,7 @@ router.get('/:id',
 
 // UPDATE user pwd //
 router.put('/:id', 
-  profMiddle.profileUpdateContentVerification, 
+  profMiddle.profileUpdateContentVerification,
   profMiddle.profileOldPwdConfirmation, 
   profMiddle.profileNewPwdEncoding, 
   profMiddle.profilePwdUpdate,

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import DetailsLoggedIn from './DetailsLoggedIn'
 import DetailsLoggedOut from './DetailsLoggedOut'
-import ShowProblems from '../generals/ShowProblems'
+import ShowMessages from '../generals/ShowMessages'
 
 import { loginInputRevise,  pwdChangeInputRevise, 
   deleteProfInputRevise }  from '../../utils/inputRevise.js'
@@ -56,7 +56,7 @@ class ProfileItem extends Component {
         );
       const loginRes = await doAjaxSending(this.props.loginProfile, 'POST', ajaxBody);
       this.setState({password: '', profileMessage: loginRes.message})
-      const todoRes = await doAjaxSending(loginRes.report.gettingTodos, 'GET', '');
+      const todoRes = await doAjaxSending(loginRes.report.getAddTodos, 'GET', '');
       this.props.funcLoginProc(loginRes.report, todoRes.report);
 
     }catch(err){
@@ -130,7 +130,7 @@ class ProfileItem extends Component {
 
         funcLogin={this.handleLogin}
       />
-      <ShowProblems messageContent={this.state.profileMessage} />
+      <ShowMessages messageContent={this.state.profileMessage} />
     </>      
 
     const loggedInContent = <>
@@ -148,14 +148,14 @@ class ProfileItem extends Component {
         funcCancelModify={this.handleCancelModify}
         funcLogOut={this.handleLogOut}
       />
-      <ShowProblems messageContent={this.state.profileMessage} />
+      <ShowMessages messageContent={this.state.profileMessage} />
     </>
 
     const cardState = this.state.cardOnFocus? 
       'cardUserActive' : 'cardUserInactive'
 
     return (
-      <div className={cardState}>
+      <div className={'profileItem', cardState}>
         <p onClick={this.handleCardFocus}>
           Username: <span className='profUsername'>{this.state.username}</span>
         </p>

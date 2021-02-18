@@ -1,83 +1,102 @@
 import { React, Component } from 'react'
-import FormInputUnit from '../generals/FormInputUnit.js'
+
+import DetailsNotationArea from './DetailsNotationArea'
+import DetailsDeleteArea from './DetailsDeletArea'
+import ShowMessages from '../generals/ShowMessages'
+
 import { todoNotationInputRevise } from '../../utils/inputRevise'
+import interpretError from '../../utils/interpretProblems'
 
 class TodoItem extends Component{
   constructor(props){
     super(props);
-    this.handleContentChange = this.handleContentChange.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleModeSwitch = this.handleModeSwitch.bind(this)
+    this.handleModifyNote = this.handleModifyNote.bind(this)
+    this.handleClickDelete = this.handleClickDelete.bind(this)
     this.state = {
       isItEditMode: false,
-      todoMessage: '',
+      isItDeleteMode: false,
+
       todoId: this.props.todoDatas.id,
-      notation: this.props.todoDatas.notation,
-      status: this.props.todoDatas.status === 'Finished'
+      todoChangeNoteUrl: this.props.todoDatas.updateNotation,
+      todoChangeStatusUrl: this.props.todoDatas.updateStatus,
+      todoDeleteThisUrl: this.props.todoDatas.deleteTodo,
+
+      todoMessage: '',
+      notation: '',
+      status: (this.props.todoDatas.status==='Finished')
     }
   }
-  handleContentChange(event){
-    const {name, value} = event.target;
+  handleInputChange(event){
+    const { name } = event.target
     if(name === 'status'){
-      this.props.funcStatusEdit(value, this.status.todoId);
+      const checked = event.target.checked
+      this.props.funcStatusEdit(this.state.todoChangeStatusUrl, checked);
+      this.setState({ [name]: checked })
+    }else{
+      const {value} = event.target;
+      this.setState({   [name]: value })
     }
-    this.setState({ [name]: value })
   }
-  handleModeSwitch(){
-    this.setState({
-      isItEditMode: !this.state.isItEditMode
-    })
+  handleModeSwitch(event){
+    const { name } = event.target;
+    if(name==='forNotation'){
+      this.setState({
+        notation: this.props.todoDatas.notation,
+        isItEditMode: !this.state.isItEditMode
+      })
+    }
+    if(name==='forDeletion'){
+      this.setState({
+        isItDeleteMode: !this.state.isItDeleteMode
+      })
+    }
   }
-  handleModifyNote(event){
-    todoNotationInputRevise(this.state)
-    .then(()=>{
-      this.props.funcNoteEdit(this.state.notation, this.state.todoid);
-      this.setState({ isItEditMode: false })
-    })
-    .catch(error=>{
-      this.setState({todoMessage: error})
-    })
+  handleClickDelete(){
+    this.props.funcTodoRemove(this.state.todoDeleteThisUrl, this.state.todoId)
+    this.setState({ todoMessage: '' })
   }
+  async handleModifyNote(){
+    try{
+      await todoNotationInputRevise(this.state.notation)
+      this.props.funcNoteEdit(this.state.todoChangeNoteUrl, this.state.notation);
+      this.handleModeSwitch({ target: { name: 'forNotation' } });
+    }catch(err){
+      interpretError(err, 'todoMessage', this.handleInputChange);
+      this.handleModeSwitch({ target: { name: 'forNotation' } });
+      this.setState({ todoMessage: '' })
+  }
+  }
+
 
   render(){
-    const todoNotationArea = this.state.isItEditMode?
-      <div>
-        <FormInputUnit classes='todoItemDetail'
-          id='note' label='Notation:' name='notation'
-          type='textarea' value={this.state.notation}
-          funcChange={this.handleContentChange}
-        >
-          You can write at most 150 character!
-        </FormInputUnit>
-        <button onClick={this.handleModifyNote}></button>
-      </div>
-      :
-      <div className='todoItemDetail'>
-        <span className='todoItemCentral'>Notation: {this.props.todoDatas.notation}</span>
-        <button className='todoChange' onClick={this.handleModeSwitch}>Edit
-        </button>
-      </div>
-
-    const messageToShow = this.props.messageFromAbove || this.state.todoMessage
-
     return (
       <div className='todoItem'>
         <p className='todoItemDetail'>
           <span>Task: {this.props.todoDatas.task}</span>
         </p>
-        { todoNotationArea }
+        <DetailsNotationArea notation={this.props.todoDatas.notation} 
+          notationAreaMode={this.state.isItEditMode} noteValue={this.state.notation}
+          funcExecNotify={this.handleModifyNote} funcModeSwitch={this.handleModeSwitch}
+          funcChangeNotation={this.handleInputChange}
+        />
         <p className='todoItemDetail'>
-          <span className='todoItemLeft'>Start: {this.props.todoDatas.startDate}</span>
-          <span className='todoItemRight'>Last update: {this.props.todoDatas.updateDate}}</span>
+          <span className='todoItemLeft'>Start: {this.props.todoDatas.start}</span>
+          <span className='todoItemRight'>Last update: {this.props.todoDatas.update}</span>
         </p>
         <div className='todoItemDetail'>
           <span className='todoItemLeft'>Priority: {this.props.todoDatas.priority}</span>
           <span className='todoItemRight'>Status: {this.props.todoDatas.status}</span>
-          <FormInputUnit classes='todoItemDetail'
-            id='state' label='' name='state'
-            type='checkbox' value={this.state.status}
-            funcChange={this.handleContentChange}
-          />
+          <input type='checkbox' name='status' checked={this.state.status} 
+            onChange={this.handleInputChange} />
         </div>
-        <p className='todoMessage'>{messageToShow}</p>
+        <DetailsDeleteArea deleteAreaMode={this.state.isItDeleteMode} 
+          funcExecDelete={this.handleClickDelete} funcModeSwitch={this.handleModeSwitch}
+        />
+        <ShowMessages messageContent={this.props.messageFromAbove? 
+          this.props.messageFromAbove : this.state.todoMessage}
+        />
       </div>
     )
   }

@@ -9,7 +9,7 @@ const todoRation = todos.length / profiles.length;;
 
 const ProfileSchema = require('./profileItem.js');
 const TodoSchema = require('./todoItem.js');
-const dbOpenTime = 1000;
+const dbOpenTime = 2000;
 
 function saveProfile(profileItem, pIndex){
   ProfileSchema.create(profileItem, (err, doc)=>{

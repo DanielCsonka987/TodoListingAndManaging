@@ -1,17 +1,17 @@
 import React from 'react';
 
-function ShowProblems(props){
+function ShowMessages(props){
     /*
     const possibleAnchor = props.messageContent.field? 
     <a href={`#${props.messageContent.field}`}>Jump there!</a>
     : '';
     */
-    if(typeof props.messageContent === 'undefined'){    //RegisterForm def. string, ProfItem def. undefined!!
+    if(typeof props.messageContent === 'undefined'){ //TodoItem def. undefined!!
         console.log('Undef')
         return (<></>)
     }
-    const clssnmForErrorLine = ''
-    const clssnmForText = ''
+    const clssnmForErrorLine = 'errorline'
+    const clssnmForText = 'errortext'
     if(typeof props.messageContent === 'string'){
         // SIMPLE MESSAGE - loggedin, logged out, ect. // 
         return (
@@ -33,4 +33,4 @@ function ShowProblems(props){
 
 }
 
-export default ShowProblems
+export default ShowMessages

@@ -5,16 +5,29 @@ import TodoInput from './TodoInput'
 class TodoList extends Component{
     render(){
 
-        const message = this.props.todoMessage;
+        let messageToSingle = '';
+        let messageGlobally = '';
+        
+        if(this.props.todoMessage.ident === -1){
+            messageGlobally = this.props.todoMessage.msg
+        }else{
+            messageToSingle = this.props.todoMessage
+        }
+
         let todos = '';
         let todoAmount = 0;
         if( typeof this.props.todoContent === 'object'){
             if(this.props.todoContent.length > 0){
                 todoAmount = this.props.todoContent.length;
                 todos = this.props.todoContent.map((item, index)=>{
+                    let msg = '';
+                    if(messageToSingle){
+                        msg = messageToSingle.ident === item.id? 
+                            messageToSingle.msg: '';
+                    }
                     return <TodoItem key={index}
                         todoDatas={item}
-                        todoMessage={this.props.todoMessage}
+                        messageFromAbove={ msg }
                         funcNoteEdit={this.props.funcNoteEdit}
                         funcStatusEdit={this.props.funcStatusEdit}
                         funcTodoRemove={this.props.funcTodoRemove}
@@ -37,6 +50,7 @@ class TodoList extends Component{
                 </div>
                 <TodoInput 
                     userid={this.props.userid}
+                    todoSaveMessage={messageGlobally}
                     funcTodoSave={this.props.funcTodoSave}
                 />
                 { todos }

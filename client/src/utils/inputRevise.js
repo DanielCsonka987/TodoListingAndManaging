@@ -111,32 +111,50 @@ function reviseAgeMissmatch(age){
 
 module.exports.todoInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
-
+    let errors = [];
     if(datas.task === ''){
-      reject('A task title required!');
+      errors.push({
+        field: 'task',
+        msg:'A task title required!'});
     }
     if(datas.task.length > 150){
-      reject('Too long task text!');
+      errors.push({ 
+        field: 'task', 
+        msg: 'Too long task text!'});
     }
-    if(datas.prioirty === '' || 
-      (datas.priority < 1 && datas.priority > 10) ){
-      reject('A priority is needed in range from 1 to 10!')
+    if(datas.priority < 1 || datas.priority > 10 ){
+      errors.push({
+        field: 'priority', 
+        msg:'A priority is needed in range from 1 to 10!'})
     }
-    if(datas.notation !== '' &&
-      datas.notation.length > 150){
-      reject('Too long notation text!');
+    if(reviseNotationOutOfRange(datas.notation)){
+      errors.push({
+        field: 'notation', 
+        msg:'Too long notation text!'});
     }
-    resolve();
+
+    if(errors.length === 0){
+      resolve();
+    }
+    reject( clientException(errors) )
   })
 }
-module.exports.todoNotationInputRevise = (datas)=>{
+module.exports.todoNotationInputRevise = (newNotation)=>{
   return new Promise((resolve, reject)=>{
-    if(datas.notation.length > 150){
-      reject('Too long notation text!');
+    let errors = []
+    if(reviseNotationOutOfRange(newNotation)){
+      errors.push({ 
+        field: 'notation', 
+        msg: 'Too long notation text!'});
     }
-    resolve();
+    if(errors.length === 0){
+      resolve();
+    }
+    reject( clientException(errors) )
   })
 }
 
-
+function reviseNotationOutOfRange(note){
+  return note !== '' && note.length > 150
+}
 

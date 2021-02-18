@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import FormInputUnit from './FormInputUnit.js';
-import ShowProblems from './ShowProblems'
+import ShowMessages from './ShowMessages'
 
 import interpretProblems from '../../utils/interpretProblems'
 import { regInputRevise } from '../../utils/inputRevise.js';
@@ -57,7 +57,7 @@ class RegisterForm extends Component{
 
   render(){
 
-    const errormessages = <ShowProblems 
+    const errormessages = <ShowMessages 
       messageContent={this.state.registerMessage} />;
 
     return (
@@ -131,7 +131,7 @@ class RegisterForm extends Component{
 
         <div className='cardErrorMessage'>{errormessages}</div>
 
-        <div className='userButtons'>
+        <div className='btnCreate'>
           <button onClick={this.handleRegisterClick}>
             Registration!</button>
         </div>

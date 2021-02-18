@@ -9,8 +9,8 @@ import ErrorHandler from './components/generals/ErrorHandler.js'
 import interpretSessionStore from './utils/interpretSessionStore'
 import interpretProblems from './utils/interpretProblems'
 import { doAjaxSending, 
-  smblRegisDatas, smblProfDeletDatas, smblNewTodoDatas,
-  smblStateChangeTodoDatas, smblNotationChangeTodoDatas  } from './utils/apiMessenger.js';
+  smblRegisDatas, smblProfDeletDatas, smblNewTodoDatas, smblStateChangeTodoDatas, 
+  smblNotationChangeTodoDatas } from './utils/apiMessenger.js';
 
 class App extends Component {
   constructor(props){
@@ -18,8 +18,6 @@ class App extends Component {
     this.handleCardFocus = this.handleCardFocus.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleAPIError = this.handleAPIError.bind(this)
-    this.saveDatasToLocalSession = this.saveDatasToLocalSession.bind(this)
-    this.removeLocalSession = this.removeLocalSession.bind(this)
     
     this.registerProfProc = this.registerProfProc.bind(this);
     this.removeProfProc = this.removeProfProc.bind(this);
@@ -31,14 +29,13 @@ class App extends Component {
     this.todoStatusChangeProc = this.todoStatusChangeProc.bind(this);
     this.todoNoteChangeProc = this.todoNoteChangeProc.bind(this);
     this.todoRemoveProc = this.todoRemoveProc.bind(this)
-    this.removeTodoFromList = this.removeTodoFromList.bind(this)
-    this.addTodoToList = this.addTodoToList.bind(this)
-    this.changeTodoMessage = this.changeTodoMessage.bind(this);
+    this.todoStateChangeProcess = this.todoStateChangeProcess.bind(this)
+
 
     this.state = {
       loadMessage: '',
       registerServerMessage: '',
-      todoMessage: {ident: '', msg: ''},
+      todoMessage: {ident: -1, msg: ''},
       
       cardOnFocusId: -1,
 
@@ -84,7 +81,7 @@ class App extends Component {
               todos: refreshTodos.report
             })
           }else{  // NO MATCH BETWEEN ID OF COOKIE AND SESSION
-            this.handleLoginProc();
+            this.handleLogout();
           }
         }
       }
@@ -104,26 +101,20 @@ class App extends Component {
   }
 
   // LOGIN-OUT EVENTS, PROCESSES //
-  handleLoginProc(user, todos){
+  async handleLoginProc(user, todos){
     this.setState({
       loggedUser: user,
       todos: todos,
       todoMessage: {ident: -1, msg: 'Content loaded!'}
     })
-    this.saveDatasToLocalSession(user);
+    interpretSessionStore(user);
   }
-  handleLogout(){
+  async handleLogout(){
     this.setState({
       loggedUser: '',
       todos: '',
       todoMessage: {ident: '', msg: ''},
     })
-    this.removeLocalSession()
-  }
-  saveDatasToLocalSession(datas){
-    interpretSessionStore(datas)
-  }
-  removeLocalSession(){
     interpretSessionStore();
   }
 
@@ -139,6 +130,7 @@ class App extends Component {
           loginProfile: profRegRes.report.loginProfile
         }
         const loginUserInfos ={
+          id: profRegRes.report.id,
           fullname: profRegRes.report.fullname,
           age: profRegRes.report.age,
           occupation: profRegRes.report.occupation,
@@ -146,7 +138,6 @@ class App extends Component {
           logoutProfile: profRegRes.report.logoutProfile,
           getAddTodos: profRegRes.report.getAddTodos
         }
-  
         this.setState({
           profiles: [...this.state.profiles, newUserToList],
           cardOnFocusId: newUserToList.id,
@@ -154,6 +145,7 @@ class App extends Component {
           todos: {},
           registerServerMessage: ''
         })
+        await interpretSessionStore(loginUserInfos);
       }
     }catch(err){
       this.handleAPIError(err)
@@ -170,6 +162,7 @@ class App extends Component {
           loadMessage: profDelRes.message,
           loggedUser: ''
         })
+        await interpretSessionStore();
       }
     }catch(err){
       this.handleAPIError(err)
@@ -184,84 +177,77 @@ class App extends Component {
       const todoRegRes = await doAjaxSending(
         this.state.loggedUser.getAddTodos,
         'POST', ajaxBody)
-      this.setState({
-        todos: [ ...this.state.todos, todoRegRes.report ],
-        todoMessage: { ident: '', msg: todoRegRes.message }
-      }) 
-    }catch(err){
-      if(typeof err.message === 'string'){
-        this.setState({ todoMessage: err.message })
-      }else{
-        console.log(err)
+      if(todoRegRes){
+        this.todoStateChangeProcess(1, todoRegRes.report, todoRegRes.message)
       }
+    }catch(err){
+      interpretProblems(err, 'todoMessage', this.handleInputChange)
     }
   }
-  async todoStatusChangeProc(url, todoDatas){
+  async todoStatusChangeProc(url, value){
     try{
-      const ajaxBody = smblStateChangeTodoDatas(todoDatas);
+      const ajaxBody = smblStateChangeTodoDatas(value);
       const ajaxTodoStatusRes = await doAjaxSending(url, 'PUT', ajaxBody)
-      const underProc = this.state.todos.filter(item=>
+      const todoUnderProcRes = this.state.todos.filter(item=>
         item.id === ajaxTodoStatusRes.report.todo);
-      if(underProc){
-        underProc.status = ajaxTodoStatusRes.report.outcome;
-        this.removeTodoFromList(underProc.id)
-        this.addTodoToList(underProc, ajaxTodoStatusRes);
+      if(todoUnderProcRes){
+        todoUnderProcRes[0].status = ajaxTodoStatusRes.report.outcome;
+        this.todoStateChangeProcess(0, todoUnderProcRes[0], 
+          ajaxTodoStatusRes.message)
       }
-      
     }catch(err){
-      this.changeTodoMessage(todoDatas.id, 'Error happened!')
+      interpretProblems(err, 'todoMessage', this.handleInputChange)
     }
-
   }
   async todoNoteChangeProc(url, todoDatas){
     try{
       const ajaxBody = smblNotationChangeTodoDatas(todoDatas);
       const ajaxTodoNoteRes = await doAjaxSending(url, 'PUT', ajaxBody)
-      const underProc = this.state.todos.flter(item=>
+      const todoUnderProcRes = this.state.todos.filter(item=>
         item.id === ajaxTodoNoteRes.report.todo)
-      if(underProc){
-        underProc.notation = ajaxTodoNoteRes.report.outcome;
-        this.removeTodoFromList(underProc.id)
-        this.addTodoToList(underProc, ajaxTodoNoteRes);
+      if(todoUnderProcRes){
+        todoUnderProcRes[0].notation = ajaxTodoNoteRes.report.outcome;
+        this.todoStateChangeProcess(0, todoUnderProcRes[0],
+           ajaxTodoNoteRes.message)
       }
     }catch(err){
-      this.changeTodoMessage(todoDatas.id, 'Error happened!')
+      interpretProblems(err, 'todoMessage', this.handleInputChange)
     }
   }
-  async todoRemoveProc(url, todoid){
+  async todoRemoveProc(url, todoId){
     try{
       const ajaxTodoDeleteRes = await doAjaxSending(url, 'DELETE', '');
       if(ajaxTodoDeleteRes.report.todo){
-        this.removeTodoFromList(ajaxTodoDeleteRes.report.todo)
-        this.changeTodoMessge(ajaxTodoDeleteRes);
+        this.todoStateChangeProcess(-1, { id: todoId }, ajaxTodoDeleteRes.message)
       }
     }catch(err){
-      this.changeTodoMessage(todoid, 'Error happened!')
+      interpretProblems(err, 'todoMessage', this.handleInputChange)
     }
   }
-  removeTodoFromList(todoid, ajaxResObj){
-    this.setState({
-      todos: [...this.state.todos.filter(item=>item.id !== todoid)],
+
+  // -1 removal, 0 replace, 1 addition
+  async todoStateChangeProcess(process, content, msg){
+    const msgId = process >-1 ? content.id : -1
+    if(process === 0 || process === -1){
+      await this.setState({
+        todos: [...this.state.todos.filter(item=>item.id !== content.id)]
+      })
+    }
+    if(process === 0 || process === 1){
+      await this.setState({
+        todos: [...this.state.todos, content]
+      })
+    }
+    await this.setState({
       todoMessage: { 
-        ident: ajaxResObj.report.todo, 
-        msg: ajaxResObj.message 
-      } 
+        ident: msgId ? msgId : -1, 
+        msg: msg }
     })
   }
-  addTodoToList(todo, ajaxResObj){
-    this.setState({
-      todos: [...this.state.todos, todo],
-      todoMessage: { 
-        ident: ajaxResObj.report.todo, 
-        msg: ajaxResObj.message 
-      } 
-    })
-  }
-  changeTodoMessage(id, msg){
-    this.setState({
-      todoMessage: { ident: id, msg: msg }
-    })
-  }
+
+
+
+
 
   render(){
     let regArea, sideAreaContent = '';

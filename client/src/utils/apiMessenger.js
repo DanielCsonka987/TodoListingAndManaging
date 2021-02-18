@@ -78,7 +78,7 @@ module.exports.smblRegisDatas = (datas) =>{
   dataCont += (datas.last_name === '')? 
     `last_name=&` : `last_name=${datas.last_name}&`;
   dataCont += (datas.age === '')? `age=0&` : `age=${datas.age}&`;
-  dataCont += `occupation=${datas.occupaton}`;
+  dataCont += `occupation=${datas.occupation}`;
   return dataCont;
 }
 module.exports.smblLoginDatas = (unm, pwd) =>{
@@ -106,9 +106,9 @@ module.exports.smblNewTodoDatas = (datas)=>{
   dataCont += `notation=${datas.notation}`;
   return dataCont;
 }
-module.exports.smblStateChangeTodoDatas = (datas)=>{
-  return `status=${datas.status}`;
+module.exports.smblStateChangeTodoDatas = (status)=>{
+  return `status=${status}`;
 }
-module.exports.smblNotationChangeTodoDatas = (datas)=>{
-  return `notation=${datas.notation}`;
+module.exports.smblNotationChangeTodoDatas = (note)=>{
+  return `notation=${note}`;
 }

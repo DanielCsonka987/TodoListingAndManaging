@@ -8,9 +8,8 @@ const SchemaTodo = Joi.object({
 
 module.exports = (ownerId, todoData)=>{
   return new Promise((resolve, reject)=>{
-    todoData.owner = ownerId;
-    const {error, value} = SchemaTodo.validate(todoData);
 
+    const {error, value} = SchemaTodo.validate(todoData);
     if(error){
       if(error.name === 'ValidationError'){
         const problematicId = error.details[0].context.key;

@@ -1,69 +1,81 @@
 import { React, Component} from 'react'
-import { todoInputRevise } from '../../utils/inputRevise'
 import FormInputUnit from '../generals/FormInputUnit'
+import ShowMessages from '../generals/ShowMessages'
+
+import { todoInputRevise } from '../../utils/inputRevise'
+import interpretError from '../../utils/interpretProblems'
+
 
 class TodoInput extends Component{
     constructor(props){
         super(props)
-        this.handleChange = this.handleChange.bind(this)
+        this.handleAPIError = this.handleAPIError.bind(this)
+
+        this.handleInputChange = this.handleInputChange.bind(this)
         this.handleTodoSave = this.handleTodoSave.bind(this)
         this.state = {
             userid: props.userid,
-            todoMessage: '',
+
             task: '',
             priority: 0,
-            notation: ''
+            notation: '',
+            todoLocalSaveMessage: ''
         }
     }
-    handleChange(event){
+    handleInputChange(event){
         const { name, value } = event.target;
         this.setState({ [name]: value })
     }
-    handleTodoSave(){
-        todoInputRevise(this.state)
-        .then(()=>{
-            this.props.funcTodoSave(this.state);
+    handleAPIError(err){
+        interpretError(err, 'todoLocalSaveMessage', this.handleInputChange)
+    }
+    async handleTodoSave(){
+        try{
+            await todoInputRevise(this.state)
+            this.props.funcTodoSave(this.state)
             this.setState({
                 task: '',
                 priority: 0,
-                notation: ''
+                notation: '',
+                todoLocalSaveMessage: ''
             })
-        })
-        .catch(error=>{
-            this.setState({ todoMessage: error})
-        })
+        }catch(err){
+            this.handleAPIError(err);
+        }
     }
 
     render(){
-
+        const errorMessage = <ShowMessages messageContent={
+            this.state.todoLocalSaveMessage || this.props.todoSaveMessage
+        } />
         return(
             <div className='todoInput'>
                 <FormInputUnit classes=''
                     id='task' label='Task:*'
                     type='text' name='task' 
                     value={this.state.task}
-                    funcChange={this.handleChange}
+                    funcChange={this.handleInputChange}
                 >
                     It must be at most 150 character. Required!
                 </FormInputUnit>
                 <FormInputUnit classes=''
-                    id='prior' label='Priority:*'
+                    id='priority' label='Priority:*'
                     type='number' name='priority' 
                     value={this.state.prioirty}
-                    funcChange={this.handleChange}
+                    funcChange={this.handleInputChange}
                 >
                     It must be between 1-10 value. Required!
                 </FormInputUnit>
                 <FormInputUnit classes=''
-                    id='note' label='Notation:*'
+                    id='notation' label='Notation:*'
                     type='text' name='notation' 
                     value={this.state.notation}
-                    funcChange={this.handleChange}
+                    funcChange={this.handleInputChange}
                 >
                     If you define this, it must be 150 character!
                 </FormInputUnit>
-                <p>{this.state.todoMessage}</p>
-                <button onClick={this.handleTodoSave}>Save</button>
+                { errorMessage }
+                <button className='btnCreate' onClick={this.handleTodoSave}>Save</button>
             </div>
         )
     }
