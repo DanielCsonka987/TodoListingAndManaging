@@ -1,6 +1,7 @@
 import { React, Component} from 'react'
 import FormInputUnit from '../generals/FormInputUnit'
 import ShowMessages from '../generals/ShowMessages'
+import ButtonWithIcon from '../generals/ButtonWithIcon'
 
 import { todoInputRevise } from '../../utils/inputRevise'
 import interpretError from '../../utils/interpretProblems'
@@ -49,33 +50,46 @@ class TodoInput extends Component{
             this.state.todoLocalSaveMessage || this.props.todoSaveMessage
         } />
         return(
-            <div className='todoInput'>
-                <FormInputUnit classes=''
-                    id='task' label='Task:*'
-                    type='text' name='task' 
-                    value={this.state.task}
-                    funcChange={this.handleInputChange}
-                >
-                    It must be at most 150 character. Required!
-                </FormInputUnit>
-                <FormInputUnit classes=''
-                    id='priority' label='Priority:*'
-                    type='number' name='priority' 
-                    value={this.state.prioirty}
-                    funcChange={this.handleInputChange}
-                >
-                    It must be between 1-10 value. Required!
-                </FormInputUnit>
-                <FormInputUnit classes=''
-                    id='notation' label='Notation:*'
-                    type='text' name='notation' 
-                    value={this.state.notation}
-                    funcChange={this.handleInputChange}
-                >
-                    If you define this, it must be 150 character!
-                </FormInputUnit>
-                { errorMessage }
-                <button className='btnCreate' onClick={this.handleTodoSave}>Save</button>
+            <div className='todoItemWidth cardArea wrapperColumnAllCenter'>
+
+                <div className='todoInputContainer'>
+                    <div className='todoInputFormSection'>
+                        <FormInputUnit classes='todoInputToLeft' classesForInput='todoInputTextLine'
+                            id='task' label='Task:*'
+                            type='text' name='task' 
+                            value={this.state.task}
+                            funcChange={this.handleInputChange}
+                        >
+                            It must be at most 150 character. Required!
+                        </FormInputUnit>
+                        <FormInputUnit classes='todoInputToRight' classesForInput='todoInputNumberLine'
+                            id='priority' label='Priority:*'
+                            type='number' name='priority' 
+                            value={this.state.prioirty}
+                            funcChange={this.handleInputChange}
+                        >
+                            It must be between 1-10 value. Required!
+                        </FormInputUnit>
+                        <FormInputUnit classes='todoInputToLeft' classesForInput='todoInputTextLine'
+                            id='notation' label='Notation:*'
+                            type='text' name='notation' 
+                            value={this.state.notation}
+                            funcChange={this.handleInputChange}
+                        >
+                            If you define this, it must be max 150 character!
+                        </FormInputUnit>
+                    </div>
+                    <div className='todoInputMsgSection'>
+                        { errorMessage }
+                    </div>
+                    <div className='todoInputBtnSection'>
+                        <ButtonWithIcon
+                            wrapperBlockClasses='btnCreate' iconDef='create'
+                            funcClickActivity={this.handleTodoSave}
+                            >Save</ButtonWithIcon>
+                    </div>
+                </div>
+
             </div>
         )
     }

@@ -10,8 +10,8 @@ function ShowMessages(props){
         console.log('Undef')
         return (<></>)
     }
-    const clssnmForErrorLine = 'errorline'
-    const clssnmForText = 'errortext'
+    const clssnmForErrorLine = 'errorLine'
+    const clssnmForText = 'errorText'
     if(typeof props.messageContent === 'string'){
         // SIMPLE MESSAGE - loggedin, logged out, ect. // 
         return (

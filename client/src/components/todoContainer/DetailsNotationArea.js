@@ -1,4 +1,6 @@
+import React from 'react'
 import FormInputUnit from '../generals/FormInputUnit'
+import ButtonWithIcon from '../generals/ButtonWithIcon'
 
 function DetailsNotationArea(props){
 

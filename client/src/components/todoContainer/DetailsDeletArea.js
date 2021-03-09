@@ -1,3 +1,6 @@
+import React from 'react'
+import ButtonWithIcon from '../generals/ButtonWithIcon'
+
 function DetailsDeleteArea(props){
 
     const preDeletePhase =     

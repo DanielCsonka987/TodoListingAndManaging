@@ -1,9 +1,10 @@
-import './App.css';
+import './styles/layout.css';
+import './styles/fashion.css'
 import React, {Component} from 'react';
-import RegisterForm from './components/generals/RegisterForm.js'
 import ProfileList from './components/profileContainer/ProfileList.js';
 import TodoList from './components/todoContainer/TodoList.js';
 import AbourContent from './components/generals/AboutContent.js'
+import Header from './components/generals/Header'
 import ErrorHandler from './components/generals/ErrorHandler.js'
 
 import interpretSessionStore from './utils/interpretSessionStore'
@@ -246,9 +247,6 @@ class App extends Component {
   }
 
 
-
-
-
   render(){
     let regArea, sideAreaContent = '';
     if(typeof this.state.loggedUser === 'object'){
@@ -264,34 +262,25 @@ class App extends Component {
       />
     } else {
       
-      regArea = 
-        <ErrorHandler location='register area'>
-          <RegisterForm
-            regServMsg={this.state.registerServerMessage}
-            funcRegister={this.registerProfProc}
-          />
-        </ErrorHandler>
       sideAreaContent = <AbourContent />
     }
-
+ 
     return (
-      <div className="App">
-        <header className="">
-          <p>
-            
-          </p>
-        </header>
+      <div className="appContainer">
+        <Header />
         <main className='mainApp'>
           <ErrorHandler location='main area' >
-            { regArea }
+
             <ErrorHandler location='profile area'>
               <ProfileList
                 loadMessage={this.state.loadMessage}
                 allProfilesContent={this.state.profiles}
                 loggedUser={this.state.loggedUser}
+                regServMsg={this.state.registerServerMessage}
 
                 actCardFocus={this.state.cardOnFocusId}
                 funcCartInFocus={this.handleCardFocus}
+                funcRegister={this.registerProfProc}
 
                 funcCardRemoval = {this.removeProfProc}
                 funcLogin = {this.handleLoginProc}
@@ -301,7 +290,7 @@ class App extends Component {
             </ErrorHandler>
           </ErrorHandler>
         </main>
-        <footer>
+        <footer className='footerApp blackBackgr'>
 
         </footer>
       </div>

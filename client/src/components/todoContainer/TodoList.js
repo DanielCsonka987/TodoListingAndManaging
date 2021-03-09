@@ -41,18 +41,19 @@ class TodoList extends Component{
         }
 
         return (
-            <div className='todoList'>
+            <div className='todoList wrapperColumnAllCenter'>
+                <TodoInput 
+                    userid={this.props.userid}
+                    todoSaveMessage={messageGlobally}
+                    funcTodoSave={this.props.funcTodoSave}
+                />
                 <div className='todoDetails'>
                     <p className='titleText'>Your requested tasks:</p>
                     <p className='descriptText'>
                         Amount: {todoAmount}
                     </p>
                 </div>
-                <TodoInput 
-                    userid={this.props.userid}
-                    todoSaveMessage={messageGlobally}
-                    funcTodoSave={this.props.funcTodoSave}
-                />
+
                 { todos }
             </div>
         )

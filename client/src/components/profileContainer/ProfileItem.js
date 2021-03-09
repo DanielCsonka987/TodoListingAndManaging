@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-
 import DetailsLoggedIn from './DetailsLoggedIn'
 import DetailsLoggedOut from './DetailsLoggedOut'
 import ShowMessages from '../generals/ShowMessages'
+import CardTileTextAndContent from '../generals/CardTileTextAndContent'
 
 import { loginInputRevise,  pwdChangeInputRevise, 
   deleteProfInputRevise }  from '../../utils/inputRevise.js'
@@ -41,8 +41,13 @@ class ProfileItem extends Component {
     const { name, value} = event.target;
     this.setState({ [name]:value })
   }
-  handleCardFocus(){
-    this.props.funcCardFocus(this.state.userid);
+  handleCardFocus(e){
+    if(e.type === 'click'){
+      this.props.funcCardFocus(this.state.userid);
+    }
+    if(e.type === 'keypress' && ( e.code === 'Space' || e.code === 'Enter' )){
+      this.props.funcCardFocus(this.state.userid);
+    }
   }
   handleAPIError(err){
     interpretProblems(err, 'profileMessage', this.handleInputChange)
@@ -122,12 +127,13 @@ class ProfileItem extends Component {
     })
   }
   render(){
+    const isThisCardLoggedIn = typeof this.props.userExtraDatas ==='object';
 
     const loggedOutContent = <>
       <DetailsLoggedOut
         pwd={this.state.password}
         funcInputChange={this.handleInputChange}
-
+        funcInputHitEnter={this.handleLogin}
         funcLogin={this.handleLogin}
       />
       <ShowMessages messageContent={this.state.profileMessage} />
@@ -135,8 +141,7 @@ class ProfileItem extends Component {
 
     const loggedInContent = <>
       <DetailsLoggedIn
-        extraDatas={ typeof this.props.userExtraDatas ==='object'?
-          this.props.userExtraDatas: ''}
+        extraDatas={ isThisCardLoggedIn? this.props.userExtraDatas: ''}
         oldPwd={this.state.old_password}
         newPwd={this.state.new_password}
         repPwd={this.state.password_repeat}
@@ -151,19 +156,24 @@ class ProfileItem extends Component {
       <ShowMessages messageContent={this.state.profileMessage} />
     </>
 
-    const cardState = this.state.cardOnFocus? 
-      'cardUserActive' : 'cardUserInactive'
+    const cardClickableState = this.props.cardNeedToInactivate? '' : 'clickable';
+    const cardTabableState=this.props.cardNeedToInactivate? -1: 0;
+    const cardFocusState = this.state.cardOnFocus? 'cardUserActive' : 'cardUserInactive'
 
+    const cardContent=this.props.cardNeedToInactivate? 
+      '' :  this.props.cardOnFocus? 
+        isThisCardLoggedIn? loggedInContent : loggedOutContent  : ''
     return (
-      <div className={'profileItem', cardState}>
-        <p onClick={this.handleCardFocus}>
-          Username: <span className='profUsername'>{this.state.username}</span>
-        </p>
-        { this.props.cardOnFocus? 
-            this.props.cardLoggedIn? loggedInContent : loggedOutContent
-            : ''
-        }
-      </div>
+      <CardTileTextAndContent
+        wrapperBlockClasses={'' + cardFocusState} 
+        wrapperInlineClasses={cardClickableState}
+        funcKeyPressActivity={this.handleCardFocus}
+        funcClickActivity={this.handleCardFocus}
+        tabIndexing={cardTabableState} iconDef='account_circle'
+        tileText={this.state.username}
+      >
+      { cardContent } </CardTileTextAndContent>
+
     )
   }
 }

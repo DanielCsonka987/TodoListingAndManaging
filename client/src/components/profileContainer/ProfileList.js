@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ProfileItem from './ProfileItem.js';
+import RegisterForm from './RegisterForm.js'
 
 class ProfileList extends Component {
   constructor(props){
@@ -14,25 +15,34 @@ class ProfileList extends Component {
     this.props.funcLogout()
   }
   render() {
+    const loggedInUserId = typeof this.props.loggedUser === 'object' ?
+      this.props.loggedUser.id : '';
+
+    const regArea =   loggedInUserId? '' :
+      <RegisterForm
+        regServMsg={this.props.regServMsg}
+        funcRegister={this.props.registerProfProc}
+      />
 
     return (
-      <div className='profileList'>
-        <p className='titleText'>Accounts in the system:</p>
-        {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
+      <div className='profileList wrapperColumnAllCenter'>
+
+        { typeof this.props.loggedUser === 'object'? '' : regArea }
+
+        <div className=''><p className='columnTitleText'>Accounts in the system:</p>
+        {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}</div>
         {this.props.allProfilesContent.map((item, index) => {
-        const loggedId = typeof this.props.loggedUser === 'object' ?
-          this.props.loggedUser.id : '';
-         
+          const isThisUserLoggedIn = loggedInUserId===item.id;
           return <ProfileItem key={index}
             userid={item.id}
             username={item.username}
             loginProfile={item.loginProfile}
             
-            userExtraDatas={ loggedId===item.id? 
+            userExtraDatas={ isThisUserLoggedIn ? 
               this.props.loggedUser : '' }
 
             cardOnFocus={this.props.actCardFocus===item.id}
-            cardLoggedIn={loggedId !== ''}
+            cardNeedToInactivate={ (!isThisUserLoggedIn && loggedInUserId) }
 
             funcCardFocus={this.props.funcCartInFocus}
             funcLoginProc={this.handleUserLogin}

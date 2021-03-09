@@ -1,0 +1,247 @@
+
+/* General styling */
+.appContainer{
+    text-align: center;
+
+}
+.mainApp{
+  border-radius: 1%;
+}
+.blackBackgr{
+    color: #FFFAE8;
+}
+.whiteBackgr{
+    color: black;
+}
+.cardArea{
+    box-shadow: -1px 2px 5px  grey;
+    border-radius: 10%;
+    padding: 0.2rem;
+    margin: 0.4rem;
+}
+.columnTitleText{
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.tileNameText{
+    font-size: 1.4rem;
+}
+.clickable{
+    cursor: pointer;
+}
+.clickable:hover, .clickable:focus{
+    font-weight: 700;
+    font-style: italic;
+}
+.clickable:active{
+    color: blue;
+}
+.errorLine{
+
+}
+.errorText{
+
+}
+
+
+
+
+/* Site containers */
+.appContainer{
+  background: radial-gradient(circle at 10% 30%, #272755, #3C3CB2);
+
+}
+.mainApp{
+  background-color: #FFFAE8;
+  box-shadow: -1px 2px 15px #505050;
+
+}
+
+/* General form styles */
+/*
+.formUnit{
+    position: relative;
+    padding: 0.2rem 1rem;
+    text-align: start;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.inputBubble{
+    position: absolute;
+    display: none;
+    z-index: 3;
+
+    max-width: 6.5rem;
+    padding: 0.4rem;
+    top: -1.2rem;
+    right: -7rem;
+    
+    background: #FFF0C3;
+    border-radius: 13%;
+    border: 1px solid grey;
+    font-size: 0.8rem;
+}*/
+.formUnit:hover .inputBubble, /* Hovering */
+.showInputBubble .inputBubble { /* Keyboard focus */
+        display: block;
+        opacity: 0.0;
+        animation-name: infoBubbleAction;
+        animation-duration: 10s;
+        animation-delay: 1s;
+        animation-fill-mode: ease;
+}
+
+
+
+/* Button styling */
+.buttonGroupWrapper{
+    width: 80%;
+    margin: 0.4rem 0rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.btnObj{
+    padding: 0.4rem;
+
+    color: #FFFAE8;
+    font-size: 1.1rem;
+    border-radius: 10%;
+}
+.iconAndTextTogether{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.iconItself{
+    font-size: 1.6rem;
+    transform: translate(0rem, 0.4rem);
+}
+.textNextToIcon{
+    margin-left: 0.4rem;
+    line-height: 2.0rem;
+    letter-spacing: 0.04rem;
+}
+.btnLogin{
+    background-color: #517EBA;
+}
+.btnLogout{
+    background-color: #517EBA;
+}
+.btnDelete{
+    background-color: #AE0F2A;
+}
+.btnCreate{
+    background-color: #148014;
+}
+.btnChange{
+    background-color: #6F3BA4;
+}
+.btnBack{
+    background-color: #555555;
+}
+
+
+/* Header styling */
+.logo{
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-style: oblique;
+    margin-right: 0.5rem;
+
+    padding: 1.0rem;
+}
+.regSymbol{
+    font-size: 1.2rem;
+}
+.siteMessage{
+    display: flex;
+    align-items: center;
+}
+
+
+
+/* MainApp Left column */
+.profileInputContainer{ /* for the input wrapper */
+    width: 100%;
+}
+.profileInputContainer input{
+    width: 6.5rem; 
+}
+.profileItemWidth {
+    width: 17rem;
+}
+/* Profile stylings */
+.userDetail{
+    margin: 0.4rem;
+}
+
+
+
+/* MainApp Right column */
+.todoItemWidth{
+    width: 100%;
+}
+
+/* Todo input area definition */
+.todoInputContainer{ 
+    flex-basis: auto;
+
+    background-color: blueviolet;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+}
+
+.todoInputFormSection{
+
+    grid-column: 1/3;
+    grid-row: 1/5;
+
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    grid-gap: 0.5rem;
+    
+    background-color: pink
+
+}
+.todoInputToRight {
+    grid-column: 2/3;
+}
+.todoInputToLeft{
+    grid-column: 1/2
+}
+.todoInputTextLine{
+    width: 60%;
+}
+.todoInputNumberLine{
+    width: 3rem;
+}
+
+
+.todoInputMsgSection{
+    flex-basis: 60%;
+
+}
+.todoInputBtnSection{
+
+}
+
+
+/* Todo input style */
+
+
+
+
+
+@keyframes infoBubbleAction{
+    from{   opacity: 0.0;  }
+    20%{    opacity: 1.0;  }
+    80%{    opacity: 1.0;  }
+    to{     opacity: 0.0;  }
+}

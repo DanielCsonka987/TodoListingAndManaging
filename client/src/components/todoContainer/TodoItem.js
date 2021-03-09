@@ -2,6 +2,7 @@ import { React, Component } from 'react'
 
 import DetailsNotationArea from './DetailsNotationArea'
 import DetailsDeleteArea from './DetailsDeletArea'
+import TodoDateContent from './TodoDateContent'
 import ShowMessages from '../generals/ShowMessages'
 
 import { todoNotationInputRevise } from '../../utils/inputRevise'
@@ -72,7 +73,7 @@ class TodoItem extends Component{
 
   render(){
     return (
-      <div className='todoItem'>
+      <div className='todoItemWidth cardArea'>
         <p className='todoItemDetail'>
           <span>Task: {this.props.todoDatas.task}</span>
         </p>
@@ -81,10 +82,10 @@ class TodoItem extends Component{
           funcExecNotify={this.handleModifyNote} funcModeSwitch={this.handleModeSwitch}
           funcChangeNotation={this.handleInputChange}
         />
-        <p className='todoItemDetail'>
-          <span className='todoItemLeft'>Start: {this.props.todoDatas.start}</span>
-          <span className='todoItemRight'>Last update: {this.props.todoDatas.update}</span>
-        </p>
+        <div className='todoItemDetail'>
+          <TodoDateContent dateContent={this.props.todoDatas.start}>Start:</TodoDateContent>
+          <TodoDateContent dateContent={this.props.todoDatas.update}>Update:</TodoDateContent>
+        </div>
         <div className='todoItemDetail'>
           <span className='todoItemLeft'>Priority: {this.props.todoDatas.priority}</span>
           <span className='todoItemRight'>Status: {this.props.todoDatas.status}</span>
