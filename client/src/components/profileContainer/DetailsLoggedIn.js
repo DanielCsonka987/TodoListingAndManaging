@@ -7,8 +7,18 @@ const DetailsLoggedIn = (props)=>{
 
   let areaContent1, areaContent2, areaContentForButton = '';
 
+  const titleAtModifyState = stateOfComponent === 'del'?
+    'For deletion give the password!' : 'For password change fill the form!'
+  const titleForFirstPwdTag = stateOfComponent === 'del'?
+    'Password:' : 'Old password:'
   if(stateOfComponent === 'pwd'){
     areaContent2 = <>
+      <p>{ titleAtModifyState }</p>
+        <FromInputUnit 
+        label={titleForFirstPwdTag}
+        type='password' name='old_password' id='old_password'
+        value={props.oldPwd} funcChange={props.funcInputChange}
+      />
       <FromInputUnit 
         label='New password:'
         type='password' name='new_password' id='new_password'
@@ -20,18 +30,12 @@ const DetailsLoggedIn = (props)=>{
         value={props.repPwd} funcChange={props.funcInputChange}
       />
     </>
-    areaContentForButton = <ButtonWithIcon
+    areaContentForButton = <ButtonWithIcon sizing='big'
       wrapperBlockClasses='btnBack' iconDef='cancel' 
       funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
   }
 
   if(stateOfComponent === 'del'){
-  
-    const titleAtModifyState = stateOfComponent === 'del'?
-      'For deletion give the password!' : 'For password change fill the form!'
-    const titleForFirstPwdTag = stateOfComponent === 'del'?
-      'Password:' : 'Old password:'
-  
     areaContent1 = <>
       <p>{ titleAtModifyState }</p>
       <FromInputUnit 
@@ -39,29 +43,35 @@ const DetailsLoggedIn = (props)=>{
         type='password' name='old_password' id='old_password'
         value={props.oldPwd} funcChange={props.funcInputChange}
       /></>
-      areaContentForButton = <ButtonWithIcon
+      areaContentForButton = <ButtonWithIcon sizing='big'
         wrapperBlockClasses='btnBack' iconDef='cancel'
         funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
   }
 
   return(
     <div className='wrapperColumnAllCenter'>
-        <p className='userDetail'>Fullname: {props.extraDatas.fullname}</p>
-        <p className='userDetail'>Age: {props.extraDatas.age}</p>
-        <p className='userDetail'>Occupation: {props.extraDatas.occupation}</p>
+        <p className='userDetail'>
+          <span className='dataLabelMarking'>Fullname:</span>
+          <span> {props.extraDatas.fullname}</span></p>
+        <p className='userDetail'>
+          <span className='dataLabelMarking'>Age: </span>
+          <span>{props.extraDatas.age}</span></p>
+        <p className='userDetail'>
+          <span className='dataLabelMarking'>Occupation: </span>
+          <span>{props.extraDatas.occupation}</span></p>
         <div className='profileInputContainer'>
         { areaContent1 } { areaContent2 } 
         </div>
         <div className='buttonGroupWrapper'>
           { areaContentForButton }
 
-          <ButtonWithIcon
-            wrapperBlockClasses='btnChange' iconDef='build' 
+          <ButtonWithIcon sizing='big'
+            wrapperBlockClasses='btnChange' iconDef='edit' 
             funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
-          <ButtonWithIcon
+          <ButtonWithIcon sizing='big'
             wrapperBlockClasses='btnDelete' iconDef='delete' 
             funcClickActivity={props.funcProfDel}>Delete account</ButtonWithIcon>
-          <ButtonWithIcon
+          <ButtonWithIcon sizing='big'
             wrapperBlockClasses='btnLogout' iconDef='lock' 
             funcClickActivity={props.funcLogOut}>Logout</ButtonWithIcon>
 

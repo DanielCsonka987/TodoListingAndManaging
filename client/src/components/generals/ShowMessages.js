@@ -23,8 +23,8 @@ function ShowMessages(props){
         return (
             props.messageContent.map((item, index)=>{
                 return <div className={clssnmForErrorLine} key={index}>
-                  <p className={clssnmForText}>{item.msg}</p>
-                  <a href={`#${item.field}`}>Jump there!</a>
+                  <span className={clssnmForText}>{item.msg}</span>
+                  <a href={`#${item.field}`}><i className='material-icons'>arrow_back</i></a>
                 </div>
             })
         )

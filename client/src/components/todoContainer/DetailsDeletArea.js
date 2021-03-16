@@ -5,17 +5,24 @@ function DetailsDeleteArea(props){
 
     const preDeletePhase =     
         <>
-            <button className='todoBtn btnAlert'
-                onClick={props.funcExecDelete}>Execute</button>
-            <button className='todoBtn btnBack' name='forDeletion' 
-                onClick={props.funcModeSwitch}>Cancel</button>
+            <ButtonWithIcon 
+                iconDef='delete' wrapperBlockClasses='btnDelete'
+                funcClickActivity={props.funcExecDelete}
+            >Confirm the deletion!</ButtonWithIcon>
+            <ButtonWithIcon naming='forDeletion'
+                iconDef='cancel' wrapperBlockClasses='btnBack'
+                funcClickActivity={props.funcModeSwitch}
+            >Cancel the task deletion!</ButtonWithIcon>
         </> 
     const beforeDeletePhase = 
-        <button className='todoBtn btnAlert' name='forDeletion' 
-            onClick={props.funcModeSwitch}>Delete</button>
+        <ButtonWithIcon sizing = 'small' naming='forDeletion'
+            wrapperBlockClasses='btnDelete' iconDef='delete'
+            funcClickActivity={props.funcModeSwitch}
+        >Delete this task!</ButtonWithIcon>
     return (
-      <div className='todoItemDetail'>
-        { props.deleteAreaMode?   preDeletePhase : beforeDeletePhase  }
+      <div className='todoItemCardArea wrapperRowAllCenter'>
+        { props.deleteAreaMode === 'deleteConfirm'?
+           preDeletePhase : beforeDeletePhase  }
       </div>
     )
 }

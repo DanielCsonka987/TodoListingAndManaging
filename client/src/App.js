@@ -186,12 +186,14 @@ class App extends Component {
     }
   }
   async todoStatusChangeProc(url, value){
+    console.log(`${url}, ${value}`)
     try{
       const ajaxBody = smblStateChangeTodoDatas(value);
       const ajaxTodoStatusRes = await doAjaxSending(url, 'PUT', ajaxBody)
       const todoUnderProcRes = this.state.todos.filter(item=>
         item.id === ajaxTodoStatusRes.report.todo);
       if(todoUnderProcRes){
+        console.log(todoUnderProcRes)
         todoUnderProcRes[0].status = ajaxTodoStatusRes.report.outcome;
         this.todoStateChangeProcess(0, todoUnderProcRes[0], 
           ajaxTodoStatusRes.message)

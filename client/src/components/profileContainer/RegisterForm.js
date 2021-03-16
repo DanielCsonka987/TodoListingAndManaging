@@ -143,7 +143,7 @@ class RegisterForm extends Component{
         <div className='cardErrorMessage'>{errormessages}</div>
 
         <div className='buttonGroupWrapper'>
-          <ButtonWithIcon
+          <ButtonWithIcon sizing='big'
             wrapperBlockClasses=' btnCreate'  iconDef='send'
             funcClickActivity={this.handleRegisterClick}
           >Registration</ButtonWithIcon>

@@ -20,7 +20,7 @@ const DetailsLoggedOut = (props)=>{
         />
       </div>
       <div className='buttonGroupWrapper'>
-        <ButtonWithIcon
+        <ButtonWithIcon sizing='big'
           wrapperBlockClasses='btnLogin' iconDef='lock_open'
           funcClickActivity={props.funcLogin}
         >Login</ButtonWithIcon>

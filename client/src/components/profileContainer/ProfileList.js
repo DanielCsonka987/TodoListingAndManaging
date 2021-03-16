@@ -25,7 +25,7 @@ class ProfileList extends Component {
       />
 
     return (
-      <div className='profileList wrapperColumnAllCenter'>
+      <div className='profileList wrapperColumHorCentVertUp'>
 
         { typeof this.props.loggedUser === 'object'? '' : regArea }
 

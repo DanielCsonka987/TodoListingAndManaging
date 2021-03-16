@@ -1,6 +1,7 @@
 import { React, Component } from 'react'
 import TodoItem from './TodoItem.js'
 import TodoInput from './TodoInput'
+import ErrorHandler from '../generals/ErrorHandler'
 
 class TodoList extends Component{
     render(){
@@ -25,13 +26,17 @@ class TodoList extends Component{
                         msg = messageToSingle.ident === item.id? 
                             messageToSingle.msg: '';
                     }
-                    return <TodoItem key={index}
-                        todoDatas={item}
-                        messageFromAbove={ msg }
-                        funcNoteEdit={this.props.funcNoteEdit}
-                        funcStatusEdit={this.props.funcStatusEdit}
-                        funcTodoRemove={this.props.funcTodoRemove}
-                    />
+                    return (
+                        <ErrorHandler key={index} location={`TodoItem ${item.id}`}>
+                            <TodoItem key={index}
+                                todoDatas={item}
+                                messageFromAbove={ msg }
+                                funcNoteEdit={this.props.funcNoteEdit}
+                                funcStatusEdit={this.props.funcStatusEdit}
+                                funcTodoRemove={this.props.funcTodoRemove}
+                            />
+                        </ErrorHandler>
+                    )
                 })
             }else{
                 todos = <div>No content to show!</div>
