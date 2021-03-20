@@ -61,7 +61,7 @@ function ButtonWithIcon(props){
     }
 
     return(
-        <div style={ props.additWrapperStyles }>
+        <div className={props.classes} style={ props.additWrapperStyles }>
             <button name={props.naming}
                 className={'clickable ' + btnConfig[0] + ' ' + props.wrapperBlockClasses}
                 onClick={props.funcClickActivity}

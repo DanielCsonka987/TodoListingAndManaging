@@ -2,15 +2,10 @@ import React from 'react'
 import FormInputUnit from '../generals/FormInputUnit'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 
-const textInputArea={
-    width: '100%'
-}
-
-
 function DetailsNotationArea(props){
 
     const preNotationChangePhase = <>
-        <FormInputUnit additWrapperStyles={ textInputArea }
+        <FormInputUnit
             neededInputWidth='75%'
             id='notation' label='Notation:' name='notation'
           type='textarea' value={props.noteValue}
@@ -30,7 +25,7 @@ function DetailsNotationArea(props){
     </>
 
     const  beforeNotationChangePhase = <>
-        <span style={ textInputArea }>
+        <span className='todoItemForNote' >
             <span className='dataLabelMarking'>Notation: </span>
             <span>{props.notation}</span>
         </span>

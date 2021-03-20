@@ -2,7 +2,6 @@
 /* General styling */
 .appContainer{
     text-align: center;
-
 }
 .mainApp{
   border-radius: 1%;
@@ -16,8 +15,6 @@
 .cardArea{
     box-shadow: -1px 2px 5px  grey;
     border-radius: 10%;
-    padding: 0.2rem;
-    margin: 0.4rem;
 }
 .columnTitleText{
     font-size: 1.2rem;
@@ -42,19 +39,22 @@
 .errorText{
 
 }
-
-
+.dataLabelMarking{
+    font-weight: 600;
+    font-style: italic;
+}
+.aboutContent{
+    text-align: justify;
+}
 
 
 /* Site containers */
 .appContainer{
   background: radial-gradient(circle at 10% 30%, #272755, #3C3CB2);
-
 }
 .mainApp{
   background-color: #FFFAE8;
   box-shadow: -1px 2px 15px #505050;
-
 }
 
 
@@ -77,11 +77,7 @@
     font-size: 1.4rem;
 
 }
-.textNextToIcon{
-    margin-left: 0.3rem;
-    line-height: 1.1rem;
-    letter-spacing: 0.04rem;
-}
+
 .btnLogin{
     background-color: #517EBA;
 }
@@ -107,16 +103,9 @@
     font-size: 1.6rem;
     font-weight: 600;
     font-style: oblique;
-    margin-right: 0.5rem;
-
-    padding: 1.0rem;
 }
 .regSymbol{
     font-size: 1.2rem;
-}
-.siteMessage{
-    display: flex;
-    align-items: center;
 }
 
 
@@ -126,7 +115,5 @@
 }
 
 
-
-/* Todo input style */
 
 

@@ -3,7 +3,7 @@ import { Transition } from 'react-transition-group'
 
 const outerWrapperStyle = {
     position:"relative",
-
+    width: '100%'
 }
 const innerWrapperStyle = {
     padding: "0.2rem 1rem",

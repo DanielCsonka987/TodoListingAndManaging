@@ -1,0 +1,49 @@
+@supports not (display:grid) {
+    @media screen and (min-width: 1000px){
+
+        .mainApp::after{
+            content: '';
+            clear: both;
+            display: block;
+        }
+        .appHeader1{
+            padding-top: 1rem;
+        }
+        .profileList{
+            float: left;
+            width: 35vw;
+        }
+        .todoList, .aboutContent{
+            float: right;
+            width: 50vw;
+        }
+
+    }
+    @media screen and (max-width: 1000px){
+        .profileList{
+            width: 50vw;
+        }
+        .todoList{
+            width: 50vw;
+        }
+    }
+    
+}
+
+@supports not (display: flex){
+
+    /* for lot of things*/
+    .wrapperColumnAllCenter{  
+      margin: 10px auto;
+    }
+    /* for profile columns */
+    .wrapperColumHorCentVertUp{ 
+      margin: 10px auto;
+    }
+
+    .buttonGroupWrapper{
+      width: 70%;
+      margin: 10px auto;
+    
+    }
+}

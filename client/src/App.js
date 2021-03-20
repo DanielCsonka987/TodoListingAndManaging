@@ -1,4 +1,5 @@
-import './styles/layout.css';
+import './styles/modernLayout.css';
+import './styles/olderLayout.css';
 import './styles/fashion.css'
 import React, {Component} from 'react';
 import ProfileList from './components/profileContainer/ProfileList.js';
@@ -250,7 +251,7 @@ class App extends Component {
 
 
   render(){
-    let regArea, sideAreaContent = '';
+    let sideAreaContent = '';
     if(typeof this.state.loggedUser === 'object'){
 
       sideAreaContent = <TodoList

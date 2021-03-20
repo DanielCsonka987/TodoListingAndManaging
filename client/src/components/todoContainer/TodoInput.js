@@ -6,37 +6,6 @@ import ButtonWithIcon from '../generals/ButtonWithIcon'
 import { todoInputRevise } from '../../utils/inputRevise'
 import interpretError from '../../utils/interpretProblems'
 
-const todoInputFirstRowLayout={
-    width: '100%',
-    padding: '1%',
-
-    display: 'grid',
-    gridTemplateColumns: '5fr 5fr 3fr',
-    gridTemplateRows: '1fr 1fr 1fr auto',
-    gridGap: '5px'
-}
-const todoInputTask = {
-    gridColumn: '1/3',
-    gridRow: '1'
-}
-const todoInputNote = {
-    gridColumn: '1/3',
-    gridRow: '2'
-}
-const todoInputBtn = {
-    gridColumn: '3/4',
-    gridRow: '1/3'
-}
-const todoInputPrior = {
-    gridColumn: '2/3',
-    gridRow: '3'
-}
-const todoMessage ={
-    gridColumn: '1/4',
-    gridRow: '4'
-
-}
-
 class TodoInput extends Component{
     constructor(props){
         super(props)
@@ -80,9 +49,9 @@ class TodoInput extends Component{
             this.state.todoLocalSaveMessage || this.props.todoSaveMessage
         } />
         return(
-            <div className='todoItemWidth cardArea wrapperColumnAllCenter' >
-                <div style={ todoInputFirstRowLayout } className='todoItemCardAreas' >
-                        <FormInputUnit classes='' additWrapperStyles={ todoInputTask }
+            <div className='todoCardWidth cardArea wrapperColumnAllCenter' >
+                <div className='todoItemCardAreas todoItemInputContainer' >
+                        <FormInputUnit classes='todoInputForTask'
                             id='task' label='Task:*'
                             type='text' name='task' 
                             value={this.state.task} neededInputWidth={ '70%' }
@@ -90,7 +59,7 @@ class TodoInput extends Component{
                         >
                             It must be at most 150 character. Required!
                         </FormInputUnit>
-                        <FormInputUnit classes='' additWrapperStyles={ todoInputNote }
+                        <FormInputUnit classes='todoInputForNote'
                             id='notation' label='Notation:'
                             type='text' name='notation' 
                             value={this.state.notation} neededInputWidth={ '70%' }
@@ -98,20 +67,20 @@ class TodoInput extends Component{
                         >
                             If you define this, it must be max 150 character!
                         </FormInputUnit>
-                        <ButtonWithIcon sizing= 'big' additWrapperStyles={ todoInputBtn }
-                                wrapperBlockClasses='btnCreate' iconDef='create'
-                                funcClickActivity={this.handleTodoSave}
-                                >Save</ButtonWithIcon>
-
-                        <FormInputUnit classes='' additWrapperStyles={ todoInputPrior }
+                        <FormInputUnit classes='todoInputForPrior'
                             id='priority' label='Priority:*'
                             type='number' name='priority' numberMinMax={[ 1, 10 ]}
                             value={this.state.prioirty}
                             funcChange={this.handleInputChange}
-                        >
+                            >
+                            
                             It must be between 1-10 value. Required!
                         </FormInputUnit>
-                    <div style={todoMessage}>   { errorMessage }  </div>
+                        <ButtonWithIcon sizing= 'big' classes='todoInputBtn'
+                                wrapperBlockClasses='btnCreate' iconDef='create'
+                                funcClickActivity={this.handleTodoSave}
+                                >Save</ButtonWithIcon>
+                    <div className='todoInputForMsg'> { errorMessage }  </div>
                 </div>
 
             </div>

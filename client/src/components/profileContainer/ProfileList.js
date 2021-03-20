@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import ProfileItem from './ProfileItem.js';
 import RegisterForm from './RegisterForm.js'
 
@@ -18,37 +18,41 @@ class ProfileList extends Component {
     const loggedInUserId = typeof this.props.loggedUser === 'object' ?
       this.props.loggedUser.id : '';
 
-    const regArea =   loggedInUserId? '' :
-      <RegisterForm
-        regServMsg={this.props.regServMsg}
-        funcRegister={this.props.registerProfProc}
-      />
+    const regArea = loggedInUserId? '' : <>
+        <RegisterForm
+          regServMsg={this.props.regServMsg}
+          funcRegister={this.props.registerProfProc}
+        />
+        <p className='columnTitleText'>Accounts in the system:</p>
+      </>
 
     return (
       <div className='profileList wrapperColumHorCentVertUp'>
-
-        { typeof this.props.loggedUser === 'object'? '' : regArea }
-
-        <div className=''><p className='columnTitleText'>Accounts in the system:</p>
-        {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}</div>
+        { regArea }
+        {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
         {this.props.allProfilesContent.map((item, index) => {
-          const isThisUserLoggedIn = loggedInUserId===item.id;
-          return <ProfileItem key={index}
-            userid={item.id}
-            username={item.username}
-            loginProfile={item.loginProfile}
-            
-            userExtraDatas={ isThisUserLoggedIn ? 
-              this.props.loggedUser : '' }
+            const isThisUserLoggedIn = loggedInUserId===item.id;
+            const showThisProfile = isThisUserLoggedIn || !loggedInUserId;
 
-            cardOnFocus={this.props.actCardFocus===item.id}
-            cardNeedToInactivate={ (!isThisUserLoggedIn && loggedInUserId) }
+            if(showThisProfile){
+              return <ProfileItem key={index}
+                userid={item.id}
+                username={item.username}
+                loginProfile={item.loginProfile}
+                
+                userExtraDatas={ isThisUserLoggedIn ? 
+                  this.props.loggedUser : '' }
 
-            funcCardFocus={this.props.funcCartInFocus}
-            funcLoginProc={this.handleUserLogin}
-            funcLogoutProc={this.handleUserLogout}
-            funcCardRemoval={this.props.funcCardRemoval}
-          />
+                cardOnFocus={this.props.actCardFocus===item.id}
+
+                funcCardFocus={this.props.funcCartInFocus}
+                funcLoginProc={this.handleUserLogin}
+                funcLogoutProc={this.handleUserLogout}
+                funcCardRemoval={this.props.funcCardRemoval}
+              />
+            }else{
+              return (<Fragment key={index}></Fragment>)
+            }
           })
         }
     </div>

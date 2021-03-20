@@ -68,7 +68,7 @@ class TodoItem extends Component{
 
   render(){
     return (
-      <div className='todoItemWidth cardArea'>
+      <div className='todoCardWidth cardArea'>
 
         <div className='todoItemCardAreas'>
           <span className={'todoItemCardAras dataLabelMarking'}>

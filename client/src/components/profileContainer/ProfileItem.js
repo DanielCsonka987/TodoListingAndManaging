@@ -156,20 +156,17 @@ class ProfileItem extends Component {
       <ShowMessages messageContent={this.state.profileMessage} />
     </>
 
-    const cardClickableState = this.props.cardNeedToInactivate? '' : 'clickable';
-    const cardTabableState=this.props.cardNeedToInactivate? -1: 0;
     const cardFocusState = this.state.cardOnFocus? 'cardUserActive' : 'cardUserInactive'
 
-    const cardContent=this.props.cardNeedToInactivate? 
-      '' :  this.props.cardOnFocus? 
+    const cardContent= this.props.cardOnFocus? 
         isThisCardLoggedIn? loggedInContent : loggedOutContent  : ''
     return (
       <CardTileTextAndContent
         wrapperBlockClasses={'' + cardFocusState} 
-        wrapperInlineClasses={cardClickableState}
+        wrapperInlineClasses={'clickable'}
         funcKeyPressActivity={this.handleCardFocus}
         funcClickActivity={this.handleCardFocus}
-        tabIndexing={cardTabableState} iconDef='account_circle'
+        tabIndexing='0' iconDef='account_circle'
         tileText={this.state.username}
       >
       { cardContent } </CardTileTextAndContent>
