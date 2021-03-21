@@ -1,0 +1,55 @@
+
+GENERALLY
+
+Server data vaidation (datas) -> to present msg and localize it 
+        
+        (data consumation)
+
+        status: failed,
+        contentType: 'profile' / 'todo' / 'system'
+        report: { errorMsg, errorField }
+         
+        at = login, pwdChange, register / newTodo, statusChange / cookieValidate
+
+
+FREE PROCESSES
+
+Before login data 
+    -> all profiles to published
+
+        status: success,
+        contentType: 'profile'
+        report: { Array: id, username  }
+
+Login process
+    -> server profile existence validation (username + pwd) -> whole profile by username
+        ( id, username, passwordHash, age, occupation, todos ) forward process, 
+        all needed to possible presentation
+    -> server password validation
+    -> server cookie setting ( id )
+    -> server datas to fill  
+
+        status: success,
+        contentType: 'login'
+        report: { id, age, occupation, todos },
+
+        status: failed,
+        contentType: 'login',
+        report: { type, errorMsg, errorCause },
+
+Registration
+    -> server username collision measure
+
+        status failed,
+        contentType: 'register'
+
+
+RESTRICTED PROCESSES
+
+At all restricted processes
+    -> cookie validation (id existence in it and same with URLparam)
+    -> cookie validation (id possibly valid)
+    -> cookie validation (id existence in DB) => pwdHash stored for possible need
+
+Profile removal
+    -> pwd validation

@@ -1,4 +1,4 @@
-const ProfileSchema = require('./profileItem.js');
+const ProfileSchema = require('./ProfileItem.js');
 
 const reportProcessResult = require('./createModelAnswer.js').forInformativeObj;
 const collectionProfileResult = require('./createModelAnswer.js').forProfileCollect;

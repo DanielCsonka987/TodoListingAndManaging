@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const TodoSchema = require('./todoItem.js');
+const TodoSchema = require('./TodoSchema.js');
 
 const reportProcessResult = require('./createModelAnswer.js').forInformativeObj;
 const collectionTodoResult = require('./createModelAnswer.js').forTodoCollect;

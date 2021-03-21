@@ -1,5 +1,3 @@
-const ProfileSchema = require('../../model/profileItem.js');
-
 module.exports.profiles = [
   {
     first_name: 'John',

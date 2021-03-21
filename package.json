@@ -9,9 +9,13 @@
     "dev": "nodemon server.js",
     "seedDB": "node ./model/dbSeeder.js",
 
-    "test_modelProf": "mocha ./test/model/profileItem.test.js",
+    "test_modelProf1": "mocha ./test/model/profileItem.test.js",
+    "test_modelProf2": "mocha ./test/model/profileItemMore.test.js",
+
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
+
     "test_todos": "mocha ./test/model/todoProcesses.test.js",
+
     "test_profiles": "mocha ./test/model/profileProcesses.test.js",
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
     "test_pwd": "mocha ./test/utils/pwdManager.test.js",
