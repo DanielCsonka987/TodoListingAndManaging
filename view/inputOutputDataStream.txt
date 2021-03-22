@@ -1,47 +1,71 @@
 
-GENERALLY
+GENERALLY *
 
-Server data vaidation (datas) -> to present msg and localize it 
-        
-        (data consumation)
-
+Server data vaidation (datas) -> to present msg and localize it
         status: failed,
-        contentType: 'profile' / 'todo' / 'system'
         report: { errorMsg, errorField }
-         
+        
         at = login, pwdChange, register / newTodo, statusChange / cookieValidate
+
+All server request -> cookie renewing if exists and valid
+
+
 
 
 FREE PROCESSES
 
 Before login data 
     -> all profiles to published
-
         status: success,
-        contentType: 'profile'
-        report: { Array: id, username  }
+        report: Array of { id, username  }
+
+        status: failed,
+        report: errorMsg
 
 Login process
+    -> (data revision) *
     -> server profile existence validation (username + pwd) -> whole profile by username
         ( id, username, passwordHash, age, occupation, todos ) forward process, 
         all needed to possible presentation
-    -> server password validation
-    -> server cookie setting ( id )
-    -> server datas to fill  
+    -> pwd validation
+    -> session cookie setting ( id )
+        status: failed,
+        report: errorMsg
 
+    -> load profile extended datas 
         status: success,
-        contentType: 'login'
-        report: { id, age, occupation, todos },
+        report: { id, username, age, occupation, todos } (extended profile content) **
 
         status: failed,
-        contentType: 'login',
-        report: { type, errorMsg, errorCause },
+        report: errorMsg
 
 Registration
+    -> (data revision) *
     -> server username collision measure
+    -> pwd encoding
+    -> profile creation to DB
+        status: failed,
+        report: errorMsg
+        
+    -> session cookie setting reg ( id )
+        status: success,
+        report: { id, username, age, occupation, todos } (extended profile content) **
 
         status failed,
-        contentType: 'register'
+        report: errorMsg
+
+Logout process
+    -> cookie removal
+        status: success,
+        report: done
+
+        status failed,
+        report: errorMsg
+
+Cookie server validation (at page refresh)
+
+
+
 
 
 RESTRICTED PROCESSES
@@ -51,5 +75,45 @@ At all restricted processes
     -> cookie validation (id possibly valid)
     -> cookie validation (id existence in DB) => pwdHash stored for possible need
 
+
+Profile pwd change
+    -> (data revision) *
+    -> oldHashed + new verification
+    -> encoding
+    -> profile DB update
+        status: success,
+        report: done
+
+        status failed,
+        report: errorMsg
+
 Profile removal
     -> pwd validation
+
+
+Todo save
+    -> (data revision) *
+    -> todo saveing DB
+        status: success,
+        report: { task, note, startdate, updateDate, priority } (whole todo)
+
+        status failed,
+        report: errorMsg
+
+Todo status change or Todo notation change
+    -> (data revision) *
+    -> todo update DB
+        status: success,
+        report: updateDate
+
+        status failed,
+        report: errorMsg
+
+Todo deletion
+    -> todo removal DB
+
+        status: success,
+        report: 'done'
+
+        status failed,
+        report: errorMsg
