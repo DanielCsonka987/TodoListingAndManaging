@@ -11,14 +11,11 @@
 
     "test_modelProf1": "mocha ./test/model/profileItem.test.js",
     "test_modelProf2": "mocha ./test/model/profileItemMore.test.js",
-
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
-
-    "test_todos": "mocha ./test/model/todoProcesses.test.js",
-
-    "test_profiles": "mocha ./test/model/profileProcesses.test.js",
+    
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
     "test_pwd": "mocha ./test/utils/pwdManager.test.js",
+
     "test_regapi": "mocha ./test/service/registerApi.test.js",
     "test_logapi": "mocha ./test/service/loginApi.test.js",
     "test_profapi": "mocha ./test/service/profileApi.test.js",

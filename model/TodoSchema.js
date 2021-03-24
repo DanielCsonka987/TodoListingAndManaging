@@ -8,16 +8,17 @@ const TodoItemSchema = Schema({
   notation: {type: String, maxlength: 150},
   startingDate: {type: Date, default: Date.now()},
   lastModfingDate: {type: Date, default: Date.now()},
-  status: {type: String, enum: ['Finished', 'Proceeding'], default: 'Proceeding' },
-  owner: {type: Schema.Types.ObjectId, require: true, ref: 'profiles'}
+  status: {type: String, enum: ['Finished', 'Proceeding'], default: 'Proceeding' }
 });
 
-TodoItemSchema.method.changeTodoStatus = function(id, todoid, state){
 
+TodoItemSchema.methods.changeTodoStatus = function(newStatus, newDate){
+  this.status = newStatus
+  this.lastModfingDate = newDate;
 }
-
-TodoItemSchema.static.changeTodoNote = function(id, todoid, note){
-
+TodoItemSchema.methods.changeTodoNote = function(newNote, newDate){
+  this.notation = newNote
+  this.lastModfingDate = newDate;
 }
 
 module.exports = TodoItemSchema;

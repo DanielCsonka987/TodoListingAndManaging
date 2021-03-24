@@ -46,13 +46,11 @@ describe('Profile processes complex tests',()=>{
         it('Profle fetching attempt - no any in system', (done)=>{
             ProfileModel.collectAllProfiles(res=>{
                 expect(res).to.not.be.undefined;
-                expect(res).to.be.a('string')
-                const finalRes = JSON.parse(res);
-                expect(finalRes).to.be.a('object')
-                expect(finalRes.status).to.be.a('string')
-                expect(finalRes.status).to.equal('success')
-                expect(finalRes.report).to.be.a('string')
-                expect(finalRes.report).to.equal('No content to show!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('success')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('No content to show!')
                 done();
             })
         })
@@ -70,14 +68,12 @@ describe('Profile processes complex tests',()=>{
                 expect(docs).to.be.a('array')
                 const amount = docs.length;
                 ProfileModel.collectAllProfiles((res)=>{
-                    expect(res).to.be.a('string')
-                    const finalRes = JSON.parse(res)
-                    expect(finalRes).to.be.a('object')
-                    expect(finalRes.status).to.be.a('string')
-                    expect(finalRes.status).to.equal('success')
-                    expect(finalRes.report).to.be.a('array')
-                    expect(finalRes.report).to.not.be.empty
-                    expect(finalRes.report.length).to.equal(amount)
+                    expect(res).to.be.a('object')
+                    expect(res.status).to.be.a('string')
+                    expect(res.status).to.equal('success')
+                    expect(res.report).to.be.a('array')
+                    expect(res.report).to.not.be.empty
+                    expect(res.report.length).to.equal(amount)
                     done();
                 })
             })
@@ -88,18 +84,16 @@ describe('Profile processes complex tests',()=>{
                 expect(err).to.be.a('null')
                 const uId = doc._id.toString();
                 ProfileModel.findThisProfileToLogin(uId, (res)=>{
-                    expect(res).to.be.a('string')
-                    const finalRes = JSON.parse(res);
-                    expect(finalRes).to.be.a('object')
-                    expect(finalRes.status).to.be.a('string')
-                    expect(finalRes.status).to.equal('success')
-                    expect(finalRes.report).to.be.a('object')
-                    expect(finalRes.report.username).to.be.a('string')
-                    expect(finalRes.report.username).to.equal(uName)
-                    expect(finalRes.report.id).to.be.a('string')
-                    expect(finalRes.report.id).to.equal(uId)
-                    expect(finalRes.report.todos).to.be.a('array')
-                    expect(finalRes.report.todos).to.be.empty
+                    expect(res).to.be.a('object')
+                    expect(res.status).to.be.a('string')
+                    expect(res.status).to.equal('success')
+                    expect(res.report).to.be.a('object')
+                    expect(res.report.username).to.be.a('string')
+                    expect(res.report.username).to.equal(uName)
+                    expect(res.report.id).to.be.a('string')
+                    expect(res.report.id).to.equal(uId)
+                    expect(res.report.todos).to.be.a('array')
+                    expect(res.report.todos).to.be.empty
                     done();
                 })
             })
@@ -198,18 +192,16 @@ describe('Profile processes complex tests',()=>{
         it('Createing new profile', (done)=>{
             const newProf = additionalPersons[1];
             ProfileModel.createNewProfile(newProf, (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res);
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('success')
-                expect(fRes.report).to.be.a('object')
-                expect(fRes.report.id).to.not.be.undefined
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('success')
+                expect(res.report).to.be.a('object')
+                expect(res.report.id).to.not.be.undefined
                 ProfileModel.findOne({username: newProf.username }, (err, doc)=>{
                     expect(err).to.be.a('null')
                     expect(doc).to.be.a('object')
-                    expect(fRes.report.id).to.equal(doc._id.toString())
-                    expect(fRes.report.username).to.equal(doc.username)
+                    expect(res.report.id).to.equal(doc._id.toString())
+                    expect(res.report.username).to.equal(doc.username)
                     done();
                 })
 
@@ -225,13 +217,11 @@ describe('Profile processes complex tests',()=>{
                 expect(doc._id).to.not.be.undefined;
                 const oldPwdHash = doc.password;
                 ProfileModel.changePwdInProfile(doc._id, newPwd, (res)=>{
-                    expect(res).to.be.a('string')
-                    const fRes = JSON.parse(res);
-                    expect(fRes).to.be.a('object')
-                    expect(fRes.status).to.be.a('string')
-                    expect(fRes.status).to.equal('success')
-                    expect(fRes.report).to.be.a('string')
-                    expect(fRes.report).to.equal('Password successfully changed!')
+                    expect(res).to.be.a('object')
+                    expect(res.status).to.be.a('string')
+                    expect(res.status).to.equal('success')
+                    expect(res.report).to.be.a('string')
+                    expect(res.report).to.equal('Password successfully changed!')
                     ProfileModel.findOne({ username: updProf}, (error, doc2)=>{
                         expect(error).to.be.a('null')
                         expect(doc2).to.be.a('object')
@@ -250,13 +240,11 @@ describe('Profile processes complex tests',()=>{
                 expect(doc).to.be.a('object')
                 expect(doc._id).to.not.be.undefined;
                 ProfileModel.removeThisProfile(doc._id, (res)=>{
-                    expect(res).to.be.a('string')
-                    const fRes = JSON.parse(res)
-                    expect(fRes).to.be.a('object')
-                    expect(fRes.status).to.be.a('string')
-                    expect(fRes.status).to.equal('success')
-                    expect(fRes.report).to.be.a('string')
-                    expect(fRes.report).to.equal('User successfully deleted!')
+                    expect(res).to.be.a('object')
+                    expect(res.status).to.be.a('string')
+                    expect(res.status).to.equal('success')
+                    expect(res.report).to.be.a('string')
+                    expect(res.report).to.equal('User successfully deleted!')
                     ProfileModel.findOne({ username: updProf}, (err, doc2)=>{
                         expect(err).to.be.a('null')
                         expect(doc2).to.be.a('null')
@@ -271,13 +259,11 @@ describe('Profile processes complex tests',()=>{
 
         it('Faulty profile data request - no proper id', (done)=>{
             ProfileModel.findThisProfileToLogin('232', (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res)
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('failed')
-                expect(fRes.report).to.be.a('string')
-                expect(fRes.report).to.equal('DB error occured!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('failed')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('DB error occured!')
                 done();
             })
         })
@@ -304,49 +290,41 @@ describe('Profile processes complex tests',()=>{
         })
         it('Faulty profile creation - no all required content', (done)=>{
             ProfileModel.createNewProfile({ username: 'newUser', age: 32 }, (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res)
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('failed')
-                expect(fRes.report).to.be.a('string')
-                expect(fRes.report).to.equal('DB error occured!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('failed')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('DB error occured!')
                 done();
             })
         })
         it('Faulty profile password update 1 - empty string', (done)=>{
             ProfileModel.createNewProfile( '' , (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res)
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('failed')
-                expect(fRes.report).to.be.a('string')
-                expect(fRes.report).to.equal('DB error occured!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('failed')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('DB error occured!')
                 done();
             })
         })
         it('Faulty profile password update 2 - short string', (done)=>{
             ProfileModel.createNewProfile( '1' , (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res)
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('failed')
-                expect(fRes.report).to.be.a('string')
-                expect(fRes.report).to.equal('DB error occured!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('failed')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('DB error occured!')
                 done();
             })
         })
         it('Faulty profile deletion - no proper id', (done)=>{
             ProfileModel.createNewProfile( '312', (res)=>{
-                expect(res).to.be.a('string')
-                const fRes = JSON.parse(res)
-                expect(fRes).to.be.a('object')
-                expect(fRes.status).to.be.a('string')
-                expect(fRes.status).to.equal('failed')
-                expect(fRes.report).to.be.a('string')
-                expect(fRes.report).to.equal('DB error occured!')
+                expect(res).to.be.a('object')
+                expect(res.status).to.be.a('string')
+                expect(res.status).to.equal('failed')
+                expect(res.report).to.be.a('string')
+                expect(res.report).to.equal('DB error occured!')
                 done();
             })
         })
