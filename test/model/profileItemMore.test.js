@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { expect } = require('chai')
 
 const ProfileModel = require('../../model/ProfileItem')
-const dbAccess =require('../../config/appConfig').db_access
+const dbAccess =require('../../config/appConfig').db_access_local
 
 const profileTestDatas = require('./profileTestDatas.js').profiles;
 const additionalPersons = require('./profileTestDatas.js').newProfiles;

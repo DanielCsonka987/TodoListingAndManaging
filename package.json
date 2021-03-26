@@ -5,17 +5,15 @@
   "main": "app.js",
   "scripts": {
     "start": "node server.js",
-
     "dev": "nodemon server.js",
     "seedDB": "node ./model/dbSeeder.js",
-
     "test_modelProf1": "mocha ./test/model/profileItem.test.js",
     "test_modelProf2": "mocha ./test/model/profileItemMore.test.js",
     "test_modelTodo": "mocha ./test/model/todoItem.test.js",
+    "test_modelTodo2": "mocha ./test/model/todoItemMore.test.js",
     
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
     "test_pwd": "mocha ./test/utils/pwdManager.test.js",
-
     "test_regapi": "mocha ./test/service/registerApi.test.js",
     "test_logapi": "mocha ./test/service/loginApi.test.js",
     "test_profapi": "mocha ./test/service/profileApi.test.js",
@@ -29,7 +27,7 @@
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "joi": "^17.2.1",
-    "mongoose": "^5.10.6",
+    "mongoose": "^5.12.2",
     "multer": "^1.4.2"
   },
   "devDependencies": {

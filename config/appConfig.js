@@ -1,10 +1,11 @@
-let dbname = 'todositedb';
-let dbUser = 'test_user001';
-let dbPwd = 'mp6jh2p0doKKiohH';
+const dbname = 'todositedb';
+const dbUser = 'test_user001';
+const dbPwd = 'R6KD4GlLKh362g8e';
 
 module.exports = {
-  db_access: 'mongodb+srv://' + dbUser + ':' + dbPwd +
+  db_access_cloud: 'mongodb+srv://' + dbUser + ':' + dbPwd +
    '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
+  db_access_local: 'mongodb://127.0.0.1:27017/'+ dbname ,
 
   validation_config: {
     encryption_saltrounds: 12,
@@ -43,3 +44,4 @@ module.exports = {
 
 //full url durring the testing phase - using easily the MongoAtlas app
 //'mongodb+srv://test_user001:mp6jh2p0doKKiohH@cluster0.rols0.mongodb.net/todositedb?retryWrites=true&w=majority'
+// mongodb+srv://test_user001:R6KD4GlLKh362g8e@cluster0.rols0.mongodb.net/todositedb?retryWrites=true&w=majority

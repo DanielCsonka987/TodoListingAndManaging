@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db_access;
+const dbaccess = require('../../config/appConfig.js').db_access_local;
 const ProfileModel = require('../../model/ProfileItem.js');
 const TodoSchema = require('../../model/TodoSchema')
 
 const profilesTodoTestDatas = require('./todoTestDatas').profilesWithTodos;
-const newTodoItem = require('./todoTestDatas').newProfilesWithoutTodos;
 const bareTodos = require('./todoTestDatas').bareNewTodos
 
 before(()=>{
@@ -29,11 +28,13 @@ before(()=>{
             console.log(error)
             reject();
           }
-          setTimeout(()=>{
+          //setTimeout(()=>{
             resolve();
-          }, 400)
+          //}, 400)
         })
       });
+    }).catch((e)=>{
+      mongoose.connection.close();
     })
 });
 
@@ -54,6 +55,8 @@ describe('Model TodoItem CRUD operations', ()=>{
         expect(doc).to.be.a('object')
         
         const seekedProfId = doc._id
+        profilesTodoTestDatas[0]._id = doc._id;
+
         expect(seekedProfId).to.be.a('object')
         const firstTodoId = doc.forTestShowFirstTodo._id
         expect(firstTodoId).to.be.a('object')
@@ -76,7 +79,10 @@ describe('Model TodoItem CRUD operations', ()=>{
       ProfileModel.findOne({username: seekedUName}, (err, doc)=>{
         expect(err).to.be.a('null')
         expect(doc).to.be.a('object')
+
         const seekedProfId = doc._id
+        profilesTodoTestDatas[1]._id = doc._id
+
         expect(seekedProfId).to.be.a('object')
         const privProfDatas = doc.privateDatas;
         expect(privProfDatas).to.be.a('object')
@@ -96,7 +102,10 @@ describe('Model TodoItem CRUD operations', ()=>{
       ProfileModel.findOne({username: seekedUName}, (err, doc)=>{
         expect(err).to.be.a('null')
         expect(doc).to.be.a('object')
+
         const seekedProfId = doc._id
+        profilesTodoTestDatas[2]._id = doc._id
+
         expect(seekedProfId).to.be.a('object')
         const privProfDatas = doc.privateDatas;
         expect(privProfDatas).to.be.a('object')
@@ -118,13 +127,8 @@ describe('Model TodoItem CRUD operations', ()=>{
 
   describe('Manipulate attempts', ()=>{
     it('Create new todo to a user, that already has some', (done)=>{
-      const seekedUName = profilesTodoTestDatas[2].username
       const newTodo = bareTodos[0];
-      ProfileModel.findOne({ username: seekedUName}, (err, doc)=>{
-        expect(err).to.be.a('null')
-        expect(doc).to.be.a('object')
-
-        ProfileModel.addNewTodo(doc._id, newTodo, (res)=>{
+      ProfileModel.addNewTodo(profilesTodoTestDatas[2]._id, newTodo, (res)=>{
           expect(res).to.be.a('object')
           expect(res).to.have.own.property('status')
           expect(res.status).to.equal('success')
@@ -139,18 +143,13 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.report.priority).to.equal(newTodo.priority)
           expect(res).to.have.own.property('message')
           done()
-        })
       })
+      
     })
 
     it('Create new todo to a user, that has none', (done)=>{
-      const seekedUName = profilesTodoTestDatas[1].username
       const newTodo = bareTodos[1];
-      ProfileModel.findOne({ username: seekedUName}, (err, doc)=>{
-        expect(err).to.be.a('null')
-        expect(doc).to.be.a('object')
-
-        ProfileModel.addNewTodo(doc._id, newTodo, (res)=>{
+      ProfileModel.addNewTodo(profilesTodoTestDatas[1]._id, newTodo, (res)=>{
           expect(res).to.be.a('object')
           expect(res).to.have.own.property('status')
           expect(res.status).to.equal('success')
@@ -165,14 +164,13 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.report.priority).to.equal(newTodo.priority)
           expect(res).to.have.own.property('message')
           done()
-        })
       })
     })
 
     it('Update todo notation', (done)=>{
-      const seekedUName = profilesTodoTestDatas[0].username
       const text = 'Stg that easy to recognize in DB';
-      ProfileModel.findOne({ username: seekedUName}, (err, profDoc)=>{
+      ProfileModel.findOne({ _id: profilesTodoTestDatas[0]._id},
+         (err, profDoc)=>{
         expect(err).to.be.a('null')
         expect(profDoc).to.be.a('object')
 
@@ -203,8 +201,8 @@ describe('Model TodoItem CRUD operations', ()=>{
     })
 
     it('Update todo status', (done)=>{
-      const seekedUName = profilesTodoTestDatas[0].username
-      ProfileModel.findOne({ username: seekedUName}, (err, profDoc)=>{
+      ProfileModel.findOne({ _id: profilesTodoTestDatas[0]._id},
+        (err, profDoc)=>{
         expect(err).to.be.a('null')
         expect(profDoc).to.be.a('object')
 
@@ -229,27 +227,115 @@ describe('Model TodoItem CRUD operations', ()=>{
             })
           }, 200)
         });
-        
       })
     })
 
-    it('Remove an existiong todo', (done)=>{
-      const seekedUName = profilesTodoTestDatas[1].username
-      ProfileModel.findOne({ usenname: seekedUName }, (err, profDoc)=>{
+    it('Remove an existiong todo, from few', (done)=>{
+      const seekedUName = profilesTodoTestDatas[3].username
+      ProfileModel.findOne({ username: seekedUName }, (err, profDoc)=>{
         expect(err).to.be.a('null')
         expect(profDoc).to.be.a('object')
 
-        const targetTodo = profDoc.forTestShowFirstTodo;
-        console.log(targetTodo)
-        ProfileModel.removeThisTodo(profDoc._id, targetTodo, (res)=>{
+        profilesTodoTestDatas[3]._id = profDoc._id
+        const targetTodo = profDoc.forTestShowFirstTodo._id;
 
-          done();
+        ProfileModel.removeThisTodo(profDoc._id, targetTodo, (res)=>{
+          expect(res).to.be.a('object')
+          expect(res).to.have.own.property('status')
+          expect(res.status).to.be.a('string')
+          expect(res.status).to.equal('success')
+
+          setTimeout(()=>{
+            ProfileModel.findOne({ _id: profDoc._id}, (err, profDoc2)=>{
+              expect(err).to.be.a('null')
+              expect(profDoc2).to.be.a('object')
+              
+              const todoNow = profDoc2.findThisRawTodo(targetTodo);
+              expect(todoNow).to.be.a('undefined')
+              done();
+          }, 200)
+          })
+        });
+      })
+    })
+
+    it('Remove an existiong todo, that is single', (done)=>{
+      ProfileModel.findOne({ _id: profilesTodoTestDatas[1]._id }, (err, profDoc)=>{
+        expect(err).to.be.a('null')
+        expect(profDoc).to.be.a('object')
+
+        const targetTodo = profDoc.forTestShowFirstTodo._id;
+        ProfileModel.removeThisTodo(profDoc._id, targetTodo, (res)=>{
+          expect(res).to.be.a('object')
+          expect(res).to.have.own.property('status')
+          expect(res.status).to.be.a('string')
+          expect(res.status).to.equal('success')
+
+          setTimeout(()=>{
+            ProfileModel.findOne({ _id: profDoc._id}, (err, profDoc2)=>{
+              expect(err).to.be.a('null')
+              expect(profDoc2).to.be.a('object')
+
+              const todoNow = profDoc2.findThisRawTodo(targetTodo);
+              expect(todoNow).to.be.a('undefined')
+              done();
+          }, 200)
+          })
         });
       })
     })
 
   });
+
   describe('Negative provesses', ()=>{
-    
+
+    it('Create todo that is not exists, empty content', (done)=>{
+      ProfileModel.addNewTodo(profilesTodoTestDatas[1]._id, {}, (res)=>{
+        expect(res).to.be.a('object')
+        expect(res).to.have.own.property('status')
+        expect(res.status).to.equal('failed')
+        done();
+      })
+    })
+
+    it('Create todo that is partly exists', (done)=>{
+      const newTodo = { task: 'Stg to test' }
+      ProfileModel.addNewTodo(profilesTodoTestDatas[1]._id, newTodo, (res)=>{
+        expect(res).to.be.a('object')
+        expect(res).to.have.own.property('status')
+        expect(res.status).to.equal('failed')
+        done();
+      })
+    })
+
+    it('Update todo notation that is not exists', (done)=>{
+      ProfileModel.modifyTodoNotation(profilesTodoTestDatas[1]._id, '11',
+        'Stg', (res)=>{
+        expect(res).to.be.a('object')
+        expect(res).to.have.own.property('status')
+        expect(res.status).to.equal('failed')
+        done();
+      })
+    })
+
+    it('Update todo status that is not exists', (done)=>{
+      ProfileModel.modifyTodoStatus(profilesTodoTestDatas[1]._id, '11',
+        'Finished', (res)=>{
+        expect(res).to.be.a('object')
+        expect(res).to.have.own.property('status')
+        expect(res.status).to.equal('failed')
+        done();
+      })
+    })
+    it('Remove todo that is not exists', (done)=>{
+      ProfileModel.removeThisTodo(profilesTodoTestDatas[1]._id, '11', (res)=>{
+        expect(res).to.be.a('object')
+        expect(res).to.have.own.property('status')
+        expect(res.status).to.equal('failed')
+        done();
+      })
+    })
+
   })
-});
+
+})
