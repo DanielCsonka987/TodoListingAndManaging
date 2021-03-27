@@ -78,11 +78,11 @@ describe('Profile processes complex tests',()=>{
                 })
             })
         })
-        it('Seek single profyle - at login process', (done)=>{
+        it('Seek single profile - at login process', (done)=>{
             const uName = profileTestDatas[3].username;
             ProfileModel.findOne({username: uName}, (err, doc)=>{
                 expect(err).to.be.a('null')
-                const uId = doc._id.toString();
+                const uId = doc._id;
                 ProfileModel.findThisProfileToLogin(uId, (res)=>{
                     expect(res).to.be.a('object')
                     expect(res.status).to.be.a('string')
@@ -90,8 +90,8 @@ describe('Profile processes complex tests',()=>{
                     expect(res.report).to.be.a('object')
                     expect(res.report.username).to.be.a('string')
                     expect(res.report.username).to.equal(uName)
-                    expect(res.report.id).to.be.a('string')
-                    expect(res.report.id).to.equal(uId)
+                    expect(res.report.id).to.be.a('object')
+                    expect(res.report.id).to.deep.equal(uId)
                     expect(res.report.todos).to.be.a('array')
                     expect(res.report.todos).to.be.empty
                     done();
@@ -200,7 +200,7 @@ describe('Profile processes complex tests',()=>{
                 ProfileModel.findOne({username: newProf.username }, (err, doc)=>{
                     expect(err).to.be.a('null')
                     expect(doc).to.be.a('object')
-                    expect(res.report.id).to.equal(doc._id.toString())
+                    expect(res.report.id).to.deep.equal(doc._id)
                     expect(res.report.username).to.equal(doc.username)
                     done();
                 })

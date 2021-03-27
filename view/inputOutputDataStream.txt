@@ -4,7 +4,8 @@ GENERALLY *
 Server data vaidation (datas) -> to present msg and localize it
         status: failed,
         report: { errorMsg, errorField }
-        
+        msg: ....
+
         at = login, pwdChange, register / newTodo, statusChange / cookieValidate
 
 All server request -> cookie renewing if exists and valid
@@ -20,7 +21,8 @@ Before login data
         report: Array of { id, username  }
 
         status: failed,
-        report: errorMsg
+        report: errorMsg,
+        msg: ....
 
 Login process
     -> (data revision) *
@@ -31,13 +33,16 @@ Login process
     -> session cookie setting ( id )
         status: failed,
         report: errorMsg
+        msg: ....
 
     -> load profile extended datas 
         status: success,
         report: { id, username, age, occupation, todos } (extended profile content) **
+        msg: ....
 
         status: failed,
         report: errorMsg
+        msg: ....
 
 Registration
     -> (data revision) *
@@ -46,21 +51,27 @@ Registration
     -> profile creation to DB
         status: failed,
         report: errorMsg
-        
+        msg: ....
+
     -> session cookie setting reg ( id )
         status: success,
-        report: { id, username, age, occupation, todos } (extended profile content) **
+        report: { id, username, age, occupation, first_name, 
+            last_name, todos } (extended profile content) **
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....
 
 Logout process
     -> cookie removal
         status: success,
         report: done
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....
 
 Cookie server validation (at page refresh)
 
@@ -83,37 +94,52 @@ Profile pwd change
     -> profile DB update
         status: success,
         report: done
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....
 
 Profile removal
     -> pwd validation
+        status: success,
+        report: ''
+        msg: ....
 
+        status failed,
+        report: errorMsg
+        msg: ....
 
 Todo save
     -> (data revision) *
     -> todo saveing DB
         status: success,
-        report: { task, note, startdate, updateDate, priority } (whole todo)
+        report: { task, note, startdate, updateDate, 
+            priority } (whole todo)
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....
 
 Todo status change or Todo notation change
     -> (data revision) *
     -> todo update DB
         status: success,
         report: updateDate
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....
 
 Todo deletion
     -> todo removal DB
 
         status: success,
-        report: 'done'
+        report: ''
+        msg: ....
 
         status failed,
         report: errorMsg
+        msg: ....

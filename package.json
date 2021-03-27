@@ -6,10 +6,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    
     "seedDB": "node ./model/dbSeeder.js",
     "test_modelProf1": "mocha ./test/model/profileItem.test.js",
     "test_modelProf2": "mocha ./test/model/profileItemMore.test.js",
-    "test_modelTodo": "mocha ./test/model/todoItem.test.js",
+    "test_modelTodo1": "mocha ./test/model/todoItem.test.js",
     "test_modelTodo2": "mocha ./test/model/todoItemMore.test.js",
     
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
