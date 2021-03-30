@@ -124,7 +124,7 @@ ProfileItemSchema.statics.changePwdInProfile = function(profid, newPwdHash, call
   return this.updateOne({ _id: profid}, {password: newPwdHash }, (err, res)=>{
     callbFunc( (err || res.nModified !== 1)? 
       view.assembleDBErrorMsg() :
-      view.assembleProperMsgContent( view.profilePwdUpdateMsg )
+      view.assembleProperMsgContent('')
     )
   })   
 }
@@ -132,7 +132,7 @@ ProfileItemSchema.statics.removeThisProfile = function(profid, callbFunc){
   return this.deleteOne({_id: profid}, (err, res)=>{
     callbFunc( (err || res.deletedCount !== 1)?
       view.assembleDBErrorMsg() :
-      view.assembleProperMsgContent( view.profileDeletedMsg )
+      view.assembleProperMsgContent('')
     )
   })
 }

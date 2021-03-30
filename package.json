@@ -15,6 +15,7 @@
     
     "test_validation": "mocha ./test/utils/dataValidation.test.js",
     "test_pwd": "mocha ./test/utils/pwdManager.test.js",
+    
     "test_regapi": "mocha ./test/service/registerApi.test.js",
     "test_logapi": "mocha ./test/service/loginApi.test.js",
     "test_profapi": "mocha ./test/service/profileApi.test.js",

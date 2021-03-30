@@ -40,12 +40,5 @@ module.exports = {
             start: privTodo.startingDate,
             update: privTodo.lastModfingDate
         }
-    },
-
-    // Common Profile messges
-    profilePwdUpdateMsg: 'Password successfully changed!',
-    profileDeletedMsg:  'User successfully deleted!'
-
-    
-
+    }
 }

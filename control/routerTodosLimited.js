@@ -1,9 +1,9 @@
 const router = require('express').Router();
 
 const todoMiddle = require('../middleware/todoMiddlewares.js');
-const profMiddle = require('../middleware/profileMiddlewares.js');
 
-const paths = require('../config/appConfig').routing_paths
+const paths = require('../config/appConfig').routing
+
 
 // READ all todos of user
 router.get('/:id'+paths.todoPostfix, 

@@ -3,7 +3,7 @@ GENERALLY *
 
 Server data vaidation (datas) -> to present msg and localize it
         status: failed,
-        report: { errorMsg, errorField }
+        report: errorField
         msg: ....
 
         at = login, pwdChange, register / newTodo, statusChange / cookieValidate
@@ -83,8 +83,13 @@ RESTRICTED PROCESSES
 
 At all restricted processes
     -> cookie validation (id existence in it and same with URLparam)
-    -> cookie validation (id possibly valid)
+    -> cookie validation (id structure test => session id stored)
     -> cookie validation (id existence in DB) => pwdHash stored for possible need
+        status: failed,
+        report: '',
+        msg: errorMsg
+
+Cookie existence test informint front - page refresh
 
 
 Profile pwd change

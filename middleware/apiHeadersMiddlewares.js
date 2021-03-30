@@ -1,4 +1,4 @@
-const generalHeaderConfig = require('../config/appConfig.js').common_apiHeader;
+const generalHeaderConfig = require('../config/appConfig.js').headers;
 
 module.exports = (req, res, next)=>{
   generalHeaderConfig.forEach((item, i) => {

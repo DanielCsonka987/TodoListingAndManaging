@@ -1,14 +1,13 @@
 const router = require('express').Router();
 
-const apiResponseHeaders = require('../middleware/setAPIRespHeaders.js');
-const cookieMiddle = require('../middleware/cookieManagers.js');
-const loginMiddle = require('../middleware/loginManagers.js');
-const profMiddle = require('../middleware/profileMiddlewares.js');
-const registrateMiddle = require('../middleware/registerManagers.js');
-const modelProfile = require('../model/profileProcesses.js');
+const apiResponseHeaders = require('../middleware/apiHeadersMiddlewares.js');
+const cookieMiddle = require('../middleware/cookieMiddlewares.js');
+const loginMiddle = require('../middleware/loginMiddlewares.js');
+const logoutMiddle = require('../middleware/logoutMiddlewares.js');
+const registrateMiddle = require('../middleware/registerMiddlewares.js');
 
-const doneMessages = require('../config/appMessages.js').front_success_messages;
-const paths = require('../config/appConfig').routing_paths
+const paths = require('../config/appConfig').routing
+
 // COMMON API response common response configuration //
 router.all('/*', apiResponseHeaders)
 

@@ -1,160 +1,114 @@
-const pwdChangeDataValidity = require('../utils/dataValidation/pwdChangeDatasValidity.js');
-const modelProfile = require('../model/profileProcesses.js');
-const modelTodo = require('../model/todoProcesses.js')
-
+const pwdInputDataValidator = require('../utils/validation/pwdInputDatasValidity.js');
 const pwdManager = require('../utils/passwordManagers.js');
-const errorMessages = require('../config/appMessages.js').front_error_messages;
+const model = require('../model/ProfileModel');
+const profView = require('../view/middleView').forProfiles
+const removeSessionCookie = require('./cookieManagers')
+  .removeSessionCookieAtResObj
 
-module.exports.profileUpdateContentVerification = (req, res, next)=>{
-  pwdChangeDataValidity(req.body)
-  .then(result=>{
-    next();
+module.exports.readPublicPrfilesSteps = [
+  readAllProfiles
+]
+module.exports.pwdChangeSteps = [
+  profileUpdateContentVerification, profileOldPwdConfirmation,
+  profileNewPwdEncoding, profilePwdUpdate
+]
+module.exports.removeAccountSteps = [
+  profileDeletePasswordRevise, profileOldPwdConfirmation,
+  profileDeletionAndLogout
+]
+
+const readAllProfiles = (req, res, next)=>{
+  model.collectAllProfiles((result)=>{
+    if(result.status === 'success'){
+      res.status(200);
+      res.json( profView.readPublicProfilesSuccess(result) );
+      next();
+    }else{
+      res.status(500);    //SERVER INTERNAL ERROR
+      res.json( profView.readPublicProfilesFail(result));
+    }
   })
-  .catch(err=>{
-    res.status(400);  //BAD REQUEST
-    res.send(JSON.stringify(err));
-  });
 }
 
-/*
-module.exports.profileAccountExistVerificationAndHashPwdGetting = (req, res, next)=>{
-  modelProfile.findThisProfileById_detailed(req.params.id)
-  .then(result =>{
-    req.oldHashedPwd = result.report.password;
-    next();
-  })
-  .catch(err=>{
-    res.status(500);  //SERVER INTERNAL ERROR
-    res.send(JSON.stringify(err));
-  })
-}
-*/
 
-//it is needed at password update, todo deletions
-module.exports.profileOldPwdConfirmation = (req, res, next)=>{
-  console.log(req.oldHashedPwd)
-  pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)
+const profileOldPwdConfirmation = (req, res, next)=>{
+  //console.log(req.oldHashedPwd)
+  pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)  
   .then(()=>{
     next();
   })
   .catch(err=>{
     if(err === 'incorrect'){
-      res.status(400);  //BAD REQUEST
-      res.send(JSON.stringify({
-        report: 'Old password is wrong!',
-        involvedId: {field: 'old_password', input: req.body.old_password},
-        message: errorMessages.password_update_revise
-      }))
+      res.status(200);
+      res.json( profView.pwdHashRevisionFail )
     } else {
-      res.status(500);  //SERVER INTERNAL ERROR
-      res.send(JSON.stringify({
-        report: 'Password inspection error!',
-        involvedId: 'old_password',
-        message: errorMessages.authentication_unknown
-      }))
+      res.status(500);
+      res.json( profView.pwdHashRevisionError )
     }
   })
 }
 
-module.exports.profileNewPwdEncoding = (req, res, next)=>{
+
+
+//it is needed at password update + account delete, pwdHash comming from cookie middle
+const profileUpdateContentVerification = (req, res, next)=>{
+  pwdInputDataValidator.pwdChangeInputPairRevise(req.body)
+  .then(result=>{
+    next();
+  })
+  .catch(err=>{
+    res.status(200);
+    res.json( profView.pwdRevisionFailed(err) );
+  });
+}
+const profileNewPwdEncoding = (req, res, next)=>{
   pwdManager.encodeThisPassword(req.body.new_password)
   .then(hashResult=>{
     req.newHashedPassword = hashResult;
     next();
   })
   .catch(err=>{
-    res.status(500);  //SERVER INTERNAL ERROR
-    res.send(JSON.stringify({
-      report: 'New password encription error!',
-      involvedId: {field: 'new_password', input: req.body.new_password},
-      message: errorMessages.password_update_newHashing
-    }));
+    res.status(500);
+    res.json( profView.pwdHashFailed );
+  })
+}
+
+const profilePwdUpdate = (req, res)=>{
+  model.changePwdInProfile(req.params.id, req.newHashedPassword, result=>{
+    if(result.status === 'success' ){
+      res.status(200);
+      res.json( profView.pwdUpdateSuccess(result) );
+      
+    }else {
+      res.status(500);
+      res.json( profView.pwdUpdateFailed(err) )
+    }
   })
 }
 
 
 
 
-// TERMINAL PROCESSES //
-module.exports.createNewProfile = (req, res, next)=>{
-  const newProf = {
-    username: req.body.username,
-    password: req.body.hashedPassword,   //created by the middleware
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    age: req.body.age,
-    occupation: req.body.occupation
-  }
-  //console.log(newProf)
-  modelProfile.createProfile(newProf)
-  .then(result=>{
-    req.justCreatedUserMessage = result;
+// REMOVE COOKIE //
+const profileDeletePasswordRevise = (req, res, next)=>{
+  pwdInputDataValidator.pwdContentRevise(req.body)
+  .then(()=>{
     next();
   })
   .catch(err=>{
-    res.status(500);    //INTERNAL SERVER ERROR
-    res.send(JSON.stringify(err));
-  });
+    res.status(200)
+    res.json( profView.pwdRevisionFailed(err))
+  })
 }
-
-
-module.exports.readAllProfiles = (req, res, next)=>{
-  modelProfile.loadInProfiles()
-  .then((result)=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
+const profileDeletionAndLogout = (req, res ) =>{
+  model.removeThisProfile(req.params.id, result=>{
+    if(result === 'success'){
+      removeSessionCookie(res, '');
+      res.status(200)
+      res.json( profView.profDelsuccess(result) )
+    }else{
+      res.status(500);
+      res.json( profView.profDelFailed(result) )
+    }
   })
-  .catch(err=>{
-    res.status(500);    //SERVER INTERNAL ERROR
-    res.send(JSON.stringify(err));
-  });
-}
-module.exports.readThisProfiles = (req, res, next)=>{
-  modelProfile.findThisProfileById(req.params.id)
-  .then(result =>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(404);
-    res.send(JSON.stringify(err))
-  });
-}
-
-module.exports.profilePwdUpdate = (req, res, next)=>{
-  modelProfile.updateProfilePassword(req.params.id, req.newHashedPassword)
-  .then(result=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(404);
-    res.send(JSON.stringify(err))
-  });
-}
-
-module.exports.profileDeletion = (req, res, next) =>{
-  modelTodo.deleteAllTodos(req.params.id)
-  .then(resultTodo =>{
-
-    modelProfile.deleteProfile(req.params.id)
-    .then(resultProfile=>{
-      resultProfile.report.deletedTodo =  resultTodo.report.deletedTodo;
-      req.justRemovedUserMessage = resultProfile;
-      next();
-    })
-    .catch(err=>{
-      res.status(404);
-      res.send(JSON.stringify(err))
-    });
-
-  })
-  .catch(err=>{
-    res.status(500); //SERVER INTERNAL ERROR
-    res.send(JSON.stringify(err));
-  })
-
 }

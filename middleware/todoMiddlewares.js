@@ -1,106 +1,89 @@
 const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js');
 const verifyState = require('../utils/dataValidation/todoStateDataValidity.js');
-const modelTodos = require('../model/todoProcesses.js')
+const model = require('../model/ProfileModel.js')
+const todoView = require('../view/middleView').forTodos
 
-module.exports.newContentVerification = (req, res, next)=>{
+module.exports.todoCreationSteps = [
+  newContentVerification, createNewTodo
+]
+module.exports.todoStatusUpdateSteps = [
+  changeTodoStateVerification, updateTodoStatus
+]
+
+const newContentVerification = (req, res, next)=>{
   verifyTodo(req.body)
   .then(result=>{
     next();
   })
   .catch(err=>{
-    res.status(400); //BAD REQUEST
-    res.send(JSON.stringify(err));
+    res.status(200);
+    res.json(todoView.todoVerifyFailed(err));
   });
 }
+const createNewTodo = (req, res)=>{
+  const todoCotent = {
+    task: req.body.task,
+    priority: req.body.priority,
+    notation: req.body.notation
+  }
+  model.addNewTodo(req.params.id, todoCotent, result=>{
+    if(result.status === 'success'){
+      res.status(201);
+      res.json( todoView.todoCreationSuccess(result) )
+    }else{
+      res.status(500);
+      res.json( todoView.todoCreationFailed(result) )
+    }
+  })
+}
 
-module.exports.changeTodoStateVerification = (req, res, next)=>{
+
+
+
+const changeTodoStateVerification = (req, res, next)=>{
   verifyState(req.body.status)
   .then(result=>{
     next();
   })
   .catch(err=>{
-    res.status(400); //BAD REQUEST
-    res.send(JSON.stringify(err));
+    res.status(200); //BAD REQUEST
+    res.json( todoView.todoStatusChangeVerifyFailed );
   });
+}
+const updateTodoStatus = (req, res)=>{
+  model.modifyTodoStatus(req.params.index, req.body.status, result=>{
+    if(result.status === 'success'){
+      res.status(200);
+      res.json( todoView.todoUpdateSuccess(result) );
+    }else{
+      res.status(500);
+      res.json( todoView.todoUpdateFailed(result) );
+    }
+  })
 }
 
 
-// TERMINAL PROCESSES //
-
-module.exports.readAllTodos = (req, res, next)=>{
-  modelTodos.loadInProfileTodos(req.params.id)
-  .then(result=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(500);
-    res.send(JSON.stringify(err));
-  });
-}
-
-module.exports.createNewTodo = (req, res, next)=>{
-  modelTodos.createTodo(req.params.id, req.body)
-  .then(result=>{
-    res.status(201);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(500);
-    res.send(JSON.stringify(err));
-  });
-}
-
-module.exports.updateTodoStatus = (req, res, next)=>{
-  modelTodos.updateStateTodo(req.params.index, req.body.status)
-  .then(result=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(500);
-    res.send(JSON.stringify(err));
-  });
-}
-
-module.exports.updateTodoNotation = (req, res, next) =>{
-  modelTodos.updateNotationTodo(req.params.index, req.body.notation)
-  .then(result=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(500);
-    res.send(JSON.stringify(err));
-  });
-}
-
-module.exports.allTodoRemoval = (req, res, next)=>{
-  modelTodos.deleteAllTodos(req.params.id)
-  .then(result =>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
-  })
-  .catch(err=>{
-    res.status(500); //SERVER INTERNAL ERROR
-    res.send(JSON.stringify(err));
+module.exports.updateTodoNotation = (req, res) =>{
+  model.modifyTodoNotation(req.params.index, req.body.notation, result=>{
+    if(result.status === 'success'){
+      res.status(200);
+      res.json( todoView.todoUpdateSuccess(result) );
+    }else{
+      res.status(500);
+      res.json( todoView.todoUpdateFailed(result) );
+    }
   })
 }
 
-module.exports.singleTodoRemoval = (req, res, next)=>{
-  modelTodos.deleteThisTodo(req.params.id, req.params.index)
-  .then(result=>{
-    res.status(200);
-    res.write(JSON.stringify(result));
-    next();
+
+module.exports.singleTodoRemoval = (req, res)=>{
+  model.removeThisTodo(req.params.id, req.params.index, result=>{
+    if(result.success === 'success'){
+      res.status(200);
+      res.json( todoView.todoRemoveSuccess(result) );
+    }else{
+      res.status(500);
+      res.json( todoView.todoRemoveFailed(result) );
+    }
   })
-  .catch(err=>{
-    res.status(500);
-    res.send(JSON.stringify(err));
-  });
 }

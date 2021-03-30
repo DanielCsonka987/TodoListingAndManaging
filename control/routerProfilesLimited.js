@@ -1,7 +1,9 @@
 const router = require('express').Router();
 
-const cookieMiddle = require('../middleware/cookieManagers.js');
+const cookieMiddle = require('../middleware/cookieMiddlewares.js');
 const profMiddle = require('../middleware/profileMiddlewares.js');
+
+const paths = require('../config/appConfig').routing
 
 // SESSION COOKIE AUTHENTICATION //
 router.all('/:id', 
