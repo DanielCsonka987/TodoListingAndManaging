@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db_access_local;
-const ProfileModel = require('../../model/ProfileItem.js');
+const dbaccess = require('../../config/appConfig.js').db.db_access_local;
+const ProfileModel = require('../../model/ProfileModel.js');
 
 const profileTestDatas = require('./profileTestDatas.js').profiles;
 const additionalPersons = require('./profileTestDatas.js').newProfiles;

@@ -17,31 +17,16 @@ const ProfileItemSchema = new Schema({
 // VIRTUAL METHODS
 
 // generally before login, public content
-ProfileItemSchema.virtual('publicDatas').get(function(){
-  return { 
-    id: this._id, 
-    username: this.username 
-  }
+ProfileItemSchema.virtual('basicProfileDatas').get(function(){
+  return view.convertProfileBasisToPublic(this)  
 })
 // after login, the needed contents
-ProfileItemSchema.virtual('privateDatas').get(function(){
-  return {
-    id: this._id, 
-    username: this.username, 
-    first_name: this.first_name,
-    last_name: this.last_name,
-    age: this.age,
-    occupation: this.occupation,
-    todos: this.convertAllTodosToSendable()
-  }
+ProfileItemSchema.virtual('detailedProfileDatas').get(function(){
+  return view.convertProfileDetailsToPublic(this)
 })
 // at profile validation
 ProfileItemSchema.virtual('systemDatas').get(function(){
-  return {
-    id: this._id,
-    username: this.username,
-    pwdHash: this.password
-  }
+  return view.convertProfileMinimumToSystem(this)
 })
 // for testing purpose
 ProfileItemSchema.virtual('forTestShowFirstTodo').get(function(){
@@ -54,7 +39,8 @@ ProfileItemSchema.virtual('forTestShowFirstTodo').get(function(){
 
 // todo methods
 ProfileItemSchema.methods.convertAllTodosToSendable = function(){
-  return this.todos.map(item => view.convertTodoPrivateToPublic(item))
+  const profileId = this._id;
+  return this.todos.map(item => view.convertTodoDetailsToPublic(profileId, item))
 }
 ProfileItemSchema.methods.findThisBrandNewTodo = function(todoItem){
   return this.todos.filter(todo => todo.task === todoItem.task )[0]
@@ -62,7 +48,7 @@ ProfileItemSchema.methods.findThisBrandNewTodo = function(todoItem){
 ProfileItemSchema.methods.findThisRawTodo = function(todoid){
   return this.todos.filter(todo=> todo._id.equals(todoid) )[0]
 }
-ProfileItemSchema.methods.removeThisTodo = function(todoid){
+ProfileItemSchema.methods.deleteThisTodoFromArray = function(todoid){
   this.todos = this.todos.filter(todo => !todo._id.equals(todoid))
 }
 
@@ -75,7 +61,7 @@ ProfileItemSchema.statics.collectAllProfiles = function(callbFunc){
     if(err) { 
       callbFunc(view.assembleDBErrorMsg());
     }else{
-      const res = docs.map(item=> item.publicDatas);
+      const res = docs.map(item=> item.basicProfileDatas);
       callbFunc(
         res.length === 0? view.asembleNoContentMsg() :
         view.assembleProperMsgContent(res)
@@ -88,7 +74,7 @@ ProfileItemSchema.statics.findThisProfileToLogin = function(profid, callbFunc){
   return this.findOne({ _id: profid }, (err, doc)=>{
     callbFunc( 
       err? view.assembleDBErrorMsg() :
-        view.assembleProperMsgContent(doc.privateDatas)
+        view.assembleProperMsgContent(doc.detailedProfileDatas)
     )
   })
 }
@@ -116,7 +102,7 @@ ProfileItemSchema.statics.createNewProfile = function(profDatas, callbFunc){
   return this.create(profDatas, (err, doc)=>{
     callbFunc( (err || !doc)?
       view.assembleDBErrorMsg() :
-      view.assembleProperMsgContent(doc.privateDatas)
+      view.assembleProperMsgContent(doc.detailedProfileDatas)
     )
   })
 }
@@ -149,7 +135,7 @@ ProfileItemSchema.statics.addNewTodo = function(profid, todoCont, callbFunc){
         doc.todos.push(todoCont)
         doc.save();
         const newTodoItself = doc.findThisBrandNewTodo(todoCont)
-        const publicTodo = view.convertTodoPrivateToPublic(newTodoItself)
+        const publicTodo = view.convertTodoDetailsToPublic(doc._id, newTodoItself)
         callbFunc(view.assembleProperMsgContent(publicTodo))
       }catch(e){
         callbFunc(view.assembleDBErrorMsg())
@@ -195,7 +181,7 @@ ProfileItemSchema.statics.removeThisTodo = function(profid, todoid, callbFunc){
       callbFunc(view.assembleDBErrorMsg())
     }else{
       try{
-        doc.removeThisTodo(todoid)
+        doc.deleteThisTodoFromArray(todoid)
         doc.save();
         callbFunc( view.assembleProperMsgContent('') )
       }catch(e){

@@ -1,18 +1,18 @@
 
 // COOKIE MESSAGES //
 module.exports.forCookies = {
-    generalProblemMsg = {
+    generalProblemMsg: {
         status: 'failed',
         report: '',
         message: 'Please, log in to use such service!'
     },
 
-    paramMissmatchMsg = {
+    paramMissmatchMsg: {
         status: 'failed',
         report: '',
         message: 'Management is permitted only at your account!'
     },
-    loggedInStateMsg = (state)=>{
+    loggedInStateMsg(state){
         return {
             status: state? 'success' : 'failed',
             report: '',
@@ -20,7 +20,7 @@ module.exports.forCookies = {
                 : 'No login state!',
         }
     },
-    systemError = {
+    systemError: {
         status: 'failed',
         report: '',
         message: 'System error occured!'
@@ -55,10 +55,12 @@ module.exports.forLogin = {
         message: 'System error occured!'
     },
     loginSuccess: (dbmsg) =>{
-        return  dbmsg.message = 'You have logged in!'
+        dbmsg.message = 'You have logged in!';
+        return  dbmsg
     },
     loginFail: (dbmsg) =>{
-        return dbmsg.message = 'System error occured!'
+        dbmsg.message = 'System error occured!';
+        return dbmsg
     }
 }
 
@@ -112,20 +114,24 @@ module.exports.forRegister ={
         }
     },
     regProfilePersistFail: (dbmsg)=>{
-        return dbmsg.message = 'System error occured!'
+        dbmsg.message = 'System error occured!';
+        return dbmsg
     },
     registerSuccess: (dbmsg)=>{
-        return dbmsg.message = 'Registration done!'
+        dbmsg.message = 'Registration done!';
+        return dbmsg
     }
 }
 
 module.exports.forProfiles = {
     // loading profile list
     readPublicProfilesFail: (dbmsg) =>{
-        return dbmsg.message = 'Reading error!'
+        dbmsg.message = 'Reading error!';
+        return dbmsg
     },
     readPublicProfilesSuccess(dbmsg){
-        return dbmsg.message = 'Reading done!'
+        dbmsg.message = 'Reading done!';
+        return dbmsg
     },
 
     // general update/delete
@@ -161,18 +167,22 @@ module.exports.forProfiles = {
         msg: 'System error occured!'
     },
     pwdUpdateFailed(dbmsg){
-        return dbmsg.message = 'Updating failed!'
+        dbmsg.message = 'Updating failed!';
+        return dbmsg
     },
     pwdUpdateSuccess(dbmsg){
-        return dbmsg.message = 'Updating done!'
+        dbmsg.message = 'Updating done!';
+        return dbmsg
     },
 
     // profile delete
     profDelsuccess(dbmsg){
-        return dbmsg.message = 'Deletion done!'
+        dbmsg.message = 'Deletion done!';
+        return dbmsg
     },
     profDelFailed(dbmsg){
-        return dbmsg.messge = 'Deletion failed!'
+        dbmsg.messge = 'Deletion failed!';
+        return dbmsg
     }
 }
 
@@ -187,10 +197,12 @@ module.exports.forTodos = {
         }
     },
     todoCreationSuccess(dbmsg){
-        return dbmsg.message = 'Creation done!'
+        dbmsg.message = 'Creation done!';
+        return dbmsg;
     },
     todoCreationFailed(dbmsg){
-        return dbmsg.message = 'Creation failed!'
+        dbmsg.message = 'Creation failed!';
+        return dbmsg
     },
 
 
@@ -201,18 +213,28 @@ module.exports.forTodos = {
         message: 'System error occured!'
     },
     todoUpdateSuccess(dbmsg){
-        return dbmsg.message = 'Update done!'
+        dbmsg.message = 'Update done!';
+        return dbmsg
     },
     todoUpdateFailed(dbmsg){
-        return dbmsg.message = 'Update failed!'
+        dbmsg.message = 'Update failed!';
+        return dbmsg
     },
 
 
     todoRemoveSuccess(dbmsg) {
-        return dbmsg.message = 'Deletion done!'
+        dbmsg.message = 'Deletion done!';
+        return dbmsg
     },
     todoRemoveFailed(dbmsg){
-        return dbmsg.message = 'Deletion failed!'
+        dbmsg.message = 'Deletion failed!';
+        return dbmsg;
     }
 
+}
+
+module.exports.forError = {
+    status:'failed',
+    report: 'Geneal error occured!',
+    message: 'System error ovvured!'
 }

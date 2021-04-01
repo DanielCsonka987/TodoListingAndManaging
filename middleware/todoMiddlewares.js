@@ -1,5 +1,5 @@
-const verifyTodo = require('../utils/dataValidation/todoDatasValidity.js');
-const verifyState = require('../utils/dataValidation/todoStateDataValidity.js');
+const verifyTodo = require('../utils/validation/todoDatasValidity.js');
+const verifyState = require('../utils/validation/todoStateDataValidity.js');
 const model = require('../model/ProfileModel.js')
 const todoView = require('../view/middleView').forTodos
 
@@ -10,7 +10,7 @@ module.exports.todoStatusUpdateSteps = [
   changeTodoStateVerification, updateTodoStatus
 ]
 
-const newContentVerification = (req, res, next)=>{
+function newContentVerification(req, res, next){
   verifyTodo(req.body)
   .then(result=>{
     next();
@@ -20,7 +20,7 @@ const newContentVerification = (req, res, next)=>{
     res.json(todoView.todoVerifyFailed(err));
   });
 }
-const createNewTodo = (req, res)=>{
+function createNewTodo(req, res){
   const todoCotent = {
     task: req.body.task,
     priority: req.body.priority,
@@ -40,7 +40,7 @@ const createNewTodo = (req, res)=>{
 
 
 
-const changeTodoStateVerification = (req, res, next)=>{
+function changeTodoStateVerification(req, res, next){
   verifyState(req.body.status)
   .then(result=>{
     next();
@@ -50,7 +50,7 @@ const changeTodoStateVerification = (req, res, next)=>{
     res.json( todoView.todoStatusChangeVerifyFailed );
   });
 }
-const updateTodoStatus = (req, res)=>{
+function updateTodoStatus(req, res){
   model.modifyTodoStatus(req.params.index, req.body.status, result=>{
     if(result.status === 'success'){
       res.status(200);

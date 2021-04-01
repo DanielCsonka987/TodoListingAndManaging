@@ -5,7 +5,7 @@ module.exports.logoutSteps = [
 ]
 
 // SESSION Cookie removal, logout
-const cookieLogoutRemoval = (req, res)=>{
+function cookieLogoutRemoval(req, res){
   try{
     cookieRemoval(res, '');
     res.status(200)

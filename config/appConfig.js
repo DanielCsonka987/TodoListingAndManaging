@@ -31,7 +31,7 @@ module.exports.routing = {
   loginPostfix: '/login',
   logoutPostfix: '/logout',
   logRevisPostfix: '/revise',
-  todoPostfix: '/todos',
+  todoInterText: '/todos/',
   updateStatusPostfix: '/status',
   updateNotationPostfix: '/notation'
 }
@@ -46,10 +46,7 @@ module.exports.cookie = {
 }
 
 module.exports.headers = [
-    ['Content-Type','application/json'],
-    ['', ''],
-    ['', ''],
-    ['', '']
+    ['Content-Type','application/json']
 ]
 
 

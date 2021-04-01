@@ -2,8 +2,7 @@ const pwdInputDataValidator = require('../utils/validation/pwdInputDatasValidity
 const pwdManager = require('../utils/passwordManagers.js');
 const model = require('../model/ProfileModel');
 const profView = require('../view/middleView').forProfiles
-const removeSessionCookie = require('./cookieManagers')
-  .removeSessionCookieAtResObj
+const removeSessionCookie = require('../utils/cookieManagers').removeSessionCookieAtResObj
 
 module.exports.readPublicPrfilesSteps = [
   readAllProfiles
@@ -17,12 +16,11 @@ module.exports.removeAccountSteps = [
   profileDeletionAndLogout
 ]
 
-const readAllProfiles = (req, res, next)=>{
+function readAllProfiles(req, res){
   model.collectAllProfiles((result)=>{
     if(result.status === 'success'){
       res.status(200);
       res.json( profView.readPublicProfilesSuccess(result) );
-      next();
     }else{
       res.status(500);    //SERVER INTERNAL ERROR
       res.json( profView.readPublicProfilesFail(result));
@@ -31,7 +29,7 @@ const readAllProfiles = (req, res, next)=>{
 }
 
 
-const profileOldPwdConfirmation = (req, res, next)=>{
+function profileOldPwdConfirmation(req, res, next){
   //console.log(req.oldHashedPwd)
   pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)  
   .then(()=>{
@@ -51,7 +49,7 @@ const profileOldPwdConfirmation = (req, res, next)=>{
 
 
 //it is needed at password update + account delete, pwdHash comming from cookie middle
-const profileUpdateContentVerification = (req, res, next)=>{
+function profileUpdateContentVerification(req, res, next){
   pwdInputDataValidator.pwdChangeInputPairRevise(req.body)
   .then(result=>{
     next();
@@ -61,7 +59,7 @@ const profileUpdateContentVerification = (req, res, next)=>{
     res.json( profView.pwdRevisionFailed(err) );
   });
 }
-const profileNewPwdEncoding = (req, res, next)=>{
+function profileNewPwdEncoding(req, res, next){
   pwdManager.encodeThisPassword(req.body.new_password)
   .then(hashResult=>{
     req.newHashedPassword = hashResult;
@@ -73,7 +71,7 @@ const profileNewPwdEncoding = (req, res, next)=>{
   })
 }
 
-const profilePwdUpdate = (req, res)=>{
+function profilePwdUpdate(req, res){
   model.changePwdInProfile(req.params.id, req.newHashedPassword, result=>{
     if(result.status === 'success' ){
       res.status(200);
@@ -90,7 +88,7 @@ const profilePwdUpdate = (req, res)=>{
 
 
 // REMOVE COOKIE //
-const profileDeletePasswordRevise = (req, res, next)=>{
+function profileDeletePasswordRevise(req, res, next){
   pwdInputDataValidator.pwdContentRevise(req.body)
   .then(()=>{
     next();
@@ -100,7 +98,7 @@ const profileDeletePasswordRevise = (req, res, next)=>{
     res.json( profView.pwdRevisionFailed(err))
   })
 }
-const profileDeletionAndLogout = (req, res ) =>{
+function profileDeletionAndLogout(req, res ){
   model.removeThisProfile(req.params.id, result=>{
     if(result === 'success'){
       removeSessionCookie(res, '');

@@ -2,16 +2,13 @@ const verifySessionCookie = require('../utils/validation/sessionIdValidity.js');
 const model = require('../model/ProfileModel.js');
 const cookieView = require('../view/middleView.js').forCookies;
 
-const sessionCookieName = sessionCookieAttributes().name;
-
-
-
+const sessionCookieName = require('../config/appConfig').cookie.sessionCookieNameing;
 
 module.exports.cookieRevisionSteps = [
   existenceTest, contentStrTest, contentDBTest, sessionCookieRenew
 ]
 
-const existenceTest = (req, res, next)=>{
+function existenceTest(req, res, next){ 
   if(req.cookies === undefined ||  req.cookies[sessionCookieName] === undefined){
     res.status(200)
     res.json( cookieView.generalProblemMsg );
@@ -24,7 +21,7 @@ const existenceTest = (req, res, next)=>{
     }
   }
 }
-const contentStrTest = (req, res, next)=>{
+function contentStrTest(req, res, next){
   verifySessionCookie(req.cookies[sessionCookieName])  //structural revision
   .then(possGoodCookieId =>{
     req.sessionCookie = possGoodCookieId;
@@ -36,7 +33,7 @@ const contentStrTest = (req, res, next)=>{
   })
 
 }
-const contentDBTest = (req, res, next)=>{
+function contentDBTest(req, res, next){
   model.findThisById(req.sessionCookie, dbresult=>{
     if(dbresult.status === 'success'){
       req.oldHashedPwd = dbresult.report.pwdHash;  //SAVING IN CASE OF INPUT old_password REVISION
@@ -47,7 +44,7 @@ const contentDBTest = (req, res, next)=>{
     }
   })
 }
-const sessionCookieRenew = (req, res, next)=>{
+function sessionCookieRenew(req, res, next){
   createSessCookie(res, req.cookies[sessionCookieName]);
   next();
 }
@@ -55,10 +52,8 @@ const sessionCookieRenew = (req, res, next)=>{
 
 
 // FRONT REQUEST IF COOKIE IS STILL ACCEPTABLE
-module.exports.reviseLoggedInState = (req, res, next) =>{
+module.exports.reviseLoggedInState = (req, res) =>{
   const cookieContentIsThere = req.cookies[sessionCookieName]?true:false;
-  res.write(JSON.stringify(
-      cookieView.cookieLoggedInStateMsg(cookieContentIsThere)
-  ))
-  next();
+  res.status(200)
+  res.json( cookieView.cookieLoggedInStateMsg(cookieContentIsThere) )
 }

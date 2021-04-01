@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const { expect } = require('chai')
 
-const ProfileModel = require('../../model/ProfileItem')
-const dbAccess =require('../../config/appConfig').db_access_local
+const ProfileModel = require('../../model/ProfileModel')
+const dbAccess =require('../../config/appConfig').db.db_access_local
 
 const profileTestDatas = require('./profileTestDatas.js').profiles;
 const additionalPersons = require('./profileTestDatas.js').newProfiles;
@@ -82,7 +82,7 @@ describe('Profile processes complex tests',()=>{
             const uName = profileTestDatas[3].username;
             ProfileModel.findOne({username: uName}, (err, doc)=>{
                 expect(err).to.be.a('null')
-                const uId = doc._id;
+                const uId = doc._id.toString();
                 ProfileModel.findThisProfileToLogin(uId, (res)=>{
                     expect(res).to.be.a('object')
                     expect(res.status).to.be.a('string')
@@ -90,8 +90,13 @@ describe('Profile processes complex tests',()=>{
                     expect(res.report).to.be.a('object')
                     expect(res.report.username).to.be.a('string')
                     expect(res.report.username).to.equal(uName)
-                    expect(res.report.id).to.be.a('object')
-                    expect(res.report.id).to.deep.equal(uId)
+
+                    const aUrl = res.report.logoutUrl;
+                    expect(aUrl).to.be.a('string')
+                    const idString = aUrl.split('/')[2]
+                    expect(idString).to.be.a('string')
+                    expect(idString).to.deep.equal(uId)
+
                     expect(res.report.todos).to.be.a('array')
                     expect(res.report.todos).to.be.empty
                     done();
@@ -145,10 +150,15 @@ describe('Profile processes complex tests',()=>{
                 expect(err).to.be.a('null')
                 expect(doc).to.be.a('object')
                 expect(doc.username).to.equal(uName);
-                const extr = doc.publicDatas;
+                const extr = doc.basicProfileDatas;
                 expect(extr).to.be.a('object')
-                expect(extr.id).to.not.be.undefined;
-                expect(extr.id).to.deep.equal(doc._id)
+
+                const aUrl = extr.loginUrl;
+                expect(aUrl).to.be.a('string')
+                const idString = aUrl.split('/')[2]
+                expect(idString).to.be.a('string')
+                expect(idString).to.deep.equal(doc._id.toString())
+
                 expect(extr.username).to.equal(uName);
                 done();
             })
@@ -161,10 +171,15 @@ describe('Profile processes complex tests',()=>{
             ProfileModel.findOne( { username: uName }, (err, doc)=>{
                 expect(err).to.be.a('null');
                 expect(doc).to.be.a('object')
-                const extr = doc.privateDatas;
+                const extr = doc.detailedProfileDatas;
                 expect(extr).to.be.a('object')
-                expect(extr.id).to.not.be.undefined;
-                expect(extr.id).to.deep.equal(doc._id);
+
+                const aUrl = extr.logoutUrl;
+                expect(aUrl).to.be.a('string')
+                const idString = aUrl.split('/')[2]
+                expect(idString).to.be.a('string')
+                expect(idString).to.deep.equal(doc._id.toString())
+
                 expect(extr.first_name).to.equal(uFirstName)
                 expect(extr.last_name).to.equal(uLastName)
                 expect(extr.age).to.equal(uAge)
@@ -196,11 +211,16 @@ describe('Profile processes complex tests',()=>{
                 expect(res.status).to.be.a('string')
                 expect(res.status).to.equal('success')
                 expect(res.report).to.be.a('object')
-                expect(res.report.id).to.not.be.undefined
+
+                const aUrl = res.report.logoutUrl;
+                expect(aUrl).to.be.a('string')
+                const idString = aUrl.split('/')[2]
+                expect(idString).to.be.a('string')
+
                 ProfileModel.findOne({username: newProf.username }, (err, doc)=>{
                     expect(err).to.be.a('null')
                     expect(doc).to.be.a('object')
-                    expect(res.report.id).to.deep.equal(doc._id)
+                    expect(idString).to.deep.equal(doc._id.toString())
                     expect(res.report.username).to.equal(doc.username)
                     done();
                 })
@@ -221,7 +241,7 @@ describe('Profile processes complex tests',()=>{
                     expect(res.status).to.be.a('string')
                     expect(res.status).to.equal('success')
                     expect(res.report).to.be.a('string')
-                    expect(res.report).to.equal('Password successfully changed!')
+                    expect(res.report).to.equal('')
                     ProfileModel.findOne({ username: updProf}, (error, doc2)=>{
                         expect(error).to.be.a('null')
                         expect(doc2).to.be.a('object')
@@ -244,7 +264,7 @@ describe('Profile processes complex tests',()=>{
                     expect(res.status).to.be.a('string')
                     expect(res.status).to.equal('success')
                     expect(res.report).to.be.a('string')
-                    expect(res.report).to.equal('User successfully deleted!')
+                    expect(res.report).to.equal('')
                     ProfileModel.findOne({ username: updProf}, (err, doc2)=>{
                         expect(err).to.be.a('null')
                         expect(doc2).to.be.a('null')

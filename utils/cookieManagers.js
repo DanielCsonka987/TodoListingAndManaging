@@ -1,8 +1,7 @@
-const sessionCookieAttributes = require('../utils/sessionCookieAttribs.js');
 const cookieAttributesConfig = require('../config/appConfig.js').cookie;
 
 // GENERAL METHODS //
-module.exports.createSessionCookieAtResObj(res, value){
+module.exports.createSessionCookieAtResObj = (res, value)=>{
     const cookieAttrib = sessionCookieAttributes();
     res.cookie(cookieAttrib.name, value.toString(),
     {

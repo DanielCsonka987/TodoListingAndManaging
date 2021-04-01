@@ -5,13 +5,13 @@ const loginView = require('../view/middleView')
 const createSessionCookie = require('../utils/cookieManagers').createSessionCookieAtResObj
 
 
-module.exports.loginProcess = [
+module.exports.loginSteps = [
   loginDatasRevision, loginProfileExistenceRevision,
   urlParamRevisionWithExistingProfId, loginPasswordRevision,
   readProfileDetailsAndLogin
 ]
 
-const loginDatasRevision = function(req, res, next){
+function loginDatasRevision(req, res, next){
   verifyLoginDatas(req.body)
   .then(res=>{ next() })
   .catch(err=>{
@@ -19,7 +19,7 @@ const loginDatasRevision = function(req, res, next){
     res.json(loginView.noProperLoginDatas);
   });
 }
-const loginProfileExistenceRevision = function(req, res, next){
+function loginProfileExistenceRevision(req, res, next){
   model.findThisByUsername(req.body.username, result=>{
     if(result.status === 'success'){
       req.loginUserId = result.report.id;  //for the cookie content
@@ -32,7 +32,7 @@ const loginProfileExistenceRevision = function(req, res, next){
   })
 }
 
-const urlParamRevisionWithExistingProfId = (req, res, next)=>{
+function urlParamRevisionWithExistingProfId(req, res, next){
   if(req.loginUserId.toString() === req.params.id){
     next();
   }else{
@@ -41,7 +41,7 @@ const urlParamRevisionWithExistingProfId = (req, res, next)=>{
   }
 
 }
-const loginPasswordRevision = function(req, res, next){
+function loginPasswordRevision(req, res, next){
   pwdHashMatchVerify(req.body.password, req.loginUserHashPwd)
   .then(()=>{
     next();
@@ -57,7 +57,7 @@ const loginPasswordRevision = function(req, res, next){
   })
 }
 
-const readProfileDetailsAndLogin = (req, res)=>{
+function readProfileDetailsAndLogin(req, res){
   model.findThisProfileById(req.params.id, result =>{
     if(result.status === 'success'){
       try{

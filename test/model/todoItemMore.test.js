@@ -1,13 +1,45 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db_access_local;
-const ProfileModel = require('../../model/ProfileItem.js');
+const dbaccess = require('../../config/appConfig.js').db.db_access_local;
+const ProfileModel = require('../../model/ProfileModel.js');
 const TodoSchema = require('../../model/TodoSchema')
 
 const profilesTodoTestDatas = require('./todoTestDatas').profilesWithTodos;
 const newProfiles = require('./todoTestDatas').newProfilesWithoutTodos;
 const bareTodos = require('./todoTestDatas').bareNewTodos
+
+const reviseMessageContent = (res, expRes)=>{
+  expect(res).to.be.a('object')
+  expect(res).to.have.own.property('status')
+  expect(res.status).to.equal(expRes)
+  expect(res).to.have.own.property('report')
+}
+
+const reviseProfileContent = (report)=>{
+  expect(report).to.have.own.property('username')
+  expect(report).to.have.own.property('first_name')
+  expect(report).to.have.own.property('last_name')
+  expect(report).to.have.own.property('age')
+  expect(report).to.have.own.property('occupation')
+  expect(report).to.have.own.property('todos')
+}
+
+const reviseTodoContent = (report)=>{
+  expect(report).to.have.own.property('task')
+  expect(report).to.have.own.property('start')
+  expect(report).to.have.own.property('update')
+  expect(report).to.have.own.property('notation')
+  expect(report).to.have.own.property('priority')
+}
+
+const extinctProfId = (url) =>{
+  return url.split('/')[2]
+}
+
+const extinctTodoId = (url)=>{
+  return url.split('/')[4]
+}
 
 before(()=>{
   return new Promise((resolve, reject)=>{
@@ -50,43 +82,24 @@ describe('Integrated profile-todo tests', ()=>{
 
   it('Create a user, add some todo in a profile', (done)=>{
     ProfileModel.createNewProfile(newProfiles[0], (res)=>{
-      expect(res).to.be.a('object')
-      expect(res).to.have.own.property('status')
-      expect(res.status).to.equal('success')
 
-      expect(res).to.have.own.property('report')
+      reviseMessageContent(res, 'success')
       expect(res.report).to.be.a('object')
-      expect(res.report).to.have.own.property('id')
-      expect(res.report.id).to.be.a('object')
-      newProfiles[0]._id = res.report.id
-
-      expect(res.report).to.have.own.property('username')
-      expect(res.report).to.have.own.property('first_name')
-      expect(res.report).to.have.own.property('last_name')
-      expect(res.report).to.have.own.property('age')
-      expect(res.report).to.have.own.property('occupation')
-      expect(res.report).to.have.own.property('todos')
+      reviseProfileContent(res.report)
+      expect(res.report).to.have.property('logoutUrl')
+      newProfiles[0]._id = extinctProfId(res.report.logoutUrl);
       expect(res.report.todos).to.be.a('array')
       expect(res.report.todos).to.be.empty
 
-
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[0], (result)=>{
-        expect(result).to.be.a('object')
-        expect(result).to.have.own.property('status')
-        expect(result.status).to.be.a('string')
-        expect(result.status).to.equal('success')
-
+        reviseMessageContent(result, 'success')
         expect(result.report).to.be.a('object')
-        expect(result.report).to.have.own.property('id')
-        bareTodos[0].id = result.report.id;
 
-        expect(result.report).to.have.own.property('task')
+        expect(result.report).to.have.property('removingUrl')
+        bareTodos[0].id = extinctTodoId(result.report.removingUrl)
+        reviseTodoContent(result.report)
         expect(result.report.task).to.equal(bareTodos[0].task)
-        expect(result.report).to.have.own.property('start')
-        expect(result.report).to.have.own.property('update')
         bareTodos[0].update = result.report.update
-        expect(result.report).to.have.own.property('notation')
-        expect(result.report).to.have.own.property('priority')
         expect(result.report.priority).to.equal(bareTodos[0].priority)
         done();
       })
@@ -97,22 +110,18 @@ describe('Integrated profile-todo tests', ()=>{
   it('Previous user logs in and update todo status', (done)=>{
     const targetProf = newProfiles[0]._id
     ProfileModel.findThisProfileToLogin(targetProf, (res)=>{
-      expect(res).to.be.a('object')
-      expect(res).to.have.own.property('status')
-      expect(res.status).to.equal('success')
-      
-      expect(res).to.have.own.property('report')
-      expect(res.report).to.have.own.property('id')
-      expect(res.report.id).to.deep.equal(targetProf)
-      expect(res.report).to.have.own.property('todos')
+      reviseMessageContent(res, 'success')
+
+      expect(res.report).to.have.property('logoutUrl')
+      expect(extinctProfId(res.report.logoutUrl)).to.equal(targetProf.toString())
+
       expect(res.report.todos).to.be.a('array')
       expect(res.report.todos).to.have.lengthOf(1)
-      
-      const targetTodo = res.report.todos[0].id
+      expect(res.report.todos[0]).to.have.property('removingUrl')
+      const targetTodo = extinctTodoId(res.report.todos[0].removingUrl)
+
       ProfileModel.modifyTodoStatus(targetProf, targetTodo, 'Finished', (result)=>{
-        expect(result).to.be.a('object')
-        expect(result).to.have.own.property('status')
-        expect(result.status).to.equal('success')
+        reviseMessageContent(result, 'success')
         
         expect(result).to.have.own.property('report')
         expect(result.report).to.be.instanceOf(Date)
@@ -126,31 +135,19 @@ describe('Integrated profile-todo tests', ()=>{
     const targetProf = newProfiles[0]._id
     const targetTodo = bareTodos[0].id
     ProfileModel.modifyTodoNotation(targetProf, targetTodo, 'I dont know, stg', res=>{
-      expect(res).to.be.a('object')
-      expect(res).to.have.own.property('status')
-      expect(res.status).to.equal('success')
-      
-      expect(res).to.have.own.property('report')
+      reviseMessageContent(res, 'success')
       expect(res.report).to.be.instanceOf(Date)
       expect(res.report).to.gt(bareTodos[0].update)
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[1], (result)=>{
-        expect(result).to.be.a('object')
-        expect(result).to.have.own.property('status')
-        expect(result.status).to.be.a('string')
-        expect(result.status).to.equal('success')
-  
+        reviseMessageContent(result, 'success')
         expect(result.report).to.be.a('object')
-        expect(result.report).to.have.own.property('id')
-        bareTodos[1].id = result.report.id;
+        reviseTodoContent(result.report)
+        expect(result.report).to.have.own.property('removingUrl')
+        bareTodos[1].id = extinctTodoId(result.report.removingUrl);
   
-        expect(result.report).to.have.own.property('task')
         expect(result.report.task).to.equal(bareTodos[1].task)
-        expect(result.report).to.have.own.property('start')
-        expect(result.report).to.have.own.property('update')
         bareTodos[1].update = result.report.update
-        expect(result.report).to.have.own.property('notation')
-        expect(result.report).to.have.own.property('priority')
         expect(result.report.priority).to.equal(bareTodos[1].priority)
         done();
       })
@@ -160,29 +157,25 @@ describe('Integrated profile-todo tests', ()=>{
   it('Delete first todo, check second\'s existence', (done)=>{
     const targetProf = newProfiles[0]._id
     const targetTodo = bareTodos[0].id
+    const remainingTodo = bareTodos[1].id
     ProfileModel.removeThisTodo(targetProf, targetTodo, res=>{
-      expect(res).to.be.a('object')
-      expect(res).to.have.own.property('status')
-      expect(res.status).to.equal('success')
-
-      expect(res).to.have.own.property('report')
+      reviseMessageContent(res, 'success')
       expect(res.report).to.equal('')
 
       setTimeout(()=>{
         ProfileModel.findThisProfileToLogin(targetProf, result=>{
-          expect(result).to.be.a('object')
-          expect(result).to.have.own.property('status')
-          expect(result.status).to.equal('success')
-          
-          expect(result).to.have.own.property('report')
-          expect(result.report).to.have.own.property('id')
-          expect(result.report.id).to.deep.equal(targetProf)
+          reviseMessageContent(result, 'success')
+          expect(result.report).to.have.own.property('changPwdDelAccUrl')
+
+          expect(extinctProfId(result.report.changPwdDelAccUrl)).to.equal(targetProf)
           expect(result.report).to.have.own.property('todos')
           expect(result.report.todos).to.be.a('array')
           expect(result.report.todos).to.have.lengthOf(1)
   
           const remaingTodo = result.report.todos[0]
-          expect(remaingTodo.id).to.deep.equal(bareTodos[1].id)
+          expect(remaingTodo).to.have.property('statusChangeUrl')
+
+          expect(extinctTodoId(remaingTodo.statusChangeUrl)).to.equal(remainingTodo)
           done()
         })
       }, 200)

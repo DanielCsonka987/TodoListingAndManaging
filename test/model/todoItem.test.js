@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db_access_local;
-const ProfileModel = require('../../model/ProfileItem.js');
+const dbaccess = require('../../config/appConfig.js').db.db_access_local;
+const ProfileModel = require('../../model/ProfileModel.js');
 const TodoSchema = require('../../model/TodoSchema')
 
 const profilesTodoTestDatas = require('./todoTestDatas').profilesWithTodos;
@@ -56,20 +56,29 @@ describe('Model TodoItem CRUD operations', ()=>{
         
         const seekedProfId = doc._id
         profilesTodoTestDatas[0]._id = doc._id;
-
         expect(seekedProfId).to.be.a('object')
         const firstTodoId = doc.forTestShowFirstTodo._id
         expect(firstTodoId).to.be.a('object')
-        const privProfDatas = doc.privateDatas;
-        expect(privProfDatas).to.be.a('object')
-        expect(privProfDatas).to.have.own.property('id')
-        expect(privProfDatas.id).to.deep.equal(seekedProfId)
 
-        expect(privProfDatas).to.have.own.property('todos')
-        expect(privProfDatas.todos).to.be.a('array')
-        expect(privProfDatas.todos).to.not.be.empty
-        expect(privProfDatas.todos).to.have.lengthOf(3)
-        expect(privProfDatas.todos[0].id).to.deep.equal(firstTodoId)
+        const detailedProfDatas = doc.detailedProfileDatas;
+        expect(detailedProfDatas).to.be.a('object')
+        expect(detailedProfDatas).to.have.own.property('logoutUrl')
+
+        const aUrl = detailedProfDatas.logoutUrl;
+        expect(aUrl).to.be.a('string')
+        const idString = aUrl.split('/')[2]
+        expect(idString).to.be.a('string')
+        expect(idString).to.deep.equal(seekedProfId.toString())
+
+        expect(detailedProfDatas).to.have.own.property('todos')
+        expect(detailedProfDatas.todos).to.be.a('array')
+        expect(detailedProfDatas.todos).to.not.be.empty
+        expect(detailedProfDatas.todos).to.have.lengthOf(3)
+        expect(detailedProfDatas.todos[0]).to.have.property('notationChangeUrl')
+
+        const aUrl2 = detailedProfDatas.todos[0].notationChangeUrl;
+        const todoIdString = aUrl2.split('/')[4]
+        expect(todoIdString).to.equal(firstTodoId.toString())
         done();
       })
     })
@@ -84,14 +93,17 @@ describe('Model TodoItem CRUD operations', ()=>{
         profilesTodoTestDatas[1]._id = doc._id
 
         expect(seekedProfId).to.be.a('object')
-        const privProfDatas = doc.privateDatas;
-        expect(privProfDatas).to.be.a('object')
-        expect(privProfDatas).to.have.own.property('id')
-        expect(privProfDatas.id).to.deep.equal(seekedProfId)
+        const detailedProfDatas = doc.detailedProfileDatas;
+        expect(detailedProfDatas).to.be.a('object')
+        expect(detailedProfDatas).to.have.own.property('logoutUrl')
+        
+        const aUrl = detailedProfDatas.logoutUrl
+        const profIdString = aUrl.split('/')[2]
+        expect(profIdString).to.deep.equal(seekedProfId.toString())
 
-        expect(privProfDatas).to.have.own.property('todos')
-        expect(privProfDatas.todos).to.be.a('array')
-        expect(privProfDatas.todos).to.be.empty
+        expect(detailedProfDatas).to.have.own.property('todos')
+        expect(detailedProfDatas.todos).to.be.a('array')
+        expect(detailedProfDatas.todos).to.be.empty
         done();
       })
     })
@@ -107,17 +119,23 @@ describe('Model TodoItem CRUD operations', ()=>{
         profilesTodoTestDatas[2]._id = doc._id
 
         expect(seekedProfId).to.be.a('object')
-        const privProfDatas = doc.privateDatas;
-        expect(privProfDatas).to.be.a('object')
-        expect(privProfDatas).to.have.own.property('id')
+        const detailedProfDatas = doc.detailedProfileDatas;
+        expect(detailedProfDatas).to.be.a('object')
+        expect(detailedProfDatas).to.have.own.property('logoutUrl')
+        const aUrl = detailedProfDatas.logoutUrl
+        const profIdString = aUrl.split('/')[2]
+        expect(profIdString).to.deep.equal(seekedProfId.toString())
 
-        expect(privProfDatas).to.have.own.property('todos')
-        expect(privProfDatas.todos).to.be.a('array')
-        expect(privProfDatas.todos).to.not.be.empty
-        const seekedTodo = privProfDatas.todos[0];
-        const searchRawRes = doc.findThisRawTodo(seekedTodo.id);
+        expect(detailedProfDatas).to.have.own.property('todos')
+        expect(detailedProfDatas.todos).to.be.a('array')
+        expect(detailedProfDatas.todos).to.not.be.empty
+        const seekedTodo = detailedProfDatas.todos[0];
+        expect(seekedTodo).to.have.property('removingUrl')
+        const theUrl = seekedTodo.removingUrl;
+        const todoIdString = theUrl.split('/')[4]
 
-        expect(searchRawRes._id).to.deep.equal(seekedTodo.id)
+        const searchRawRes = doc.findThisRawTodo(todoIdString);
+        expect(searchRawRes._id.toString()).to.equal(todoIdString)
         expect(searchRawRes.task).to.equal(seekedTodo.task)
         expect(searchRawRes.priority).to.deep.equal(seekedTodo.priority)
         done()
@@ -134,13 +152,15 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.status).to.equal('success')
           expect(res).to.have.own.property('report')
           expect(res.report).to.be.a('object')
-          expect(res.report).to.have.own.property('id')
           
           expect(res.report).to.have.own.property('task')
           expect(res.report.task).to.be.a('string')
           expect(res.report.task).to.equal(newTodo.task)
           expect(res.report).to.have.own.property('priority')
           expect(res.report.priority).to.equal(newTodo.priority)
+          expect(res.report).to.have.own.property('notationChangeUrl')
+          expect(res.report).to.have.own.property('statusChangeUrl')
+          expect(res.report).to.have.own.property('removingUrl')
           expect(res).to.have.own.property('message')
           done()
       })
@@ -155,13 +175,15 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.status).to.equal('success')
           expect(res).to.have.own.property('report')
           expect(res.report).to.be.a('object')
-          expect(res.report).to.have.own.property('id')
           
           expect(res.report).to.have.own.property('task')
           expect(res.report.task).to.be.a('string')
           expect(res.report.task).to.equal(newTodo.task)
           expect(res.report).to.have.own.property('priority')
           expect(res.report.priority).to.equal(newTodo.priority)
+          expect(res.report).to.have.own.property('notationChangeUrl')
+          expect(res.report).to.have.own.property('statusChangeUrl')
+          expect(res.report).to.have.own.property('removingUrl')
           expect(res).to.have.own.property('message')
           done()
       })
@@ -194,7 +216,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               expect(rawTodo.lastModfingDate).to.deep.equal(updateTime)
               done()
             })
-          }, 200)
+          }, 300)
         });
         
       })
@@ -225,7 +247,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               expect(rawTodo.lastModfingDate).to.deep.equal(updateTime)
               done()
             })
-          }, 200)
+          }, 300)
         });
       })
     })
@@ -253,7 +275,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               const todoNow = profDoc2.findThisRawTodo(targetTodo);
               expect(todoNow).to.be.a('undefined')
               done();
-          }, 200)
+          }, 300)
           })
         });
       })
@@ -279,7 +301,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               const todoNow = profDoc2.findThisRawTodo(targetTodo);
               expect(todoNow).to.be.a('undefined')
               done();
-          }, 200)
+          }, 300)
           })
         });
       })

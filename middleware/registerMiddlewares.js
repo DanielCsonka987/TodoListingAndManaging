@@ -9,7 +9,7 @@ module.exports.registerSteps = [
   reqProfilePwdEncoding, createNewProfileAndLogin
 ]
 
-const regDatasVerification = (req, res, next)=>{
+function regDatasVerification(req, res, next){
   if(req.body.last_name === ''){
     delete req.body['last_name'];
   }
@@ -28,7 +28,7 @@ const regDatasVerification = (req, res, next)=>{
    });
 }
 
-const regProfilesCollisionScreen = (req, res, next)=>{
+function regProfilesCollisionScreen(req, res, next){
   model.findThisByUsername(req.body.username, result =>{
     if(result.status === 'sucess'){
       next();
@@ -38,7 +38,7 @@ const regProfilesCollisionScreen = (req, res, next)=>{
     }
   })
 }
-const reqProfilePwdEncoding = (req, res, next)=>{
+function reqProfilePwdEncoding(req, res, next){
   pwdEncoder(req.body.password)
   .then(hashResult =>{
     req.body.hashedPassword = hashResult;
@@ -51,7 +51,7 @@ const reqProfilePwdEncoding = (req, res, next)=>{
 }
 
 
-const createNewProfileAndLogin = (req, res)=>{
+function createNewProfileAndLogin(req, res){
   const newProf = {
     username: req.body.username,
     password: req.body.hashedPassword,   //created by this middleware

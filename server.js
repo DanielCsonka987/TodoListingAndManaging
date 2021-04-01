@@ -7,8 +7,9 @@ const multer  = require('multer');
 const upload = multer();
 
 const PORT = process.env.PORT || 8080;
-const dbAccessUrl = require('./config/appConfig.js').db_access;
-const apiRouting = require('./config/appConfig.js').routing_paths;
+const dbAccessUrl = require('./config/appConfig.js').db.db_access_local;
+const apiRouting = require('./config/appConfig.js').routing;
+
 const routerProfileAllowed = require('./control/routerProfilesAllowed.js');
 const routerLimitedProfile = require('./control/routerProfilesLimited.js');
 const routerLimitedTodos = require('./control/routerTodosLimited.js');
