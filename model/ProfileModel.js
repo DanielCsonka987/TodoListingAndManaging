@@ -39,8 +39,9 @@ ProfileItemSchema.virtual('forTestShowFirstTodo').get(function(){
 
 // todo methods
 ProfileItemSchema.methods.convertAllTodosToSendable = function(){
-  const profileId = this._id;
-  return this.todos.map(item => view.convertTodoDetailsToPublic(profileId, item))
+  return  this.todos.map(item =>{
+    return view.convertTodoDetailsToPublic(this._id, item)
+  })
 }
 ProfileItemSchema.methods.findThisBrandNewTodo = function(todoItem){
   return this.todos.filter(todo => todo.task === todoItem.task )[0]

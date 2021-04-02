@@ -1,45 +1,28 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db.db_access_local;
+const dbaccess = require('../testConfig').testDBConnection;
 const ProfileModel = require('../../model/ProfileModel.js');
 const TodoSchema = require('../../model/TodoSchema')
 
-const profilesTodoTestDatas = require('./todoTestDatas').profilesWithTodos;
-const newProfiles = require('./todoTestDatas').newProfilesWithoutTodos;
-const bareTodos = require('./todoTestDatas').bareNewTodos
+const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
+const newProfiles = require('../todoTestDatas').newProfilesWithoutTodos;
+const bareTodos = require('../todoTestDatas').bareNewTodos
 
-const reviseMessageContent = (res, expRes)=>{
-  expect(res).to.be.a('object')
-  expect(res).to.have.own.property('status')
-  expect(res.status).to.equal(expRes)
-  expect(res).to.have.own.property('report')
-}
+const reviseMessageContent = require('../testingMethods')
+  .forMsgs.reviseMessageContent
 
-const reviseProfileContent = (report)=>{
-  expect(report).to.have.own.property('username')
-  expect(report).to.have.own.property('first_name')
-  expect(report).to.have.own.property('last_name')
-  expect(report).to.have.own.property('age')
-  expect(report).to.have.own.property('occupation')
-  expect(report).to.have.own.property('todos')
-}
+const reviseProfileContent = require('../testingMethods')
+  .forMsgs.reviseProfileContent
 
-const reviseTodoContent = (report)=>{
-  expect(report).to.have.own.property('task')
-  expect(report).to.have.own.property('start')
-  expect(report).to.have.own.property('update')
-  expect(report).to.have.own.property('notation')
-  expect(report).to.have.own.property('priority')
-}
+const reviseTodoContent = require('../testingMethods')
+  .forMsgs.reviseTodoContent
 
-const extinctProfId = (url) =>{
-  return url.split('/')[2]
-}
+const extinctProfId = require('../testingMethods')
+  .forUrls.extinctProfIdFromUrl
 
-const extinctTodoId = (url)=>{
-  return url.split('/')[4]
-}
+const extinctTodoId = require('../testingMethods')
+  .forUrls.extinctTodoIdFromUrl
 
 before(()=>{
   return new Promise((resolve, reject)=>{

@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 const { expect } = require('chai')
 
 const ProfileModel = require('../../model/ProfileModel')
-const dbAccess =require('../../config/appConfig').db.db_access_local
+const dbaccess = require('../testConfig').testDBConnection;
 
-const profileTestDatas = require('./profileTestDatas.js').profiles;
-const additionalPersons = require('./profileTestDatas.js').newProfiles;
+const profileTestDatas = require('../profileTestDatas.js').profiles;
+const additionalPersons = require('../profileTestDatas.js').newProfiles;
 
 before(()=>{
     return new Promise((resolve, reject)=>{

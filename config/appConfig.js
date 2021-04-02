@@ -2,6 +2,9 @@ const dbname = 'todositedb';
 const dbUser = 'test_user001';
 const dbPwd = 'R6KD4GlLKh362g8e';
 
+module.exports.server = {
+  port: 8080
+}
 module.exports.db = {
   db_access_cloud: 'mongodb+srv://' + dbUser + ':' + dbPwd +
    '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
@@ -26,19 +29,19 @@ module.exports.validation = {
   task_notation_max: 150
 }
 module.exports.routing = {
-  basePath: '/api/',
+  basePath: '/profile/',
   registerPostfix: '/register',
   loginPostfix: '/login',
   logoutPostfix: '/logout',
   logRevisPostfix: '/revise',
-  todoInterText: '/todos/',
+  todoInterText: '/todo/',
   updateStatusPostfix: '/status',
   updateNotationPostfix: '/notation'
 }
 module.exports.cookie = {
   sessionCookiePrefix: '',
   sessionCookieNameing: 'session',
-  path: '/api/',
+  path: '/profile/',
   cookieLifetime: 900000,   //15 min
   cookieHTTPOnly: true,
   cookieSecure: true,

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-const dbaccess = require('../../config/appConfig.js').db.db_access_local;
+const dbaccess = require('../testConfig').testDBConnection;
 const ProfileModel = require('../../model/ProfileModel.js');
 
-const profileTestDatas = require('./profileTestDatas.js').profiles;
-const additionalPersons = require('./profileTestDatas.js').newProfiles;
+const profileTestDatas = require('../profileTestDatas.js').profiles;
+const additionalPersons = require('../profileTestDatas.js').newProfiles;
 
 describe('Model Profile CRUD operations', ()=>{
 

@@ -31,27 +31,27 @@ module.exports.forCookies = {
 module.exports.forLogin = {
     noProperLoginDatas: {
         status: 'falied',
-        report: '',
+        report: 'dataFail',
         message: 'Wrong username or password!'
     },
     noSuchUserInSystem: {
         status: 'falied',
-        report: '',
+        report: 'lackOfUser',
         message: 'Wrong username or password!'
     },
     differentParamAndUserid: {
         status: 'falied',
-        report: '',
+        report: 'differentParams',
         message: 'Wrong username or password!'
     },
     passwordNotAcceptable: {
         status: 'falied',
-        report: '',
+        report: 'authentication1',
         message: 'Wrong username or password!'
     },
     passwordTestError: {
         status: 'failed',
-        report: 'password_test',
+        report: 'authentication2',
         message: 'System error occured!'
     },
     loginSuccess: (dbmsg) =>{

@@ -5,21 +5,32 @@ const expect = chai.expect;
 const mongoose = require('mongoose');
 
 const api = require('../../app.js');
-const dbaccess = require('../../config/appConfig.js').db_access;
-const ProfileSchema = require('../../model/profileItem.js')
+const dbaccess = require('../testConfig').testDBConnection;
+const ProfileSchema = require('../../model/ProfileModel.js')
 
-const userForTestRegister = require('./profileTestDatas').registGoodProfile;
+const userForTestRegister = require('../todoTestDatas').profilesWithTodos;
 let alreadyRegUserId = '';
+
+const findProfId = require('../testingMethods').forUrls.extinctProfIdFromUrl
+const findTodoId = require('../testingMethods').forUrls.extinctTodoIdFromUrl
+
 
 before(()=>{
   return new Promise((resolve, reject)=>{
     mongoose.connect(dbaccess, {useNewUrlParser: true, useUnifiedTopology: true});
-    mongoose.connection.on('error', err=>{ console.log('MongoDB error ', err) })
+    mongoose.connection
+    .on('error', err=>{ console.log('MongoDB error ', err) })
     .once('open', ()=>{ console.log('MongooseDB connection occured for test!') })
     .once('close', ()=>{ console.log('MongooseDB connection closed!') })
+
+    mongoose.connection.collections.prfiles.drop((err)=>{
+      if(err){
+        console.log('Collection empting failed! ' + err)
+      }
+    })
     resolve();
 
-  }).catch(err=>{ console.log(err) });
+  })
 })
 
 after(function(){
@@ -28,7 +39,7 @@ after(function(){
       mongoose.connection.close();
       resolve();
     })
-  }).catch(err=>{ console.log(err) });
+  })
 })
 
 describe('Read all user from api', function(){

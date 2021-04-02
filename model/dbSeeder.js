@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
-const dbaccess = require('../config/appConfig.js').db_access_local;
+const dbaccess = require('../config/appConfig.js').db.db_access_local;
 const bcrypt = require('bcrypt');
-const encrRound = require('../config/appConfig.js').validation_config.encryption_saltrounds;
+const encrRound = require('../config/appConfig.js').validation.encryption_saltrounds;
 
 const profiles = require('./dbDatasToExampleSite.js');
-const ProfileModel = require('./ProfileItem.js');
+const ProfileModel = require('./ProfileModel.js');
 
 mongoose.connect(dbaccess, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(()=>{

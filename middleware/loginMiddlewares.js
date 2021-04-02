@@ -1,7 +1,7 @@
 const verifyLoginDatas = require('../utils/validation/loginDatasValidity.js');
 const pwdHashMatchVerify = require('../utils/passwordManagers.js').verifyThisPassword;
 const model = require('../model/ProfileModel.js');
-const loginView = require('../view/middleView')
+const loginView = require('../view/middleView').forLogin
 const createSessionCookie = require('../utils/cookieManagers').createSessionCookieAtResObj
 
 
@@ -23,7 +23,7 @@ function loginProfileExistenceRevision(req, res, next){
   model.findThisByUsername(req.body.username, result=>{
     if(result.status === 'success'){
       req.loginUserId = result.report.id;  //for the cookie content
-      req.loginUserHashPwd = result.report.password;  //for authenticate
+      req.loginUserHashPwd = result.report.pwdHash;  //for authenticate
       next();
     } else{
       res.status(200)
@@ -58,7 +58,7 @@ function loginPasswordRevision(req, res, next){
 }
 
 function readProfileDetailsAndLogin(req, res){
-  model.findThisProfileById(req.params.id, result =>{
+  model.findThisProfileToLogin(req.params.id, result =>{
     if(result.status === 'success'){
       try{
         createSessionCookie(res, req.loginUserId.toString());

@@ -6,7 +6,8 @@ const bodyparser = require('body-parser');
 const multer  = require('multer');
 const upload = multer();
 
-const PORT = process.env.PORT || 8080;
+const appConfigPorting = require('./config/appConfig').server.port
+const PORT_FINAL = process.env.PORT || appConfigPorting;
 const dbAccessUrl = require('./config/appConfig.js').db.db_access_local;
 const apiRouting = require('./config/appConfig.js').routing;
 
@@ -42,8 +43,8 @@ app.use(apiRouting.basePath, routerLimitedTodos);  // TODO PROCESSES
 // ERROR handling //
 app.all('/', apiErrorHandler)
 
-const server = app.listen(PORT, ()=>{
-  console.log(`Server online at port:${PORT}`);
+const server = app.listen(PORT_FINAL, ()=>{
+  console.log(`Server online at port:${PORT_FINAL}`);
 });
 
 
