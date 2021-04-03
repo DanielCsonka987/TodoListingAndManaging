@@ -4,13 +4,30 @@ chai.use(chaiHTTP);
 const expect = chai.expect;
 const mongoose = require('mongoose');
 
-const api = require('../../app.js');
+const api = require('../../server.js');
 const mongooseProfileProc = require('../../model/profileProcesses.js');
 const dbaccess = require('../../config/appConfig.js').db_access;
-const ProfileSchema = require('../../model/profileItem.js');
+const ProfileModel = require('../../model/ProfileModel.js');
 
-const newUser = require('./profileTestDatas.js').registGoodProfile;
-const faultyUsers = require('./profileTestDatas.js').registFaultyProfiles;
+const api = require('../../server.js');
+const dbaccess = require('../testConfig').testDBConnection;
+const ProfileModel = require('../../model/ProfileModel.js')
+let alreadyRegUserId = [];
+
+const findProfId = require('../testingMethods').forUrls.extinctProfIdFromUrl
+const findTodoId = require('../testingMethods').forUrls.extinctTodoIdFromUrl
+
+const testRepsBasics = require('../testingMethods').forMsgs.testRespMsgBasics;
+const testJSONBasics = require('../testingMethods').forMsgs.testJSONMsgBasics;
+const testRespCookie = require('../testingMethods').forMsgs.testRespMsgBasics;
+
+const testProfDetailedContent = require('../testingMethods').forMsgs
+  .reviseProfDetailedContent
+
+const registForm = require('../testingMethods').forFormParams.smblRegistForm;
+
+const newUser = require('../registProfileDatas').profiles;
+const faultyUsers = require('../todoTestDatas').bareNewTodos;
 
 before(function(){
   return new Promise((resolve, reject)=>{
@@ -19,21 +36,54 @@ before(function(){
     .on('error', (err)=>{ console.log('MongoDB error: ', err); })
     .once('open', ()=>{ console.log('Test DB connection established!') })
     .once('close', ()=>{ console.log('Test DB connection closed') });
-    resolve();
-  }).catch(err=>{ console.log(err) });
+    mongoose.connection.profiles.drop(err=>{
+      if(err){
+        console.log('Collection empting failed! ' + err)
+        reject();
+      }
+      resolve();
+    })
+  }).catch(err=>{ mongoose.connection.close() });
 });
 
 after(function(){
   return new Promise((resolve, reject)=>{
-    ProfileSchema.deleteOne({username: newUser.username}, (err, rep)=>{
-      expect(err).to.be.a('null');
-      mongoose.connection.close();
-      resolve();
-    });
-  }).catch(err=>{ console.log(err) })
+    mongoose.connection.close();
+    resolve();
+  })
 })
 
-describe('Register on api', function(){
+describe('Register on api empty db', function(){
+
+  it('Register a new users and read back', function(){
+    let agent = chai.request.agent(api);
+    return agent.keepOpen()
+      .post('/profile/register')
+      .type('form')
+      .send( registForm(userForTestRegister[0]) )
+      .then((res)=>{
+        testRepsBasics(res)
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'success')
+        testProfDetailedContent(resJSON.report)
+        
+        alreadyRegUserId.push( findProfId(resJSON.report.logoutUrl) )
+        
+        testRespCookie(res, alreadyRegUserId)
+
+
+        return agent.get(`/profile/`)
+          .type('form')
+          .send()
+          .then((nextRes)=>{
+            testRepsBasics(nextRes)
+            const resNextJSON = JSON.parse(nextRes.text);
+            testJSONBasics(resNextJSON, 'success')
+
+          })
+      })
+  })
+
   it('Register with normal datas - only positive case', function(){
     return new Promise((resolve, reject)=>{
       chai.request(api).keepOpen()

@@ -13,7 +13,7 @@ const reviseMessageContent = require('../testingMethods')
   .forMsgs.reviseMessageContent
 
 const reviseProfileContent = require('../testingMethods')
-  .forMsgs.reviseProfileContent
+  .forMsgs.reviseProfDetailedContent
 
 const reviseTodoContent = require('../testingMethods')
   .forMsgs.reviseTodoContent
