@@ -47,7 +47,7 @@ module.exports = {
             loginUrl: paths.basePath + privProf.id + paths.loginPostfix
         }
     },
-    convertProfileDetailsToPublic: function(privProf){
+    convertProfileDetailsToLogin: function(privProf){
         return{
             username: privProf.username, 
             first_name: privProf.first_name,
@@ -59,6 +59,11 @@ module.exports = {
             changPwdDelAccUrl: paths.basePath + privProf._id.toString(),
             logoutUrl: paths.basePath + privProf._id.toString() + paths.logoutPostfix,
         }
+    },
+    convertProfileDetailsToRegister: function(privProf){
+        let datas = this.convertProfileDetailsToLogin(privProf)
+        datas.id = privProf._id;
+        return datas
     },
     convertTodoDetailsToPublic: function(profileId, privTodo){
         return {

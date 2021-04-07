@@ -21,8 +21,12 @@ ProfileItemSchema.virtual('basicProfileDatas').get(function(){
   return view.convertProfileBasisToPublic(this)  
 })
 // after login, the needed contents
-ProfileItemSchema.virtual('detailedProfileDatas').get(function(){
-  return view.convertProfileDetailsToPublic(this)
+ProfileItemSchema.virtual('detailedProfileDatas_Login').get(function(){
+  return view.convertProfileDetailsToLogin(this)
+})
+// after registering, the needed contents
+ProfileItemSchema.virtual('detailedProfileDatas_Register').get(function(){
+  return view.convertProfileDetailsToRegister(this)
 })
 // at profile validation
 ProfileItemSchema.virtual('systemDatas').get(function(){
@@ -75,7 +79,7 @@ ProfileItemSchema.statics.findThisProfileToLogin = function(profid, callbFunc){
   return this.findOne({ _id: profid }, (err, doc)=>{
     callbFunc( 
       err? view.assembleDBErrorMsg() :
-        view.assembleProperMsgContent(doc.detailedProfileDatas)
+        view.assembleProperMsgContent(doc.detailedProfileDatas_Login)
     )
   })
 }
@@ -103,7 +107,7 @@ ProfileItemSchema.statics.createNewProfile = function(profDatas, callbFunc){
   return this.create(profDatas, (err, doc)=>{
     callbFunc( (err || !doc)?
       view.assembleDBErrorMsg() :
-      view.assembleProperMsgContent(doc.detailedProfileDatas)
+      view.assembleProperMsgContent(doc.detailedProfileDatas_Register)
     )
   })
 }

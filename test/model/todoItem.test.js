@@ -60,7 +60,7 @@ describe('Model TodoItem CRUD operations', ()=>{
         const firstTodoId = doc.forTestShowFirstTodo._id
         expect(firstTodoId).to.be.a('object')
 
-        const detailedProfDatas = doc.detailedProfileDatas;
+        const detailedProfDatas = doc.detailedProfileDatas_Login;
         expect(detailedProfDatas).to.be.a('object')
         expect(detailedProfDatas).to.have.own.property('logoutUrl')
 
@@ -93,7 +93,7 @@ describe('Model TodoItem CRUD operations', ()=>{
         profilesTodoTestDatas[1]._id = doc._id
 
         expect(seekedProfId).to.be.a('object')
-        const detailedProfDatas = doc.detailedProfileDatas;
+        const detailedProfDatas = doc.detailedProfileDatas_Login;
         expect(detailedProfDatas).to.be.a('object')
         expect(detailedProfDatas).to.have.own.property('logoutUrl')
         
@@ -119,7 +119,7 @@ describe('Model TodoItem CRUD operations', ()=>{
         profilesTodoTestDatas[2]._id = doc._id
 
         expect(seekedProfId).to.be.a('object')
-        const detailedProfDatas = doc.detailedProfileDatas;
+        const detailedProfDatas = doc.detailedProfileDatas_Login;
         expect(detailedProfDatas).to.be.a('object')
         expect(detailedProfDatas).to.have.own.property('logoutUrl')
         const aUrl = detailedProfDatas.logoutUrl

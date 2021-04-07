@@ -30,7 +30,7 @@ function regDatasVerification(req, res, next){
 
 function regProfilesCollisionScreen(req, res, next){
   model.findThisByUsername(req.body.username, result =>{
-    if(result.status === 'sucess'){
+    if(result.status === 'failed'){
       next();
     }else{
       res.status(200); 
@@ -64,6 +64,7 @@ function createNewProfileAndLogin(req, res){
   model.createNewProfile(newProf, result=>{
     if(result.status === 'success'){
       createSessCookie(res, result.report.id);
+      delete result.report.id
       res.status(200)
       res.json( regView.registerSuccess(result) )
     }else{

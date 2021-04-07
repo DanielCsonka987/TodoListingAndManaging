@@ -3,7 +3,6 @@ const expect = require('chai').expect;
 
 const dbaccess = require('../testConfig').testDBConnection;
 const ProfileModel = require('../../model/ProfileModel.js');
-const TodoSchema = require('../../model/TodoSchema')
 
 const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
 const newProfiles = require('../todoTestDatas').newProfilesWithoutTodos;
@@ -65,14 +64,12 @@ describe('Integrated profile-todo tests', ()=>{
 
   it('Create a user, add some todo in a profile', (done)=>{
     ProfileModel.createNewProfile(newProfiles[0], (res)=>{
-
       reviseMessageContent(res, 'success')
       expect(res.report).to.be.a('object')
       reviseProfileContent(res.report)
-      expect(res.report).to.have.property('logoutUrl')
-      newProfiles[0]._id = extinctProfId(res.report.logoutUrl);
-      expect(res.report.todos).to.be.a('array')
       expect(res.report.todos).to.be.empty
+
+      newProfiles[0]._id = res.report.id.toString();
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[0], (result)=>{
         reviseMessageContent(result, 'success')

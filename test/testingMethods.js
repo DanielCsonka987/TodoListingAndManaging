@@ -1,9 +1,9 @@
 const expect = require('chai').expect;
+const testingHeaderArray = require('./testConfig').headerArrayToTest
 const profileIDPos = require('./testConfig').profileIDPosInUrl
 const todoIDPos = require('./testConfig').todoIDPosInUrl
-const profURLSchema = require('./testConfig').profShortURLRegexp
-const todoURLSchema = require('./testConfig').todoShortURLRegexp
-const todoLongURLLong = require('./testConfig').todoLongURLRegexp
+const profURLSchema = require('./testConfig').profURLRegexp
+const todoURLSchema = require('./testConfig').todoURLRegexp
 
 module.exports.forMsgs = {
     reviseMessageContent: (res, expRes)=>{
@@ -12,35 +12,70 @@ module.exports.forMsgs = {
         expect(res.status).to.equal(expRes)
         expect(res).to.have.own.property('report')
     },
-    reviseListOfProfiles: (report)=>{
+    reviseListOfProfiles: (report, expLength)=>{
       expect(report).to.be.a('array')
-      expect(report).to.have.deep.property('username')
-      expect(report).to.have.deep.property('loginUrl')
+      expect(report).to.have.lengthOf(expLength)
+      if(report.length > 0){
+        const urlExam = new RegExp(profURLSchema.loginProf)
+
+        report.forEach(item=>{
+          expect(item).to.have.property('username')
+          expect(item.username).to.be.a('string')
+          expect(item).to.have.property('loginUrl')
+          expect(item.loginUrl).to.be.a('string')
+          expect( urlExam.test(item.loginUrl) ).to.be.true
+        })
+      }
     },
     reviseProfDetailedContent: (report)=>{
         expect(report).to.have.own.property('username')
         expect(report.username).to.be.a('string')
         expect(report.username).to.not.equal('')
         expect(report).to.have.own.property('first_name')
-        expect(report.firt_name).to.be.a('string')
+        expect(report.first_name).to.be.a('string')
         expect(report.first_name).to.not.equal('')
         expect(report).to.have.own.property('last_name')
         expect(report).to.have.own.property('age')
         expect(report).to.have.own.property('occupation')
         expect(report).to.have.own.property('todos')
+        expect(report.todos).to.be.a('array')
 
         expect(report).to.have.own.property('changPwdDelAccUrl')
+        expect(report.changPwdDelAccUrl).to.be.a('string')
+        const urlExam1 = new RegExp(profURLSchema.changePwdRemoveProf)
+        expect( urlExam1.test(report.changPwdDelAccUrl) ).to.be.true
+        
         expect(report).to.have.own.property('logoutUrl')
+        expect(report.logoutUrl).to.be.a('string')
+        const urlExam2 = new RegExp(profURLSchema.logoutProf)
+        expect( urlExam2.test(report.logoutUrl) ).to.be.true
     },
       
     reviseTodoContent: (report)=>{
         expect(report).to.have.own.property('task')
+        expect(report.task).to.be.a('string')
+        expect(report.task).to.not.equal('')
         expect(report).to.have.own.property('start')
         expect(report).to.have.own.property('update')
+
+        expect(report).to.have.own.property('status')
+        expect(report.status).to.be.a('string')
         expect(report).to.have.own.property('notation')
-        expect(report).to.have.own.property('priority')
-        expect(report).to.have.own.property('update')
-        expect(report).to.have.own.property('start')
+
+        expect(report).to.have.own.property('notationChangeUrl')
+        expect(report.notationChangeUrl).to.be.a('string')
+        const urlExam1 = new RegExp(todoURLSchema.changeNote)
+        expect(urlExam1.test(report.notationChangeUrl) ).to.be.true
+
+        expect(report).to.have.own.property('statusChangeUrl')
+        expect(report.statusChangeUrl).to.be.a('string')
+        const urlExam2 = new RegExp(todoURLSchema.changeStatus)
+        expect( urlExam2.test(report.statusChangeUrl) ).to.be.true
+
+        expect(report).to.have.own.property('removingUrl')
+        expect(report.removingUrl).to.be.a('string')
+        const urlExam3 = new RegExp(todoURLSchema.remove)
+        expect( urlExam3.test(report.removingUrl) ).to.be.true
     },
 
     testRespMsgBasics: (resp, expStatusCode) =>{
@@ -60,7 +95,15 @@ module.exports.forMsgs = {
     testRespMsgCookie: (resp, expLabel, expContent)=>{
         expect(resp).to.have.cookie(expLabel, expContent)
     },
-    testRepHeaders: (resp)=>{
+    testRespHeaders: (resp)=>{
+      expect(resp).to.have.headers
+
+      testingHeaderArray.forEach((head)=>{
+        expect(resp).to.have.header(head[0], head[1])
+      })
+
+    },
+    testLoginStateRevisionResp: (resp, expRes)=>{
 
     }
 }
@@ -74,12 +117,12 @@ module.exports.forFormParams = {
     smblRegistForm: (profObj)=>{
       return {
         'username': profObj.username,
-        'password': pwd1,
-        'password_repeat': pwd2,
-        'first_name': firstn,
-        'last_name': lastn,
-        'age': age,
-        'occupation': ocup
+        'password': profObj.password,
+        'password_repeat': profObj.password_repeat,
+        'first_name': profObj.first_name,
+        'last_name': profObj.last_name,
+        'age': profObj.age,
+        'occupation': profObj.occupation
       }
     },
     smblPwdChangeForm: (pwdOld, pwdNew)=>{

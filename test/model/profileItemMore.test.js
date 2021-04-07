@@ -9,8 +9,7 @@ const additionalPersons = require('../profileTestDatas.js').newProfiles;
 
 before(()=>{
     return new Promise((resolve, reject)=>{
-        mongoose.connect(dbAccess, 
-            { useNewUrlParser: true, useUnifiedTopology: true })
+        mongoose.connect(dbaccess, { useNewUrlParser: true, useUnifiedTopology: true })
         const dbConn = mongoose.connection;
         dbConn
             .once('open', ()=> console.log('MongoDB opened!'))
@@ -163,7 +162,7 @@ describe('Profile processes complex tests',()=>{
                 done();
             })
         })
-        it('Virtuals testing - more details', (done)=>{
+        it('Virtuals testing - more details login', (done)=>{
             const uName = profileTestDatas[3].username;
             const uFirstName = profileTestDatas[3].first_name;
             const uLastName = profileTestDatas[3].last_name;
@@ -171,7 +170,7 @@ describe('Profile processes complex tests',()=>{
             ProfileModel.findOne( { username: uName }, (err, doc)=>{
                 expect(err).to.be.a('null');
                 expect(doc).to.be.a('object')
-                const extr = doc.detailedProfileDatas;
+                const extr = doc.detailedProfileDatas_Login;
                 expect(extr).to.be.a('object')
 
                 const aUrl = extr.logoutUrl;
@@ -180,6 +179,30 @@ describe('Profile processes complex tests',()=>{
                 expect(idString).to.be.a('string')
                 expect(idString).to.deep.equal(doc._id.toString())
 
+                expect(extr.first_name).to.equal(uFirstName)
+                expect(extr.last_name).to.equal(uLastName)
+                expect(extr.age).to.equal(uAge)
+                done();
+            })
+        })
+        it('Virtuals testing - more details register', (done)=>{
+            const uName = profileTestDatas[3].username;
+            const uFirstName = profileTestDatas[3].first_name;
+            const uLastName = profileTestDatas[3].last_name;
+            const uAge = profileTestDatas[3].age;
+            ProfileModel.findOne( { username: uName }, (err, doc)=>{
+                expect(err).to.be.a('null');
+                expect(doc).to.be.a('object')
+                const extr = doc.detailedProfileDatas_Register;
+                expect(extr).to.be.a('object')
+
+                const aUrl = extr.logoutUrl;
+                expect(aUrl).to.be.a('string')
+                const idString = aUrl.split('/')[2]
+                expect(idString).to.be.a('string')
+                expect(idString).to.deep.equal(doc._id.toString())
+
+                expect(extr.id).to.be.a('object')
                 expect(extr.first_name).to.equal(uFirstName)
                 expect(extr.last_name).to.equal(uLastName)
                 expect(extr.age).to.equal(uAge)
