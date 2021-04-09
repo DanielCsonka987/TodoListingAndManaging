@@ -95,15 +95,16 @@ module.exports.forMsgs = {
     testRespMsgCookie: (resp, expLabel, expContent)=>{
         expect(resp).to.have.cookie(expLabel, expContent)
     },
+    testRespMsgNoCookie: (resp, expLabel)=>{
+      if(resp.header['set-cookie'])
+        expect(resp).to.have.cookie(expLabel, '')
+    },
     testRespHeaders: (resp)=>{
       expect(resp).to.have.headers
 
       testingHeaderArray.forEach((head)=>{
         expect(resp).to.have.header(head[0], head[1])
       })
-
-    },
-    testLoginStateRevisionResp: (resp, expRes)=>{
 
     }
 }
@@ -153,8 +154,13 @@ module.exports.forFormParams = {
       return{
         'status': sts
       }
+    },
+    extinctLogindDatas: (seekedUname, datapool)=>{
+      const { username, password } = datapool.filter(item =>{
+          return item.username === seekedUname 
+        })[0]
+      return [ username, password ]
     }
-      
 }
 module.exports.forUrls = {
     extinctProfIdFromUrl: (url) =>{
@@ -164,5 +170,6 @@ module.exports.forUrls = {
     extinctTodoIdFromUrl: (url)=>{
       return url.split('/')[todoIDPos]
     }
+
 
 }

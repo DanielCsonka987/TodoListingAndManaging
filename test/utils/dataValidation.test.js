@@ -188,7 +188,7 @@ describe('Login datas verification - positive/negative cases', ()=>{
   it('Correct composition', (done)=>{
     LoginVerif({
       username: 'somebody',
-      password: '123that'
+      password: '123that$'
     })
     .then(res=>{
       expect(res).to.be.a('object');

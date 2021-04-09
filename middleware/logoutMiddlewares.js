@@ -1,4 +1,4 @@
-const cookieRemoval = require('../utils/cookieManagers').removeSessionCookieAtRespObj
+const cookieRemoval = require('../utils/cookieManagers').removeSessionCookieAtResObj
 const logoutView = require('../view/middleView').forLogout
 module.exports.logoutSteps = [
   cookieLogoutRemoval

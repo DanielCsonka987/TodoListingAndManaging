@@ -30,28 +30,28 @@ module.exports.forCookies = {
 // LOGIN MESSAGES //
 module.exports.forLogin = {
     noProperLoginDatas: {
-        status: 'falied',
+        status: 'failed',
         report: 'dataFail',
         message: 'Wrong username or password!'
     },
     noSuchUserInSystem: {
-        status: 'falied',
+        status: 'failed',
         report: 'lackOfUser',
         message: 'Wrong username or password!'
     },
     differentParamAndUserid: {
-        status: 'falied',
+        status: 'failed',
         report: 'differentParams',
         message: 'Wrong username or password!'
     },
     passwordNotAcceptable: {
-        status: 'falied',
-        report: 'authentication1',
+        status: 'failed',
+        report: 'authentication',
         message: 'Wrong username or password!'
     },
     passwordTestError: {
         status: 'failed',
-        report: 'authentication2',
+        report: 'authentication',
         message: 'System error occured!'
     },
     loginSuccess: (dbmsg) =>{

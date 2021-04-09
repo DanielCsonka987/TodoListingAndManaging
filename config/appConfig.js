@@ -14,12 +14,11 @@ module.exports.validation = {
   encryption_saltrounds: 12,
   actPwdLengthStandard : 60,
   username_regexp: '^[a-zA-Z0-9_.]{4,40}$',
-  mongodbid_regexp: '[0-9a-f]{24}',
+  password_regexp: '^.{4,40}$',
+  mongodbid_regexp: '^[0-9a-f]{24}$',
   true_false_regexp: '^true$|^false$',
 
   // defined in primitive values
-  pwd_text_min: 4,
-  pwd_text_max: 40,
   name_max: 80,
   occupation_max: 50,
   age_min: 5,
