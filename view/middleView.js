@@ -156,22 +156,27 @@ module.exports.forProfiles = {
         report: 'old_password',
         message: 'This old password is not correct!'
     },
+    pwdHashRevisionFailed: {
+        status: 'failed',
+        report: 'old_password',
+        msg: 'This old password is not correct!'
+    },
     pwdHashRevisionError:{
         status: 'failed',
         report: '',
         message: 'System error occured!'
     },
-    pwdHashFailed: {
+    pwdHashingFailed: {
         status: 'failed',
         report: '',
-        msg: 'System error occured!'
-    },
-    pwdUpdateFailed(dbmsg){
-        dbmsg.message = 'Updating failed!';
-        return dbmsg
+        message: 'System error occured!'
     },
     pwdUpdateSuccess(dbmsg){
         dbmsg.message = 'Updating done!';
+        return dbmsg
+    },
+    pwdUpdateFailed(dbmsg){
+        dbmsg.message = 'Updating failed!';
         return dbmsg
     },
 

@@ -20,7 +20,7 @@ const testRespBasics = require('../testingMethods').forMsgs.testRespMsgBasics;
 const testJSONBasics = require('../testingMethods').forMsgs.testJSONMsgBasics;
 const testRespCookie = require('../testingMethods').forMsgs.testRespMsgCookie;
 const testRespNoCookie = require('../testingMethods').forMsgs.testRespMsgNoCookie;
-const testRespHeaders = require('../testingMethods').forMsgs.testRespHeaders;
+const testRespHeaders = require('../testingMethods').forMsgs.testRespMsgHeaders;
 
 const testProfList = require('../testingMethods').forMsgs.reviseListOfProfiles;
 const testProfDetailes = require('../testingMethods').forMsgs.reviseProfDetailedContent;

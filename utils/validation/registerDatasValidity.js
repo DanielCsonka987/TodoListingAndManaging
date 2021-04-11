@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const usernamedRegexp = require('../../config/appConfig.js').validation
   .username_regexp;
-const passwordRegexp = require('../../config/appConfig').validation
-  .password_regexp
+const pwdMinMax = require('../../config/appConfig').validation
+  .password
 const nameMax = require('../../config/appConfig').validation.name_max
 const occupMax = require('../../config/appConfig').validation.occupation_max
 const ageMax = require('../../config/appConfig').validation.age_max
@@ -10,7 +10,7 @@ const ageMin = require('../../config/appConfig').validation.age_min
 
 const SchemaRegister = Joi.object({
   username: Joi.string().pattern(new RegExp(usernamedRegexp)).required(),
-  password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
+  password: Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required(),
   password_repeat: Joi.ref('password'),
   first_name: Joi.string().max(nameMax).required(),
   last_name: Joi.string().max(nameMax),

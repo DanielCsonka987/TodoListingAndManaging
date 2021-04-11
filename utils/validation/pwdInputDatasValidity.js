@@ -1,13 +1,13 @@
 const Joi = require('joi');;
-const passwordRegexp = require('../../config/appConfig').validation
-  .password_regexp
+const pwdMinMax = require('../../config/appConfig').validation
+  .password
 
 const SchemaOldNewPwdChange = Joi.object({
-  new_password: Joi.string().pattern(new RegExp(passwordRegexp)).required(),
-  old_password: Joi.string().pattern(new RegExp(passwordRegexp)).required()
+  new_password: Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required(),
+  old_password: Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required()
 });
 
-const SchemaOldPwdRevise = Joi.string().pattern(new RegExp(passwordRegexp)).required()
+const SchemaOldPwdRevise = Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required()
 
 module.exports.pwdChangeInputPairRevise = (pwdChangeData) =>{
   return new Promise((resolve, reject)=>{

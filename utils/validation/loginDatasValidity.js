@@ -1,12 +1,11 @@
 const Joi = require('joi');
 const usernamedRegexp = require('../../config/appConfig.js').validation
   .username_regexp;
-const passwordRegexp = require('../../config/appConfig.js')
-  .validation.password_regexp;
-
+const pwdMinMax = require('../../config/appConfig').validation
+  .password
 const SchemaLogin = Joi.object({
-  username: Joi.string().pattern(new RegExp(usernamedRegexp)).required(),
-  password: Joi.string().pattern(new RegExp(passwordRegexp)).required()
+  username: Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required(),
+  password: Joi.string().min(pwdMinMax[0]).max(pwdMinMax[1]).required()
 }).with('username', 'password');
 
 module.exports = (loginData)=>{

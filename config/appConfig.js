@@ -8,13 +8,13 @@ module.exports.server = {
 module.exports.db = {
   db_access_cloud: 'mongodb+srv://' + dbUser + ':' + dbPwd +
    '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
-  db_access_local: 'mongodb://127.0.0.1:27017/'+ dbname ,
+  db_access_local: 'mongodb://127.0.0.1:27017/'+ dbname,
 }
 module.exports.validation = {
   encryption_saltrounds: 12,
   actPwdLengthStandard : 60,
   username_regexp: '^[a-zA-Z0-9_.]{4,40}$',
-  password_regexp: '^.{4,40}$',
+  password: [4, 40],
   mongodbid_regexp: '^[0-9a-f]{24}$',
   true_false_regexp: '^true$|^false$',
 

@@ -3,6 +3,7 @@ const model = require('../model/ProfileModel.js');
 const cookieView = require('../view/middleView.js').forCookies;
 
 const sessionCookieName = require('../config/appConfig').cookie.sessionCookieNameing;
+const createSessCookie = require('../utils/cookieManagers').createSessionCookieAtResObj
 
 module.exports.cookieRevisionSteps = [
   existenceTest, contentStrTest, contentDBTest, sessionCookieRenew

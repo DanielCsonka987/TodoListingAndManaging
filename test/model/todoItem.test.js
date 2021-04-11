@@ -3,7 +3,6 @@ const expect = require('chai').expect;
 
 const dbaccess = require('../testConfig').testDBConnection;
 const ProfileModel = require('../../model/ProfileModel.js');
-const TodoSchema = require('../../model/TodoSchema')
 
 const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
 const bareTodos = require('../todoTestDatas').bareNewTodos

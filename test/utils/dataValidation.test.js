@@ -367,12 +367,37 @@ describe('Change password datas verification - positive/negative cases', functio
     })
   })
 })
+
 describe('Single pwd revision - positive/negative cases', ()=>{
-  it('Single password validation, proper one', ()=>{
+  it('Single password validation, proper one, no1', ()=>{
     return ChangePwdVerif.pwdContentRevise('test')
     .then(res=>{
       expect(res).to.be.a('string')
       expect(res).to.equal('test')
+    })
+    .catch(err =>{ expect(err).to.be.a('undefiend') })
+  })
+  it('Single password validation, proper one, no2', ()=>{
+    return ChangePwdVerif.pwdContentRevise('tEst')
+    .then(res=>{
+      expect(res).to.be.a('string')
+      expect(res).to.equal('tEst')
+    })
+    .catch(err =>{ expect(err).to.be.a('undefiend') })
+  })
+  it('Single password validation, proper one, no3', ()=>{
+    return ChangePwdVerif.pwdContentRevise('te$t')
+    .then(res=>{
+      expect(res).to.be.a('string')
+      expect(res).to.equal('te$t')
+    })
+    .catch(err =>{ expect(err).to.be.a('undefiend') })
+  })
+  it('Single password validation, proper one, no4', ()=>{
+    return ChangePwdVerif.pwdContentRevise('t3st')
+    .then(res=>{
+      expect(res).to.be.a('string')
+      expect(res).to.equal('t3st')
     })
     .catch(err =>{ expect(err).to.be.a('undefiend') })
   })

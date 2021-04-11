@@ -10,13 +10,15 @@ let alreadyRegUserID = [];
 
 const testRespBasics = require('../testingMethods').forMsgs.testRespMsgBasics;
 const testRespCookie = require('../testingMethods').forMsgs.testRespMsgCookie;
-const testHeaders = require('../testingMethods').forMsgs.testRespHeaders;
+const testHeaders = require('../testingMethods').forMsgs.testRespMsgHeaders;
 const testJSONBasics = require('../testingMethods').forMsgs.testJSONMsgBasics;
+
 const testProfileList = require('../testingMethods').forMsgs.reviseListOfProfiles
 const testProfDetailedContent = require('../testingMethods').forMsgs.reviseProfDetailedContent
   
 const registForm = require('../testingMethods').forFormParams.smblRegistForm;
 const findProfId = require('../testingMethods').forUrls.extinctProfIdFromUrl
+
 const userForTestRegister = require('../registProfileDatas').profiles;
 
 before(function(){

@@ -8,20 +8,12 @@ const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
 const newProfiles = require('../todoTestDatas').newProfilesWithoutTodos;
 const bareTodos = require('../todoTestDatas').bareNewTodos
 
-const reviseMessageContent = require('../testingMethods')
-  .forMsgs.reviseMessageContent
+const reviseMessageContent = require('../testingMethods').forMsgs.testRespMsgBasics
+const reviseProfileContent = require('../testingMethods').forMsgs.reviseProfDetailedContent
+const reviseTodoContent = require('../testingMethods').forMsgs.reviseTodoContent
 
-const reviseProfileContent = require('../testingMethods')
-  .forMsgs.reviseProfDetailedContent
-
-const reviseTodoContent = require('../testingMethods')
-  .forMsgs.reviseTodoContent
-
-const extinctProfId = require('../testingMethods')
-  .forUrls.extinctProfIdFromUrl
-
-const extinctTodoId = require('../testingMethods')
-  .forUrls.extinctTodoIdFromUrl
+const extinctProfId = require('../testingMethods').forUrls.extinctProfIdFromUrl
+const extinctTodoId = require('../testingMethods').forUrls.extinctTodoIdFromUrl
 
 before(()=>{
   return new Promise((resolve, reject)=>{

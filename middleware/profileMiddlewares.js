@@ -30,7 +30,6 @@ function readAllProfiles(req, res){
 
 
 function profileOldPwdConfirmation(req, res, next){
-  //console.log(req.oldHashedPwd)
   pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)  
   .then(()=>{
     next();
@@ -38,7 +37,7 @@ function profileOldPwdConfirmation(req, res, next){
   .catch(err=>{
     if(err === 'incorrect'){
       res.status(200);
-      res.json( profView.pwdHashRevisionFail )
+      res.json( profView.pwdHashRevisionFailed )
     } else {
       res.status(500);
       res.json( profView.pwdHashRevisionError )
@@ -67,7 +66,7 @@ function profileNewPwdEncoding(req, res, next){
   })
   .catch(err=>{
     res.status(500);
-    res.json( profView.pwdHashFailed );
+    res.json( profView.pwdHashingFailed );
   })
 }
 
@@ -79,7 +78,7 @@ function profilePwdUpdate(req, res){
       
     }else {
       res.status(500);
-      res.json( profView.pwdUpdateFailed(err) )
+      res.json( profView.pwdUpdateFailed(result) )
     }
   })
 }
@@ -87,9 +86,9 @@ function profilePwdUpdate(req, res){
 
 
 
-// REMOVE COOKIE //
+// REMOVE PROFILE //
 function profileDeletePasswordRevise(req, res, next){
-  pwdInputDataValidator.pwdContentRevise(req.body)
+  pwdInputDataValidator.pwdContentRevise(req.body.old_password)
   .then(()=>{
     next();
   })
@@ -100,8 +99,8 @@ function profileDeletePasswordRevise(req, res, next){
 }
 function profileDeletionAndLogout(req, res ){
   model.removeThisProfile(req.params.id, result=>{
-    if(result === 'success'){
-      removeSessionCookie(res, '');
+    if(result.status === 'success'){
+      removeSessionCookie(res);
       res.status(200)
       res.json( profView.profDelsuccess(result) )
     }else{
