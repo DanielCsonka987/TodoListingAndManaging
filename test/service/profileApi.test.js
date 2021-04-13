@@ -25,8 +25,7 @@ const testLoginResp = require('../testingMethods').forMsgs.reviseProfDetailedCon
 
 const findProfId = require('../testingMethods').forUrls.extinctProfIdFromUrl
 const findRespCookieDate = require('../testingMethods').forMsgs.extinctRespCookieExpireDate
-const findLoginDatas = require('../testingMethods').forFormParams.extinctLogindDatas
-const findOldPwd = require('../testingMethods').forFormParams.extinctOldPwd
+const findPwd = require('../testingMethods').forFormParams.extinctPwd
 
 const loginForm = require('../testingMethods').forFormParams.smblLoginForm
 const pwdChangeForm = require('../testingMethods').forFormParams.smblPwdChangeForm
@@ -40,8 +39,8 @@ before(function(){
     .once('close', ()=>{ console.log('Mongoose test DB closed!') })
     .on('error', (err)=>{ console.log('Mongoose error occured! ', err) })
 
-    mongoose.connection.collections.profiles.drop(err=>{
-      if(err){
+    mongoose.connection.collections.profiles.drop(error=>{
+      if(error){
         console.log('Collection is not empty!')
         reject()
       }
@@ -79,12 +78,12 @@ describe('Password change attempts',function(){
       testJSONContent(resJSON, 'success')
       testProfList(resJSON.report, 5)
       const u1 = resJSON.report[0]
-      const loginParam = findLoginDatas(u1.username, registDatas) 
+      const loginPwdParam = findPwd(u1.username, registDatas) 
       userToManage = { 
         id: findProfId(u1.loginUrl),
-        srnm: loginParam[0],
-        psswrd: loginParam[1],
-        pwdHash: findOldPwd(u1.username, testDatas),
+        srnm: u1.username,
+        psswrd: loginPwdParam,
+        pwdHash: findPwd(u1.username, testDatas),
         lgnurl: u1.loginUrl,
       }
     })
@@ -206,12 +205,12 @@ describe('Negative account change tests', ()=>{
       userToNegativeManage = { 
         id: findProfId(u2.loginUrl),
         srnm: u2.username,
-        pwdHash: findOldPwd(u2.username, testDatas),
+        pwdHash: findPwd(u2.username, testDatas),
         lgnurl: u2.loginUrl
       }
-      const loginParam = findLoginDatas(u2.username, registDatas) 
+      const loginPwdParam = findPwd(u2.username, registDatas) 
 
-      userToNegativeManage.psswrd = loginParam[1]
+      userToNegativeManage.psswrd = loginPwdParam
     })
   })
 
@@ -607,7 +606,7 @@ describe('Negative account change tests', ()=>{
       testRespCookie(nextRes, 'session', userToNegativeManage.id)
       const cookieDate1 = findRespCookieDate(nextRes, 'session') 
       expect(cookieDate1).to.be.a('Date')
-      
+
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
 

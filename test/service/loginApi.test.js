@@ -26,8 +26,6 @@ const testProfList = require('../testingMethods').forMsgs.reviseListOfProfiles;
 const testProfDetailes = require('../testingMethods').forMsgs.reviseProfDetailedContent;
 
 const loginForm = require('../testingMethods').forFormParams.smblLoginForm;
-const pwdChangeForm = require('../testingMethods').forFormParams.smblPwdChangeForm;
-
 
 before(()=>{
   return new Promise((resolve, reject)=>{
@@ -39,12 +37,12 @@ before(()=>{
 
     mongoose.connection.collections.profiles.drop((err)=>{
       if(err){
-        console.log('Collection empting failed! ' + err)
+        console.log('Collection empting failed!')
         reject();
       }
       ProfileModel.insertMany(usersForDB, (err, resp)=>{
         if(err || resp.length !== usersForDB.length){
-          console.log('Collection filling in failed ' + err)
+          console.log('Collection filling in failed')
           reject();
         }
         console.log('Test DB redy to operate!')
@@ -139,6 +137,18 @@ describe('Proper login-out attempts', function(){
         })
     })
 
+})
+
+describe('Login, than revise the cookie lifetime', ()=>{
+  before(()=>{
+
+  })
+  it('Login, client app reloded', ()=>{
+
+  })
+  it('No Login, client app reloaded', ()=>{
+
+  })
 })
 
 describe('Uncorrect login-out attempts', function(){

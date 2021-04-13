@@ -40,14 +40,14 @@ module.exports.forMsgs = {
   },
 
   testJSONMsgBasics: (msg, expState) =>{
-      expect(msg).to.be.a('object');
-      expect(msg).to.have.property('status')
-      expect(msg).to.have.property('report')
-      expect(msg).to.have.property('message')
+    expect(msg).to.be.a('object');
+    expect(msg).to.have.property('status')
+    expect(msg).to.have.property('report')
+    expect(msg).to.have.property('message')
 
-      expect(msg.status).to.be.a('string')
-      expect(msg.status).to.equal(expState)
-      expect(msg.message).to.be.a('string')
+    expect(msg.status).to.be.a('string')
+    expect(msg.status).to.equal(expState)
+    expect(msg.message).to.be.a('string')
   },
   reviseListOfProfiles: (report, expLength)=>{
     expect(report).to.be.a('array')
@@ -65,56 +65,64 @@ module.exports.forMsgs = {
     }
   },
   reviseProfDetailedContent: (report)=>{
-      expect(report).to.have.own.property('username')
-      expect(report.username).to.be.a('string')
-      expect(report.username).to.not.equal('')
-      expect(report).to.have.own.property('first_name')
-      expect(report.first_name).to.be.a('string')
-      expect(report.first_name).to.not.equal('')
-      expect(report).to.have.own.property('last_name')
-      expect(report).to.have.own.property('age')
-      expect(report).to.have.own.property('occupation')
-      expect(report).to.have.own.property('todos')
-      expect(report.todos).to.be.a('array')
+    expect(report).to.have.own.property('username')
+    expect(report.username).to.be.a('string')
+    expect(report.username).to.not.equal('')
+    expect(report).to.have.own.property('first_name')
+    expect(report.first_name).to.be.a('string')
+    expect(report.first_name).to.not.equal('')
+    expect(report).to.have.own.property('last_name')
+    expect(report).to.have.own.property('age')
+    expect(report).to.have.own.property('occupation')
+    expect(report).to.have.own.property('todos')
+    expect(report.todos).to.be.a('array')
 
-      expect(report).to.have.own.property('changPwdDelAccUrl')
-      expect(report.changPwdDelAccUrl).to.be.a('string')
-      const urlExam1 = new RegExp(profURLSchema.changePwdRemoveProf)
-      expect( urlExam1.test(report.changPwdDelAccUrl) ).to.be.true
-      
-      expect(report).to.have.own.property('logoutUrl')
-      expect(report.logoutUrl).to.be.a('string')
-      const urlExam2 = new RegExp(profURLSchema.logoutProf)
-      expect( urlExam2.test(report.logoutUrl) ).to.be.true
+    expect(report).to.have.own.property('changPwdDelAccUrl')
+    expect(report.changPwdDelAccUrl).to.be.a('string')
+    const urlExam1 = new RegExp(profURLSchema.changePwdRemoveProf)
+    expect( urlExam1.test(report.changPwdDelAccUrl) ).to.be.true
+    
+    expect(report).to.have.own.property('logoutUrl')
+    expect(report.logoutUrl).to.be.a('string')
+    const urlExam2 = new RegExp(profURLSchema.logoutProf)
+    expect( urlExam2.test(report.logoutUrl) ).to.be.true
   },
     
   reviseTodoContent: (report)=>{
-      expect(report).to.have.own.property('task')
-      expect(report.task).to.be.a('string')
-      expect(report.task).to.not.equal('')
-      expect(report).to.have.own.property('start')
-      expect(report).to.have.own.property('update')
+    expect(report).to.have.own.property('task')
+    expect(report.task).to.be.a('string')
+    expect(report.task).to.not.equal('')
+    expect(report).to.have.own.property('start')
+    expect(report).to.have.own.property('update')
 
-      expect(report).to.have.own.property('status')
-      expect(report.status).to.be.a('string')
-      expect(report).to.have.own.property('notation')
+    expect(report).to.have.own.property('status')
+    expect(report.status).to.be.a('string')
+    expect(report).to.have.own.property('notation')
 
-      expect(report).to.have.own.property('notationChangeUrl')
-      expect(report.notationChangeUrl).to.be.a('string')
-      const urlExam1 = new RegExp(todoURLSchema.changeNote)
-      expect(urlExam1.test(report.notationChangeUrl) ).to.be.true
+    expect(report).to.have.own.property('notationChangeUrl')
+    expect(report.notationChangeUrl).to.be.a('string')
+    const urlExam1 = new RegExp(todoURLSchema.changeNote)
+    expect(urlExam1.test(report.notationChangeUrl) ).to.be.true
 
-      expect(report).to.have.own.property('statusChangeUrl')
-      expect(report.statusChangeUrl).to.be.a('string')
-      const urlExam2 = new RegExp(todoURLSchema.changeStatus)
-      expect( urlExam2.test(report.statusChangeUrl) ).to.be.true
+    expect(report).to.have.own.property('statusChangeUrl')
+    expect(report.statusChangeUrl).to.be.a('string')
+    const urlExam2 = new RegExp(todoURLSchema.changeStatus)
+    expect( urlExam2.test(report.statusChangeUrl) ).to.be.true
 
-      expect(report).to.have.own.property('removingUrl')
-      expect(report.removingUrl).to.be.a('string')
-      const urlExam3 = new RegExp(todoURLSchema.remove)
-      expect( urlExam3.test(report.removingUrl) ).to.be.true
+    expect(report).to.have.own.property('removingUrl')
+    expect(report.removingUrl).to.be.a('string')
+    const urlExam3 = new RegExp(todoURLSchema.remove)
+    expect( urlExam3.test(report.removingUrl) ).to.be.true
+  },
+  testThisTodoDating: (todoItem, expRelation)=>{
+    const starting = new Date(todoItem.start)
+    const updating = new Date(todoItem.update)
+    if(expRelation === 'equal'){
+      expect(starting).to.equal(updating)
+    }else{
+      expect(starging).to.be.below(updating)
+    }
   }
-
     
 }
 module.exports.forFormParams = { 
@@ -170,7 +178,7 @@ module.exports.forFormParams = {
       })[0]
     return [ username, password ]
   },
-  extinctOldPwd: (seekedUname, datapool)=>{
+  extinctPwd: (seekedUname, datapool)=>{
     const { password } = datapool.filter(item =>{
       return item.username === seekedUname
     })[0];

@@ -69,7 +69,7 @@ module.exports = {
         return {
             task: privTodo.task,
             priority: privTodo.priority,
-            notation: privTodo.notation,
+            notation: privTodo.notation || '',
             status: privTodo.status,
             start: privTodo.startingDate,
             update: privTodo.lastModfingDate,
