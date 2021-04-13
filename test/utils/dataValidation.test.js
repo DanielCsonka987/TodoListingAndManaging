@@ -363,7 +363,7 @@ describe('Change password datas verification - positive/negative cases', functio
     })
     .catch(err=>{
       expect(err).to.be.a('string');
-      expect(err).to.equal('new_password');
+      expect(err).to.equal('old_password');
     })
   })
 })

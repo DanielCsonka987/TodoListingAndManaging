@@ -159,7 +159,7 @@ module.exports.forProfiles = {
     pwdHashRevisionFailed: {
         status: 'failed',
         report: 'old_password',
-        msg: 'This old password is not correct!'
+        message: 'This old password is not correct!'
     },
     pwdHashRevisionError:{
         status: 'failed',

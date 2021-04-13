@@ -32,8 +32,6 @@ const loginForm = require('../testingMethods').forFormParams.smblLoginForm
 const pwdChangeForm = require('../testingMethods').forFormParams.smblPwdChangeForm
 const deleteProfForm = require('../testingMethods').forFormParams.smblProfDelForm
 
-const chaiAgent = chai.request.agent(api);
-
 before(function(){
   return new Promise((resolve, reject)=>{
     mongoose.connect(dbaccess, { useNewUrlParser: true, useUnifiedTopology: true});
@@ -70,7 +68,7 @@ after(function(){
 describe('Password change attempts',function(){
 
   before(()=>{
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
     .get('/profile/')
     .then(res=>{
@@ -93,40 +91,39 @@ describe('Password change attempts',function(){
   })
 
   it('Login a users, change pwd, revise in DB and cookie date changes check', function(){
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent
-    .post()
+    .post(userToManage.lgnurl)
     .type('form')
     .send( loginForm(userToManage.srnm, userToManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToManage.id)
-      const cookieDating1 = findRespCookieDate(nextRes, 'session');
-
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToManage.id)
+      const cookieDating1 = findRespCookieDate(res, 'session');
       
-      const secJSON = JSON.parse(nextRes.text);
-      testJSONContent(secJSON, 'success')
-      testLoginResp(secJSON.report)
+      const firtsJSON = JSON.parse(res.text);
+      testJSONContent(firtsJSON, 'success')
+      testLoginResp(firtsJSON.report)
 
-      userToManage.pwdChngPrfDl = secJSON.report.changPwdDelAccUrl
+      userToManage.pwdChngPrfDl = firtsJSON.report.changPwdDelAccUrl
 
       const newPwd = 'testPwd'
       return chaiAgent.keepOpen()
       .put(userToManage.pwdChngPrfDl)
       .type('form')
       .send( pwdChangeForm( userToManage.psswrd, newPwd ) )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToManage.id)
-        const cookieDating2 = findRespCookieDate(thirdRes, 'session');
+      .then(nextRes=>{
+        testRespBasics(nextRes, 200)
+        testRespHeader(nextRes)
+        testRespCookie(nextRes, 'session', userToManage.id)
+        const cookieDating2 = findRespCookieDate(nextRes, 'session');
         //console.log(cookieDating1)
         //console.log(cookieDating2)
         expect(cookieDating1).to.not.equal(cookieDating2)
 
-        const thrJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thrJSON, 'success')
+        const secJSON = JSON.parse(nextRes.text)
+        testJSONContent(secJSON, 'success')
         userToManage.nwpsswrd = newPwd
 
         return ProfileModel.findOne({ _id: userToManage.id}, (err, doc)=>{
@@ -141,9 +138,8 @@ describe('Password change attempts',function(){
     
   })
 
-
   it('Login a user, delete its account, revise ind DB', ()=>{
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     expect(userToManage).to.be.a('object')
 
     return chaiAgent
@@ -161,7 +157,7 @@ describe('Password change attempts',function(){
       return chaiAgent.keepOpen()
       .delete(userToManage.pwdChngPrfDl)
       .type('form')
-      .send( deleteProfForm(userToManage.psswrd) )
+      .send( deleteProfForm(userToManage.nwpsswrd) )
       .then(nextRes=>{
         testRespBasics(nextRes, 200)
         testRespHeader(nextRes)
@@ -195,7 +191,7 @@ describe('Password change attempts',function(){
 
 describe('Negative account change tests', ()=>{  
   before(()=>{
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent
     .get('/profile/')
     .then(res=>{
@@ -213,22 +209,23 @@ describe('Negative account change tests', ()=>{
         pwdHash: findOldPwd(u2.username, testDatas),
         lgnurl: u2.loginUrl
       }
-      const loginParam = findLoginDatas(u1.username, registDatas) 
+      const loginParam = findLoginDatas(u2.username, registDatas) 
 
       userToNegativeManage.psswrd = loginParam[1]
     })
   })
 
   it('Password change, empty old password', ()=>{
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd))
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
@@ -241,17 +238,21 @@ describe('Negative account change tests', ()=>{
       .send( pwdChangeForm( '', 'testPwd') )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
 
         expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not correct!')
+        expect(thirdJSON.message).to.equal('This old password is not permitted!')
 
-        return ProfileModel.findOne({}, (err, doc)=>{
-
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
         })
 
 
@@ -261,15 +262,16 @@ describe('Negative account change tests', ()=>{
   })
 
   it('Password change, not proper old password', ()=>{
-    //const chaiAgent = chai.request.agent(api);
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
-    .post(u2.loginUrl)
+    .post(userToNegativeManage.lgnurl)
     .type('form')
-    .send(loginParam[0], loginParam[1])
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
@@ -280,8 +282,10 @@ describe('Negative account change tests', ()=>{
       .send( pwdChangeForm( 'sureNotPwd', 'testPwd') )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
@@ -289,26 +293,27 @@ describe('Negative account change tests', ()=>{
         expect(thirdJSON.report).to.equal('old_password')
         expect(thirdJSON.message).to.equal('This old password is not correct!')
 
-        return ProfileModel.findOne({}, (err, doc)=>{
-          
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
         })
+
       })
     })
   })
 
-
-
-
-
   it('Password change, empty new password', ()=>{
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
-    .post(u2.loginUrl)
+    .post(userToNegativeManage.lgnurl)
     .type('form')
-    .send(loginParam[0], loginParam[1])
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
@@ -319,31 +324,37 @@ describe('Negative account change tests', ()=>{
       .send( pwdChangeForm( userToNegativeManage.psswrd, '') )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
 
         expect(thirdJSON.report).to.equal('new_password')
-        expect(thirdJSON.message).to.equal('')
+        expect(thirdJSON.message).to.equal('This new password is not permitted!')
 
-        return ProfileModel.findOne({}, (err, doc)=>{
-
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
         })
       })
     })
   })
 
   it('Password change, too short new password', ()=>{
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
-    .post(u2.loginUrl)
+    .post(userToNegativeManage.lgnurl)
     .type('form')
-    .send(loginParam[0], loginParam[1])
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
@@ -354,31 +365,37 @@ describe('Negative account change tests', ()=>{
       .send( pwdChangeForm( userToNegativeManage.psswrd, 't') )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
 
-        expect(thirdJSON.report).to.equal('new_pssword')
-        expect(thirdJSON.message).to.equal('')
+        expect(thirdJSON.report).to.equal('new_password')
+        expect(thirdJSON.message).to.equal('This new password is not permitted!')
 
-        return ProfileModel.findOne({}, (err, doc)=>{
-
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
         })
       })
     })
   })
 
   it('Password change, no form', ()=>{
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
-    .post(u2.loginUrl)
+    .post(userToNegativeManage.lgnurl)
     .type('form')
-    .send(loginParam[0], loginParam[1])
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
@@ -389,102 +406,286 @@ describe('Negative account change tests', ()=>{
       .send( '' )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
 
-        expect(thirdJSON.report).to.equal('')
-        expect(thirdJSON.message).to.equal('')
+        expect(thirdJSON.report).to.equal('old_password')
+        expect(thirdJSON.message).to.equal('This old password is not permitted!')
 
-        return ProfileModel.findOne({}, (err, doc)=>{
-
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
         })
       })
     })
   })
 
   it('Password change, not existiong user - changed url paramter', ()=>{
-
-  })
-
-  it('Deletion, empty password', ()=>{
+    
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
-    .post(u2.loginUrl)
+    .post(userToNegativeManage.lgnurl)
     .type('form')
-    .send(loginParam[0], loginParam[1])
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
     .then(nextRes=>{
       testRespBasics(nextRes, 200)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
       testRespHeader(nextRes)
-
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+      expect(cookieDate1).to.be.a('Date')
+      
       const nextJSON = JSON.parse(nextRes.text)
       testJSONContent(nextJSON, 'success')
 
+      const alteredPwdChangeUrl = userToNegativeManage.pwdDelUrl.replace(
+        new RegExp('[0-9a-f]{24}'), '0123456789adcdef01234567'
+      )
+      
       return chaiAgent.keepOpen()
-      .put(userToNegativeManage.pwdDelUrl)
+      .put(alteredPwdChangeUrl)
       .type('form')
-      .send( deleteProfForm('') )
+      .send( pwdChangeForm(userToNegativeManage.psswrd, 'newPwd') )
       .then(thirdRes=>{
         testRespBasics(thirdRes, 200)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         testRespHeader(thirdRes)
+        testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
 
         const thirdJSON = JSON.parse(thirdRes.text)
         testJSONContent(thirdJSON, 'failed')
 
         expect(thirdJSON.report).to.equal('')
-        expect(thirdJSON.message).to.equal('')
+        expect(thirdJSON.message).to.equal('Management is permitted only at your account!')
+
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc.password).to.equal(userToNegativeManage.pwdHash)
+        })
+
+      })
+    })
+  })
+
+  it('Deletion, empty password', ()=>{
+    const chaiAgent = chai.request.agent(api);
+    return chaiAgent.keepOpen()
+    .post(userToNegativeManage.lgnurl)
+    .type('form')
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
+    .then(nextRes=>{
+      testRespBasics(nextRes, 200)
+      testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+
+      const nextJSON = JSON.parse(nextRes.text)
+      testJSONContent(nextJSON, 'success')
+
+      return chaiAgent.keepOpen()
+      .delete(userToNegativeManage.pwdDelUrl)
+      .type('form')
+      .send( deleteProfForm('') )
+      .then(thirdRes=>{
+        testRespBasics(thirdRes, 200)
+        testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
+
+        const thirdJSON = JSON.parse(thirdRes.text)
+        testJSONContent(thirdJSON, 'failed')
+
+        expect(thirdJSON.report).to.equal('old_password')
+        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc._id.toString()).to.equal(userToNegativeManage.id)
+        })
       })
     })
   })
 
   it('Deletion, not proper password', ()=>{
-    
+    const chaiAgent = chai.request.agent(api);
+    return chaiAgent.keepOpen()
+    .post(userToNegativeManage.lgnurl)
+    .type('form')
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
+    .then(nextRes=>{
+      testRespBasics(nextRes, 200)
+      testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+
+      const nextJSON = JSON.parse(nextRes.text)
+      testJSONContent(nextJSON, 'success')
+
+      return chaiAgent.keepOpen()
+      .delete(userToNegativeManage.pwdDelUrl)
+      .type('form')
+      .send( deleteProfForm('sureNotGood') )
+      .then(thirdRes=>{
+        testRespBasics(thirdRes, 200)
+        testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
+
+        const thirdJSON = JSON.parse(thirdRes.text)
+        testJSONContent(thirdJSON, 'failed')
+
+        expect(thirdJSON.report).to.equal('old_password')
+        expect(thirdJSON.message).to.equal('This old password is not correct!')
+
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc._id.toString()).to.equal(userToNegativeManage.id)
+        })
+      })
+    })
   })
 
   it('Deletion, empty form', ()=>{
+    const chaiAgent = chai.request.agent(api);
+    return chaiAgent.keepOpen()
+    .post(userToNegativeManage.lgnurl)
+    .type('form')
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
+    .then(nextRes=>{
+      testRespBasics(nextRes, 200)
+      testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
 
+      const nextJSON = JSON.parse(nextRes.text)
+      testJSONContent(nextJSON, 'success')
+
+      return chaiAgent.keepOpen()
+      .delete(userToNegativeManage.pwdDelUrl)
+      .type('form')
+      .send( '' )
+      .then(thirdRes=>{
+        testRespBasics(thirdRes, 200)
+        testRespHeader(thirdRes)
+        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
+        const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+        expect(cookieDate1).to.not.equal(cookieDate2)
+
+        const thirdJSON = JSON.parse(thirdRes.text)
+        testJSONContent(thirdJSON, 'failed')
+
+        expect(thirdJSON.report).to.equal('old_password')
+        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc._id.toString()).to.equal(userToNegativeManage.id)
+        })
+      })
+    })
   })
 
   it('Deletion, no existing user to delete - changed url parameter', ()=>{
+    const chaiAgent = chai.request.agent(api);
+    return chaiAgent.keepOpen()
+    .post(userToNegativeManage.lgnurl)
+    .type('form')
+    .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
+    .then(nextRes=>{
+      testRespBasics(nextRes, 200)
+      testRespHeader(nextRes)
+      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+      const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+      expect(cookieDate1).to.be.a('Date')
+      
+      const nextJSON = JSON.parse(nextRes.text)
+      testJSONContent(nextJSON, 'success')
 
+      const alteredPwdChangeUrl = userToNegativeManage.pwdDelUrl.replace(
+        new RegExp('[0-9a-f]{24}'), '0123456789adcdef01234567'
+      )
+
+      return chaiAgent.keepOpen()
+      .delete(alteredPwdChangeUrl)
+      .type('form')
+      .send( deleteProfForm(userToNegativeManage.psswrd) )
+      .then(thirdRes=>{
+        testRespBasics(thirdRes, 200)
+        testRespHeader(thirdRes)
+        testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
+
+        const thirdJSON = JSON.parse(thirdRes.text)
+        testJSONContent(thirdJSON, 'failed')
+
+        expect(thirdJSON.report).to.equal('')
+        expect(thirdJSON.message).to.equal('Management is permitted only at your account!')
+
+        return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+          expect(err).to.be.a('null')
+          expect(doc).to.be.a('object')
+          expect(doc._id.toString()).to.equal(userToNegativeManage.id)
+        })
+      })
+    })
   })
 
   it('Make a pwdchange change without login', ()=>{
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
     .put(userToNegativeManage.pwdDelUrl)
     .type('form')
     .send( pwdChangeForm( userToNegativeManage.psswrd, 'testPwd') )
     .then(thirdRes=>{
       testRespBasics(thirdRes, 200)
-      testRespNoCookie(thirdRes, 'session')
       testRespHeader(thirdRes)
+      testRespNoCookie(thirdRes, 'session')
 
       const thirdJSON = JSON.parse(thirdRes.text)
       testJSONContent(thirdJSON, 'failed')
 
       expect(thirdJSON.report).to.equal('')
-      expect(thirdJSON.message).to.equal('')
+      expect(thirdJSON.message).to.equal('Please, log in to use such service!')
+
+      return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+        expect(err).to.be.a('null')
+        expect(doc).to.be.a('object')
+        expect(doc.password).to.equal(userToNegativeManage.pwdHash)
+      })
     })
   })
 
   it('Make a account delete without login', ()=>{
+    const chaiAgent = chai.request.agent(api);
     return chaiAgent.keepOpen()
     .delete(userToNegativeManage.pwdDelUrl)
     .type('form')
     .send( deleteProfForm(userToNegativeManage.psswrd) )
     .then(thirdRes=>{
       testRespBasics(thirdRes, 200)
-      testRespNoCookie(thirdRes, 'session')
       testRespHeader(thirdRes)
+      testRespNoCookie(thirdRes, 'session')
 
       const thirdJSON = JSON.parse(thirdRes.text)
       testJSONContent(thirdJSON, 'failed')
 
       expect(thirdJSON.report).to.equal('')
-      expect(thirdJSON.message).to.equal('')
+      expect(thirdJSON.message).to.equal('Please, log in to use such service!')
+
+      return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
+        expect(err).to.be.a('null')
+        expect(doc).to.be.a('object')
+        expect(doc._id.toString()).to.equal(userToNegativeManage.id)
+      })
     })
   })
 })
