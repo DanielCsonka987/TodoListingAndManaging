@@ -76,7 +76,7 @@ module.exports.forMsgs = {
     expect(report).to.have.own.property('occupation')
     expect(report).to.have.own.property('todos')
     expect(report.todos).to.be.a('array')
-
+    
     expect(report).to.have.own.property('changPwdDelAccUrl')
     expect(report.changPwdDelAccUrl).to.be.a('string')
     const urlExam1 = new RegExp(profURLSchema.changePwdRemoveProf)
@@ -86,9 +86,16 @@ module.exports.forMsgs = {
     expect(report.logoutUrl).to.be.a('string')
     const urlExam2 = new RegExp(profURLSchema.logoutProf)
     expect( urlExam2.test(report.logoutUrl) ).to.be.true
+
+    expect(report).to.have.own.property('createNewTodo')
+    expect(report.createNewTodo).to.be.a('string')
+    const urlExam3 = new RegExp(todoURLSchema.createNew)
+    expect( urlExam3.test(report.createNewTodo) ).to.be.true
   },
     
   reviseTodoContent: (report)=>{
+    expect(report).to.have.own.property('id')
+    //expect(report).to.be.a('string')
     expect(report).to.have.own.property('task')
     expect(report.task).to.be.a('string')
     expect(report.task).to.not.equal('')
@@ -98,6 +105,7 @@ module.exports.forMsgs = {
     expect(report).to.have.own.property('status')
     expect(report.status).to.be.a('string')
     expect(report).to.have.own.property('notation')
+    expect(report.notation).to.be.a('string')
 
     expect(report).to.have.own.property('notationChangeUrl')
     expect(report.notationChangeUrl).to.be.a('string')
@@ -114,17 +122,33 @@ module.exports.forMsgs = {
     const urlExam3 = new RegExp(todoURLSchema.remove)
     expect( urlExam3.test(report.removingUrl) ).to.be.true
   },
+  testBackAndFrontTodoEquality: (frontVer, backDBVer)=>{
+    expect(frontVer.task).to.be.a('string')
+    expect(backDBVer.task).to.be.a('string')
+    expect(backDBVer.task).to.equal(frontVer.task)
+    
+    expect(frontVer.priority).to.be.a('number')
+    expect(backDBVer.priority).to.be.a('number')
+    expect(backDBVer.priority).to.equal(frontVer.priority)
+
+    if(backDBVer.notation){
+      expect(frontVer.notation).to.be.a('string')
+      expect(backDBVer.notation).to.be.a('string')
+      expect(backDBVer.notation).to.equal(frontVer.notation)
+    }
+  },
   testThisTodoDating: (todoItem, expRelation)=>{
     const starting = new Date(todoItem.start)
     const updating = new Date(todoItem.update)
     if(expRelation === 'equal'){
-      expect(starting).to.equal(updating)
+      expect(starting).to.deep.equal(updating)
     }else{
       expect(starging).to.be.below(updating)
     }
   }
-    
+  
 }
+
 module.exports.forFormParams = { 
   smblLoginForm: (uname, pwd)=>{
     return {

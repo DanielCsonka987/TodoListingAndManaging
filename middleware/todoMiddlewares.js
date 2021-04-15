@@ -46,12 +46,13 @@ function changeTodoStateVerification(req, res, next){
     next();
   })
   .catch(err=>{
-    res.status(200); //BAD REQUEST
+    res.status(200);
     res.json( todoView.todoStatusChangeVerifyFailed );
   });
 }
 function updateTodoStatus(req, res){
-  model.modifyTodoStatus(req.params.index, req.body.status, result=>{
+  const newStatusText = req.body.status === 'true'? 'Finished' : 'Proceeding'
+  model.modifyTodoStatus(req.params.id, req.params.index, newStatusText, result=>{
     if(result.status === 'success'){
       res.status(200);
       res.json( todoView.todoUpdateSuccess(result) );
@@ -64,7 +65,7 @@ function updateTodoStatus(req, res){
 
 
 module.exports.updateTodoNotation = (req, res) =>{
-  model.modifyTodoNotation(req.params.index, req.body.notation, result=>{
+  model.modifyTodoNotation(req.params.id, req.params.index, req.body.notation, result=>{
     if(result.status === 'success'){
       res.status(200);
       res.json( todoView.todoUpdateSuccess(result) );
@@ -78,7 +79,7 @@ module.exports.updateTodoNotation = (req, res) =>{
 
 module.exports.singleTodoRemoval = (req, res)=>{
   model.removeThisTodo(req.params.id, req.params.index, result=>{
-    if(result.success === 'success'){
+    if(result.status === 'success'){
       res.status(200);
       res.json( todoView.todoRemoveSuccess(result) );
     }else{

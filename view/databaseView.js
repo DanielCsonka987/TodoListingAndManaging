@@ -56,6 +56,7 @@ module.exports = {
             occupation: privProf.occupation,
             todos: privProf.convertAllTodosToSendable(),
 
+            createNewTodo: paths.basePath + privProf._id.toString() + paths.todoInterText,
             changPwdDelAccUrl: paths.basePath + privProf._id.toString(),
             logoutUrl: paths.basePath + privProf._id.toString() + paths.logoutPostfix,
         }
@@ -67,6 +68,7 @@ module.exports = {
     },
     convertTodoDetailsToPublic: function(profileId, privTodo){
         return {
+            id: privTodo._id,
             task: privTodo.task,
             priority: privTodo.priority,
             notation: privTodo.notation || '',

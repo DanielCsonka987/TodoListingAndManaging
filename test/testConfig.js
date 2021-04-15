@@ -11,6 +11,7 @@ module.exports = {
         //logingReviseURLRegexp: '^\/profile\/revise$'
     },
     todoURLRegexp: {
+        createNew: '^\/profile\/[0-9a-f]{24}\/todo\/$',
         changeNote: '^\/profile\/[0-9a-f]{24}\/todo\/[0-9a-f]{24}\/notation$',
         changeStatus: '^\/profile\/[0-9a-f]{24}\/todo\/[0-9a-f]{24}\/status$',
         remove: '^\/profile\/[0-9a-f]{24}\/todo\/[0-9a-f]{24}$'

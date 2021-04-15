@@ -5,7 +5,7 @@ const TodoItemSchema = Schema({
 
   task: {type: String, required: true, maxlength: 150 },
   priority: {type: Number, required: true, min: 0, max: 10 },
-  notation: {type: String, maxlength: 150},
+  notation: {type: String, maxlength: 150, default: ''},
   startingDate: {type: Date, default: Date.now()},
   lastModfingDate: {type: Date, default: Date.now()},
   status: {type: String, enum: ['Finished', 'Proceeding'], default: 'Proceeding' }
