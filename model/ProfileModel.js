@@ -54,7 +54,11 @@ ProfileItemSchema.methods.findThisRawTodo = function(todoid){
   return this.todos.filter(todo=> todo._id.equals(todoid) )[0]
 }
 ProfileItemSchema.methods.deleteThisTodoFromArray = function(todoid){
+  const oldTodoAmount = this.todos.length
   this.todos = this.todos.filter(todo => !todo._id.equals(todoid))
+  if(this.todos.length >= oldTodoAmount){
+    throw new Error()
+  }
 }
 
 
@@ -189,6 +193,7 @@ ProfileItemSchema.statics.removeThisTodo = function(profid, todoid, callbFunc){
         doc.deleteThisTodoFromArray(todoid)
         doc.save();
         callbFunc( view.assembleProperMsgContent('') )
+
       }catch(e){
         callbFunc(view.assembleDBErrorMsg())
       }

@@ -211,12 +211,18 @@ module.exports.forTodos = {
     },
 
 
-    // todo status change
+    // todo status/notation change
     todoStatusChangeVerifyFailed: {
         status: 'failed',
         report: 'status',
         message: 'System error occured!'
     },
+    todoNotationChangeVerifyFailed: {
+        status: 'failed',
+        report: 'notation',
+        message: 'System error occured!'
+    },
+
     todoUpdateSuccess(dbmsg){
         dbmsg.message = 'Update done!';
         return dbmsg

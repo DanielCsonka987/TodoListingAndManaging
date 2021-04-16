@@ -6,9 +6,6 @@ const todoView = require('../view/middleView').forTodos
 module.exports.todoCreationSteps = [
   newContentVerification, createNewTodo
 ]
-module.exports.todoStatusUpdateSteps = [
-  changeTodoStateVerification, updateTodoStatus
-]
 
 function newContentVerification(req, res, next){
   verifyTodo(req.body)
@@ -38,8 +35,9 @@ function createNewTodo(req, res){
 }
 
 
-
-
+module.exports.todoStatusUpdateSteps = [
+  changeTodoStateVerification, updateTodoStatus
+]
 function changeTodoStateVerification(req, res, next){
   verifyState(req.body.status)
   .then(result=>{
@@ -64,7 +62,18 @@ function updateTodoStatus(req, res){
 }
 
 
-module.exports.updateTodoNotation = (req, res) =>{
+module.exports.updateTodoNotation = [
+  changeTodoNoteVerification, updateNotation
+]
+function changeTodoNoteVerification(req, res, next){
+  if(typeof req.body.notation === 'string'){
+    next()
+  }else{
+    res.status(200)
+    res.json( todoView.todoNotationChangeVerifyFailed )
+  }
+}
+function updateNotation(req, res){
   model.modifyTodoNotation(req.params.id, req.params.index, req.body.notation, result=>{
     if(result.status === 'success'){
       res.status(200);

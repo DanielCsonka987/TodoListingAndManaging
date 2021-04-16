@@ -509,57 +509,651 @@ describe('CRUD of todos', function(){
 describe('Negaitve CRUD tests', ()=>{
   describe('Creation attempts', ()=>{
     it('Login, todo create - without task definition', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[1]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const todoActAount = 0
+        const createTodoUrl = logJSON.report.createNewTodo
+        const newTodo = {
+          task: '',
+          priority: testTodos[0].priority,
+          notation: testTodos[0].notation
+        }
+        chaiAgent
+        .post(createTodoUrl)
+        .type('form')
+        .send( newTodoForm(newTodo) )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('task')
+          expect(finalJSON.message).to.be.a('string')
+          expect(finalJSON.message).to.equal('This task is not permitted!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            expect(doc.todos).to.have.lengthOf(todoActAount)
+          })
+        })
+      })
     })
     it('Login, todo create - without priority definition', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[1]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const todoActAount = 0
+        const createTodoUrl = logJSON.report.createNewTodo
+        const newTodo = {
+          task: testTodos[0].task,
+          priority: '',
+          notation: testTodos[0].notation
+        }
+        chaiAgent
+        .post(createTodoUrl)
+        .type('form')
+        .send( newTodoForm(newTodo) )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('priority')
+          expect(finalJSON.message).to.be.a('string')
+          expect(finalJSON.message).to.equal('This priority is not permitted!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            expect(doc.todos).to.have.lengthOf(todoActAount)
+          })
+        })
+      })
     })
   })
   describe('Modify state attempts', ()=>{
     it('Login, todo modify state - no good url at todoID, no todo like that', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const stateChangeUrl = actTodo.statusChangeUrl.replace(
+          new RegExp('[0-9a-f]{24}\/status$'), '0123456789adcdef01234567/status'
+        )
+        return chaiAgent
+        .put(stateChangeUrl)
+        .type('form')
+        .send( changeStateForm('true') )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 500)
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('DB error occured!')
+          expect(finalJSON.message).to.equal('Update failed!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo.status.toString()).to.equal('Proceeding')
+          })
+        })
+      })
     })
     it('Login, todo modify state - no good url at profID', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const stateChangeUrl = actTodo.statusChangeUrl.replace(
+          new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
+        )
+        return chaiAgent
+        .put(stateChangeUrl)
+        .type('form')
+        .send( changeStateForm('true') )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Management is permitted only at your account!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo.status.toString()).to.equal('Proceeding')
+          })
+        })
+      })
     })
     it('Login, todo modify state - not good input', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const stateChangeUrl = actTodo.statusChangeUrl
+        return chaiAgent
+        .put(stateChangeUrl)
+        .type('form')
+        .send( changeStateForm('vcxy') )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('status')
+          expect(finalJSON.message).to.equal('System error occured!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo.status.toString()).to.equal('Proceeding')
+          })
+        })
+      })
     })
+    
     it('Login, todo modify state - no form input', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const stateChangeUrl = actTodo.statusChangeUrl
+        return chaiAgent
+        .put(stateChangeUrl)
+        .type('form')
+        .send( '' )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('status')
+          expect(finalJSON.message).to.equal('System error occured!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo.status.toString()).to.equal('Proceeding')
+          })
+        })
+      })
     })
   })
   describe('Modify notation attempts', ()=>{
     it('Login, todo modify notation - no good url at todoID, no todo like that', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[1]
+        const noteChangeUrl = actTodo.notationChangeUrl.replace(
+          new RegExp('[0-9a-f]{24}\/notation$'), '0123456789adcdef01234567/notation'
+        )
+        const newNotation = 'Not supposed to be in DB!'
+        return chaiAgent
+        .put(noteChangeUrl)
+        .type('form')
+        .send( changeNoteForm(newNotation) )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 500)
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('DB error occured!')
+          expect(finalJSON.message).to.equal('Update failed!')
+
+          return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo).to.be.a('object')
+            expect(dbTodo.notation).to.not.deep.equal(newNotation)
+          })
+        })
+      })
     })
     it('Login, todo modify notation - no good url at profID', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[1]
+        const noteChangeUrl = actTodo.notationChangeUrl.replace(
+          new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
+        )
+        const newNotation = 'Not supposed to be in DB!'
+
+        return chaiAgent
+        .put(noteChangeUrl)
+        .type('form')
+        .send( changeNoteForm(newNotation) )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Management is permitted only at your account!')
+
+          return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo).to.be.a('object')
+            expect(dbTodo.notation).to.not.deep.equal(newNotation)
+          })
+        })
+      })
     })
     it('Login, todo modify notation - no form input', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const oldNotation = actTodo.notation
+        const noteChangeUrl = actTodo.notationChangeUrl
+        return chaiAgent
+        .put(noteChangeUrl)
+        .type('form')
+        .send( '' )
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('notation')
+          expect(finalJSON.message).to.equal('System error occured!')
+
+          return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo).to.be.a('object')
+            expect(dbTodo.toString()).to.not.deep.equal(oldNotation)
+          })
+        })
+      })
     })
   })
   describe('Deletion attempts', ()=>{
     it('Login, todo deletion - no good url at todoID, no todo like that', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const deleteTodoUrl = actTodo.removingUrl.replace(
+          new RegExp('[0-9a-f]{24}$'), '0123456789adcdef01234567'
+        )
+        return chaiAgent
+        .delete(deleteTodoUrl)
+        .then(nextRes=>{
+          testRespBasics(nextRes, 500)
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('DB error occured!')
+          expect(finalJSON.message).to.equal('Deletion failed!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo).to.be.a('object')
+          })
+        })
+      })
     })
     it('Login, todo deletion - no good url at profID', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+      return chaiAgent
+      .post(actUser.lgnurl)
+      .type('form')
+      .send( loginForm(actUser.srnm, actUser.psswrd) )
+      .then(res=>{
+        testRespBasics(res, 200)
+        testRespHeader(res)
+        testRespCookie(res, 'session', actUser.id)
+
+        const logJSON = JSON.parse(res.text)
+        testJSONContent(logJSON, 'success')
+        testLoginResp(logJSON.report)
+
+        const actTodo = logJSON.report.todos[0]
+        const deleteTodoUrl = actTodo.notationChangeUrl.replace(
+          new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
+        )
+
+        return chaiAgent
+        .delete(deleteTodoUrl)
+        .then(nextRes=>{
+          testRespBasics(nextRes, 200)
+          const finalJSON = JSON.parse(nextRes.text)
+
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Management is permitted only at your account!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo(actTodo.id)
+            expect(dbTodo).to.be.a('object')
+          })
+
+        })
+      })
     })
   })
   describe('No login attempts', ()=>{
     it('No login, but attempt create todo', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+
+      return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
+        expect(dbresp).to.be.a('object')
+        
+        testJSONContent(dbresp, 'success')
+        testLoginResp(dbresp.report)
+
+        const todoAmount = dbresp.report.todos.length
+        const createUrl = dbresp.report.createNewTodo;
+        const newTodo = testTodos[1]
+        return chaiAgent
+        .post(createUrl)
+        .type('form')
+        .send( newTodoForm(newTodo) )
+        .then(nextRes =>{
+          testRespBasics(nextRes, 200)
+          testRespHeader(nextRes)
+          testRespNoCookie(nextRes, 'session')
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Please, log in to use such service!')
+
+          return ProfileModel.findOne({ _id: actUser.id }, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+            expect(doc.todos.length).to.equal(todoAmount)
+          })
+        })
+      })
     })
     it('No login, but attempt todo state change', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+
+      return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
+        expect(dbresp).to.be.a('object')
+        
+        testJSONContent(dbresp, 'success')
+        testLoginResp(dbresp.report)
+
+        const todoTarget = dbresp.report.todos[0]
+        const changeStateUrl = todoTarget.statusChangeUrl
+        // true input -> setting Finished, false input -> setting Proceeding
+        const newState = todoTarget.status === 'Proceeding'? 'true': 'false'
+        return chaiAgent
+        .post(changeStateUrl)
+        .type('form')
+        .send( changeStateForm(newState) )
+        .then(nextRes =>{
+          testRespBasics(nextRes, 200)
+          testRespHeader(nextRes)
+          testRespNoCookie(nextRes, 'session')
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Please, log in to use such service!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+            const dbStateMustBe = newState === 'true'? 'Proceeding' : 'Finished'
+
+            const dbTodo = doc.findThisRawTodo( todoTarget.id )
+            expect(dbTodo).to.be.a('object')
+            expect(dbTodo.status.toString()).to.equal(dbStateMustBe)
+          })
+        })
+      })
     })
     it('No login, but attempt todo notation change', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+
+      return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
+        expect(dbresp).to.be.a('object')
+        
+        testJSONContent(dbresp, 'success')
+        testLoginResp(dbresp.report)
+
+        const todoTarget = dbresp.report.todos[0]
+        const changeNoteUrl = todoTarget.notationChangeUrl
+
+        const newNotation = 'This must be in db, but no login state!'
+        return chaiAgent
+        .post(changeNoteUrl)
+        .type('form')
+        .send( changeNoteForm(newNotation) )
+        .then(nextRes =>{
+          testRespBasics(nextRes, 200)
+          testRespHeader(nextRes)
+          testRespNoCookie(nextRes, 'session')
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Please, log in to use such service!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+
+            const dbTodo = doc.findThisRawTodo( todoTarget.id )
+            expect(dbTodo).to.be.a('object')
+            expect(dbTodo.notation.toString()).to.not.equal(newNotation)
+          })
+        })
+      })
     })
     it('No login, but attempt todo deletion', ()=>{
-  
+      const chaiAgent = chai.request.agent(api)
+      const actUser = userToManage[0]
+
+      return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
+        expect(dbresp).to.be.a('object')
+        
+        testJSONContent(dbresp, 'success')
+        testLoginResp(dbresp.report)
+
+        const todoAmount = dbresp.report.todos.length
+        const todoTarget = dbresp.report.todos[0]
+        const deletionUrl = todoTarget.removingUrl
+
+        return chaiAgent
+        .post(deletionUrl)
+        .then(nextRes =>{
+          testRespBasics(nextRes, 200)
+          testRespHeader(nextRes)
+          testRespNoCookie(nextRes, 'session')
+
+          const finalJSON = JSON.parse(nextRes.text)
+          testJSONContent(finalJSON, 'failed')
+          expect(finalJSON.report).to.be.a('string')
+          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.message).to.equal('Please, log in to use such service!')
+
+          return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
+            expect(err).to.be.a('null')
+            expect(doc).to.be.a('object')
+            expect(doc.todos.length).to.equal(todoAmount)
+
+            const dbTodo = doc.findThisRawTodo( todoTarget.id )
+            expect(dbTodo).to.be.a('object')
+          })
+        })
+      })
     })
   })
 

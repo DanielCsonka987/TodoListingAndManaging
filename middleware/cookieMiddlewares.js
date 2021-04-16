@@ -56,5 +56,5 @@ function sessionCookieRenew(req, res, next){
 module.exports.reviseLoggedInState = (req, res) =>{
   const cookieContentIsThere = req.cookies[sessionCookieName]?true:false;
   res.status(200)
-  res.json( cookieView.cookieLoggedInStateMsg(cookieContentIsThere) )
+  res.json( cookieView.loggedInStateMsg(cookieContentIsThere) )
 }
