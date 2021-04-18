@@ -1,21 +1,25 @@
-
-module.exports.systemError = (msg)=>{
+module.exports.clientError = (msg)=>{
     return JSON.stringify({
-        errorType: 'error',
+        errorType: 'client',
+        messge: msg
+    })
+}
+module.exports.serverError = (msg)=>{
+    return JSON.stringify({
+        errorType: 'server',
         message: msg
     })
 }
-module.exports.serverException = (content, msg)=>{
-    return JSON.stringify({
-        errorType: 'exception',
-        content: content,
-        message: msg
-    });
+module.exports.serverException = (obj)=>{
+    delete obj.status;
+    return JSON.stringify(
+        obj.errorType = 'exception'
+    );
 }
-module.exports.clientException = (cont)=>{
-    return {
+module.exports.clientException = (fields)=>{
+    return JSON.stringify({
         errorType: 'validation',
-        content: cont
-    };
+        report: fields
+    });
 }
 
