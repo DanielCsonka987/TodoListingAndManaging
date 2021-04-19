@@ -13,7 +13,7 @@ function newContentVerification(req, res, next){
     next();
   })
   .catch(err=>{
-    res.status(200);
+    res.status(400);
     res.json(todoView.todoVerifyFailed(err));
   });
 }
@@ -44,7 +44,7 @@ function changeTodoStateVerification(req, res, next){
     next();
   })
   .catch(err=>{
-    res.status(200);
+    res.status(400);
     res.json( todoView.todoStatusChangeVerifyFailed );
   });
 }
@@ -69,7 +69,7 @@ function changeTodoNoteVerification(req, res, next){
   if(typeof req.body.notation === 'string'){
     next()
   }else{
-    res.status(200)
+    res.status(400)
     res.json( todoView.todoNotationChangeVerifyFailed )
   }
 }

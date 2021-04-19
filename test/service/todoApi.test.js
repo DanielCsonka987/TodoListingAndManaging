@@ -536,7 +536,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( newTodoForm(newTodo) )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -583,7 +583,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( newTodoForm(newTodo) )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -672,7 +672,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( changeStateForm('true') )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
 
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -713,7 +713,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( changeStateForm('vcxy') )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -756,7 +756,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( '' )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -849,7 +849,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( changeNoteForm(newNotation) )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
 
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -892,7 +892,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( '' )
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
@@ -979,7 +979,7 @@ describe('Negaitve CRUD tests', ()=>{
         return chaiAgent
         .delete(deleteTodoUrl)
         .then(nextRes=>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           const finalJSON = JSON.parse(nextRes.text)
 
           testJSONContent(finalJSON, 'failed')
@@ -1018,7 +1018,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( newTodoForm(newTodo) )
         .then(nextRes =>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           testRespHeader(nextRes)
           testRespNoCookie(nextRes, 'session')
 
@@ -1055,7 +1055,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( changeStateForm(newState) )
         .then(nextRes =>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           testRespHeader(nextRes)
           testRespNoCookie(nextRes, 'session')
 
@@ -1096,7 +1096,7 @@ describe('Negaitve CRUD tests', ()=>{
         .type('form')
         .send( changeNoteForm(newNotation) )
         .then(nextRes =>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           testRespHeader(nextRes)
           testRespNoCookie(nextRes, 'session')
 
@@ -1134,7 +1134,7 @@ describe('Negaitve CRUD tests', ()=>{
         return chaiAgent
         .post(deletionUrl)
         .then(nextRes =>{
-          testRespBasics(nextRes, 200)
+          testRespBasics(nextRes, 400)
           testRespHeader(nextRes)
           testRespNoCookie(nextRes, 'session')
 

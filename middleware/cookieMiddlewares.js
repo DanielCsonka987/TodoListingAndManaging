@@ -11,11 +11,11 @@ module.exports.cookieRevisionSteps = [
 
 function existenceTest(req, res, next){ 
   if(req.cookies === undefined ||  req.cookies[sessionCookieName] === undefined){
-    res.status(200)
+    res.status(400)
     res.json( cookieView.generalProblemMsg );
   } else { 
     if(req.cookies[sessionCookieName] !== req.params.id ){
-         res.status(200)
+         res.status(400)
          res.json( cookieView.paramMissmatchMsg );
     } else {
       next();
@@ -29,7 +29,7 @@ function contentStrTest(req, res, next){
     next();
   })
   .catch((err)=>{
-    res.status(200);  //somehow it is empty, ex. logged in later
+    res.status(400);  //somehow it is empty, ex. logged in later
     res.json( cookieView.generalProblemMsg ); 
   })
 
@@ -40,7 +40,7 @@ function contentDBTest(req, res, next){
       req.oldHashedPwd = dbresult.report.pwdHash;  //SAVING IN CASE OF INPUT old_password REVISION
       next();
     }else{
-      res.status(200);
+      res.status(400);
       res.json( cookieView.generalProblemMsg );
     }
   })

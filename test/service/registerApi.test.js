@@ -121,7 +121,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')
@@ -150,7 +150,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')
@@ -177,7 +177,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')
@@ -204,7 +204,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')
@@ -232,7 +232,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')
@@ -260,7 +260,7 @@ describe('Register on api empty db', function(){
       .type('form')
       .send( registForm(faultyUserForm) ) //no username
       .then((res)=>{
-        testRespBasics(res, 200);
+        testRespBasics(res, 400);
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
         testJSONBasics(resJSON, 'failed')

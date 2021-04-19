@@ -207,7 +207,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm(user.usrnm, '')   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -227,7 +227,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm(user.usrnm, 'a')   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -247,7 +247,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm('', user.psswrd)   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -266,7 +266,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( '' )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -283,7 +283,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm('someBidy', 'noGoodUser')   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -305,7 +305,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm(userParams.usrnm, userParams.psswrd)   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
@@ -327,7 +327,7 @@ describe('Uncorrect login-out attempts', function(){
       .type('form')
       .send( loginForm(user.usrnm, fakePwd)   )
       .then(res=>{
-        testRespBasics(res, 200)
+        testRespBasics(res, 400)
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)

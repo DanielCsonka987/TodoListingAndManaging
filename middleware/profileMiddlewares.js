@@ -36,7 +36,7 @@ function profileOldPwdConfirmation(req, res, next){
   })
   .catch(err=>{
     if(err === 'incorrect'){
-      res.status(200);
+      res.status(400);
       res.json( profView.pwdHashRevisionFailed )
     } else {
       res.status(500);
@@ -54,7 +54,7 @@ function profileUpdateContentVerification(req, res, next){
     next();
   })
   .catch(err=>{
-    res.status(200);
+    res.status(400);
     res.json( profView.pwdRevisionFailed(err) );
   });
 }
@@ -93,7 +93,7 @@ function profileDeletePasswordRevise(req, res, next){
     next();
   })
   .catch(err=>{
-    res.status(200)
+    res.status(400)
     res.json( profView.pwdRevisionFailed(err))
   })
 }

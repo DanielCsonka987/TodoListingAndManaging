@@ -23,7 +23,7 @@ function regDatasVerification(req, res, next){
   verifyProfile(req.body)
   .then(result=>{ next()  })
   .catch(err=>{
-    res.status(200);
+    res.status(400);
     res.json( regView.registerDataFail(err) );
    });
 }
@@ -33,7 +33,7 @@ function regProfilesCollisionScreen(req, res, next){
     if(result.status === 'failed'){
       next();
     }else{
-      res.status(200); 
+      res.status(400); 
       res.json(regView.usernameOccupied);
     }
   })

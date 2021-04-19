@@ -236,7 +236,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( pwdChangeForm( '', 'testPwd') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -280,7 +280,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( pwdChangeForm( 'sureNotPwd', 'testPwd') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -322,7 +322,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( pwdChangeForm( userToNegativeManage.psswrd, '') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -363,7 +363,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( pwdChangeForm( userToNegativeManage.psswrd, 't') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -404,7 +404,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( '' )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -449,7 +449,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( pwdChangeForm(userToNegativeManage.psswrd, 'newPwd') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
 
@@ -489,7 +489,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( deleteProfForm('') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -530,7 +530,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( deleteProfForm('sureNotGood') )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -571,7 +571,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( '' )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespCookie(thirdRes, 'session', userToNegativeManage.id)
         //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
@@ -615,7 +615,7 @@ describe('Negative account change tests', ()=>{
       .type('form')
       .send( deleteProfForm(userToNegativeManage.psswrd) )
       .then(thirdRes=>{
-        testRespBasics(thirdRes, 200)
+        testRespBasics(thirdRes, 400)
         testRespHeader(thirdRes)
         testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
 
@@ -641,7 +641,7 @@ describe('Negative account change tests', ()=>{
     .type('form')
     .send( pwdChangeForm( userToNegativeManage.psswrd, 'testPwd') )
     .then(thirdRes=>{
-      testRespBasics(thirdRes, 200)
+      testRespBasics(thirdRes, 400)
       testRespHeader(thirdRes)
       testRespNoCookie(thirdRes, 'session')
 
@@ -666,7 +666,7 @@ describe('Negative account change tests', ()=>{
     .type('form')
     .send( deleteProfForm(userToNegativeManage.psswrd) )
     .then(thirdRes=>{
-      testRespBasics(thirdRes, 200)
+      testRespBasics(thirdRes, 400)
       testRespHeader(thirdRes)
       testRespNoCookie(thirdRes, 'session')
 

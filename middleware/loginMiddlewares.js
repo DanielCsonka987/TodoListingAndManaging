@@ -15,7 +15,7 @@ function loginDatasRevision(req, res, next){
   verifyLoginDatas(req.body)
   .then(res=>{ next() })
   .catch(err=>{
-    res.status(200);
+    res.status(400);
     res.json(loginView.noProperLoginDatas);
   });
 }
@@ -26,7 +26,7 @@ function loginProfileExistenceRevision(req, res, next){
       req.loginUserHashPwd = result.report.pwdHash;  //for authenticate
       next();
     } else{
-      res.status(200)
+      res.status(400)
       res.json(loginView.noSuchUserInSystem) 
     }
   })
@@ -36,7 +36,7 @@ function urlParamRevisionWithExistingProfId(req, res, next){
   if(req.loginUserId.toString() === req.params.id){
     next();
   }else{
-    res.status(200)
+    res.status(400)
     res.json(loginView.differentParamAndUserid)
   }
 
@@ -48,7 +48,7 @@ function loginPasswordRevision(req, res, next){
   })
   .catch(err=>{
     if(err === 'incorrect'){
-      res.status(200);
+      res.status(400);
       res.json(loginView.passwordNotAcceptable)
     } else {
       res.status(500);  //SERVER INTERNAL ERROR
@@ -65,7 +65,7 @@ function readProfileDetailsAndLogin(req, res){
         res.status(200);
         res.json( loginView.loginSuccess(result) );
       }catch(e){
-        res.status(500);
+        res.status(400);
         res.json( loginView.loginFail(result) )
       }
     }else{
