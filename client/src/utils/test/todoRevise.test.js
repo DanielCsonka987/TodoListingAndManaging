@@ -18,7 +18,6 @@ describe('Todo notation revision', ()=>{
     })
     test('Negative input - too long', ()=>{
         return todoNoteRev(noteDatas.incorExpls[0]).catch(res=>{
-            console.log(res)
             expect( getType(res) ).toBe('string')
             const resObj = JSON.parse(res)
             expect( resObj.errorType ).toBe('validation')

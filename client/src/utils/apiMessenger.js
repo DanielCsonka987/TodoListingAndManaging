@@ -1,4 +1,5 @@
-const { serverException, systemError } = require('./errorObject')
+const e = require('express');
+const { serverException, serverError } = require('./errorObject')
 
 module.exports.doAjaxSending = (apiPath, method, input)=>{
   if(!apiPath){
@@ -13,40 +14,21 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
     //console.log(init.body);
   }
   return fetch(apiPath, init)
-  .then(async apiResp => {
-    const msg = await apiResp.text();
-    try{
-      const res = JSON.parse(msg);
-      return res;
-    }catch(err){  // SERVER CRUSHED ex 404 or 500 - front developing problem //
-      let serverProblem = 'App error! ';
-      serverProblem += (apiResp.status === 404)?'No such service!': ''
-      serverProblem += (apiResp.status === 500)?'Crucial server error!': ''
-      throw new Error(systemError(serverProblem))
-    }
-  })
-  .then(apiJSONResult =>{
-    // Backend => intput validation error / Login revise error /
-    // Register process error / Cookie content error / DB Error occured
+  .then(apiResp => {
 
-    //console.log(apiJSONResult)
-    if('involvedId' in apiJSONResult){
-      if(apiJSONResult.involvedId){
-        // FIELD, PROFILE, TODO, string-type USER MISTAKE //
-        throw new Error(serverException(apiJSONResult.involvedId,
-          apiJSONResult.message));
-      }else{  // UNCHATEGORISED ERROR TYPE //
-        console.log(apiJSONResult)
-        throw new Error(systemError('Application error HANDLE IT!'));
-      }
-    }else{ 
-      return apiJSONResult;
+    const servMsg = JSON.parse(apiResp.json)
+    if(servMsg.status === 'success'){
+      return servMsg;
     }
-  })
-  .catch(err=>{ 
-    //console.log(err.message)
-    throw new Error(err.message) 
-    
+  }).catch(errResp=>{
+    let servMsg = ''
+    try{
+      servMsg = JSON.parse(errResp.json)
+    }catch(e){
+      console.log('Error url: ' + apiPath + ' ' + method)
+      throw new Error(serverError('Api error! No such service!'))
+    }
+    throw new Error( serverException(servMsg) )
   })
 }
 function smblTheInit(met){

@@ -12,8 +12,9 @@ module.exports.serverError = (msg)=>{
 }
 module.exports.serverException = (obj)=>{
     delete obj.status;
+    obj.errorType = 'exception'
     return JSON.stringify(
-        obj.errorType = 'exception'
+        obj
     );
 }
 module.exports.clientException = (fields)=>{
