@@ -2,7 +2,6 @@ const getType = require('jest-get-type')
 const respObjs = require('./mockDatas').readAllMock
 const apiComm = require('../apiMessenger.js').doAjaxSending
 
-// START THE API !! //
 global.fetch = jest.fn()
 
 describe('Read messages', ()=>{
@@ -12,9 +11,7 @@ describe('Read messages', ()=>{
   test('Read all users', async ()=>{
     expect.assertions(3);
     fetch.mockImplementationOnce(()=>{
-      return Promise.resolve({ 
-        json: JSON.stringify(respObjs.corResp)
-      })
+      return respObjs.corResp 
     })
     try{
       const res = await apiComm('/profile/', 'GET', '');
@@ -29,7 +26,7 @@ describe('Read messages', ()=>{
   test('Server GET error 404 - not proper processing', async ()=>{
     expect.assertions(3);
     fetch.mockImplementationOnce(()=>{
-      return Promise.reject( respObjs.incorResp404)
+      return  respObjs.incorResp404
     })
     try{
       const res = await apiComm('/profile/', 'GET', '');
@@ -44,7 +41,7 @@ describe('Read messages', ()=>{
   test('Server GET error 400 - normal service refuse', async ()=>{
     expect.assertions(3);
     fetch.mockImplementationOnce(  ()=>{
-      return Promise.reject( respObjs.incorResp400 )
+      return respObjs.incorResp400
     })
     try{
       const res = await apiComm('/profile/', 'GET', '');
@@ -59,7 +56,7 @@ describe('Read messages', ()=>{
   test('Server GET error 500 - normal service refuse', async ()=>{
     expect.assertions(3);
     fetch.mockImplementationOnce(  ()=>{
-      return Promise.reject( respObjs.incorResp500 )
+      return respObjs.incorResp500
     })
     try{
       const res = await apiComm('/profile/', 'GET', '');
@@ -73,6 +70,3 @@ describe('Read messages', ()=>{
   })
 })
 
-// test('Real api - login attempt, cookie revision', ()=>{
-//
-// })

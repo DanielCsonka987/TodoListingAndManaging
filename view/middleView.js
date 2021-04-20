@@ -12,10 +12,10 @@ module.exports.forCookies = {
         report: '',
         message: 'Management is permitted only at your account!'
     },
-    loggedInStateMsg(state){
+    loggedInStateMsg(state, profId){
         return {
             status: state? 'success' : 'failed',
-            report: '',
+            report: state? profId.toString() : '',
             message: state? 'You are still logged in!'
                 : 'No login state!',
         }

@@ -1,4 +1,3 @@
-const e = require('express');
 const { serverException, serverError } = require('./errorObject')
 
 module.exports.doAjaxSending = (apiPath, method, input)=>{
@@ -14,16 +13,15 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
     //console.log(init.body);
   }
   return fetch(apiPath, init)
-  .then(apiResp => {
+  .then(async apiResp => {
+    const servJSONMsg = await apiResp.text()
+    return JSON.parse(servJSONMsg)
 
-    const servMsg = JSON.parse(apiResp.json)
-    if(servMsg.status === 'success'){
-      return servMsg;
-    }
-  }).catch(errResp=>{
+  }).catch(async errResp=>{
     let servMsg = ''
     try{
-      servMsg = JSON.parse(errResp.json)
+      const servJSONMsg = await errResp.text()
+      servMsg = JSON.parse(servJSONMsg)
     }catch(e){
       console.log('Error url: ' + apiPath + ' ' + method)
       throw new Error(serverError('Api error! No such service!'))

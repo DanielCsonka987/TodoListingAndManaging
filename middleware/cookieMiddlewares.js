@@ -54,7 +54,11 @@ function sessionCookieRenew(req, res, next){
 
 // FRONT REQUEST IF COOKIE IS STILL ACCEPTABLE
 module.exports.reviseLoggedInState = (req, res) =>{
-  const cookieContentIsThere = req.cookies[sessionCookieName]?true:false;
+  const sessionCookieCont = req.cookies[sessionCookieName];
+  const sessionCookieExist = sessionCookieCont? true:false;
   res.status(200)
-  res.json( cookieView.loggedInStateMsg(cookieContentIsThere) )
+  res.json( 
+    cookieView.loggedInStateMsg(
+      sessionCookieExist, sessionCookieCont) 
+  )
 }

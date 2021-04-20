@@ -8,7 +8,6 @@ import AbourContent from './components/generals/AboutContent.js'
 import Header from './components/generals/Header'
 import ErrorHandler from './components/generals/ErrorHandler.js'
 
-import interpretSessionStore from './utils/interpretSessionStore'
 import interpretProblems from './utils/interpretProblems'
 import { doAjaxSending, 
   smblRegisDatas, smblProfDeletDatas, smblNewTodoDatas, smblStateChangeTodoDatas, 
@@ -21,11 +20,16 @@ class App extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleAPIError = this.handleAPIError.bind(this)
     
+    this.handleLoginProc = this.handleLoginProc.bind(this);
+    this.handleLogoutProc = this.handleLogoutProc.bind(this);
+    this.handleRelogProc = this.handleRelogProc.bind(this)
+
+    this.readBackSessionStoreage = this.readBackSessionStoreage.bind(this)
+    this.fillInSessionStore = this.fillInSessionStore.bind(this)
+    this.emptySessionStore = this.emptySessionStore.bind(this)
+
     this.registerProfProc = this.registerProfProc.bind(this);
     this.removeProfProc = this.removeProfProc.bind(this);
-
-    this.handleLoginProc = this.handleLoginProc.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
 
     this.todoAdditionProc = this.todoAdditionProc.bind(this)
     this.todoStatusChangeProc = this.todoStatusChangeProc.bind(this);
@@ -37,7 +41,7 @@ class App extends Component {
     this.state = {
       loadMessage: '',
       registerServerMessage: '',
-      todoMessage: {ident: -1, msg: ''},
+      todoListMessage: {ident: -1, msg: ''},
       
       cardOnFocusId: -1,
 
@@ -59,39 +63,39 @@ class App extends Component {
     interpretProblems(err, 'loadMessage', this.handleInputChange)
   }
   async componentDidMount(){
+    
     try{
-      const systemProfiles = await doAjaxSending('/api', 'GET', '');
+      const systemProfiles = await doAjaxSending('/profile/', 'GET', '');
+      console.log(systemProfiles)
+      
       if(systemProfiles.report.length === 0){
         this.setState({ loadMessage: systemProfiles.message})
       }else{
         this.setState({profiles: systemProfiles.report });
 
-        // REVISE LOGGED IN STATUS AND REGENERATE IN NEED
-        const profLogIdRev = await doAjaxSending('/api/revise', 'GET', '');
-        if(profLogIdRev.report.loggedInState){
-
-          //APP STATE RESTORATION - details of LoggedInUser restoration
-          await interpretSessionStore(profLogIdRev.report,
-             'loggedUser', this.handleInputChange)
-
-          if(this.state.loggedUser.id === profLogIdRev.report.getUserId){
-            const refreshTodos = await doAjaxSending(
-              this.state.loggedUser.getAddTodos, 'GET', '')
-
-            this.setState({
-              cardOnFocusId: profLogIdRev.report.getUserId,
-              todos: refreshTodos.report
-            })
-          }else{  // NO MATCH BETWEEN ID OF COOKIE AND SESSION
-            this.handleLogout();
+      // REVISE LOGGED IN STATUS (at expl. page reload) AND REGENERATE STATUS IN NEED
+        const loggingRevisionMsg = await doAjaxSending('/profile/revise', 'GET', '');
+        if(loggingRevisionMsg.status === 'success'){
+          const storageId = await sessionStorage.getItem('profId')
+          const loggedProfId = loggingRevisionMsg.report;
+          if(storageId === loggedProfId){
+            this.handleRelogProc(loggedProfId)
+          }else{
+            this.handleLogoutProc();
           }
+        }else{
+          this.handleLogoutProc();
         }
       }
-      
     }catch(err){
       this.handleAPIError(err)
     }
   }
+
+
+
+
+
   handleCardFocus(userid){
     if(this.state.loggedUser === ''){
       this.setState({ 
@@ -99,26 +103,44 @@ class App extends Component {
          '' : userid})
     }
     // ProfileItem / TodoItem messages needs to be ersed!
-
   }
 
+
   // LOGIN-OUT EVENTS, PROCESSES //
-  async handleLoginProc(user, todos){
+  async handleRelogProc(loggedUserId){
+    try{
+      const userDet = await this.readBackSessionStoreage()
+      const refreshTodos = await doAjaxSending( userDet.collectTodos, 'GET', '')
+      this.handleCardFocus(loggedUserId)
+      this.handleLoginProc(userDet, refreshTodos.report, 'reload')
+    }catch(err){
+      this.handleAPIError(err)
+    }
+  }
+
+  async handleLoginProc(user, todos, procMode){
     this.setState({
       loggedUser: user,
       todos: todos,
-      todoMessage: {ident: -1, msg: 'Content loaded!'}
+      todoListMessage: {ident: -1, msg: 'Content loaded!'}
     })
-    interpretSessionStore(user);
+    if(procMode === 'login'){
+      this.fillInSessionStore(user);
+    }
   }
-  async handleLogout(){
+  async handleLogoutProc(){
     this.setState({
       loggedUser: '',
       todos: '',
-      todoMessage: {ident: '', msg: ''},
+      todoListMessage: {ident: '', msg: ''},
     })
-    interpretSessionStore();
+
   }
+
+
+
+
+
 
   // PROFILE EVENTS, PROCESSES //
   async registerProfProc(datas){
@@ -127,27 +149,17 @@ class App extends Component {
       const profRegRes = await doAjaxSending('/api/register', 'POST', ajaxBody)
       if(profRegRes){
         const newUserToList = {
-          id: profRegRes.report.id,
           username: datas.username,
-          loginProfile: profRegRes.report.loginProfile
-        }
-        const loginUserInfos ={
-          id: profRegRes.report.id,
-          fullname: profRegRes.report.fullname,
-          age: profRegRes.report.age,
-          occupation: profRegRes.report.occupation,
-          manageProfile: profRegRes.report.manageProfile,
-          logoutProfile: profRegRes.report.logoutProfile,
-          getAddTodos: profRegRes.report.getAddTodos
+          loginProfile: profRegRes.report.loginUrl
         }
         this.setState({
           profiles: [...this.state.profiles, newUserToList],
           cardOnFocusId: newUserToList.id,
-          loggedUser: loginUserInfos,
+          loggedUser: profRegRes.report,
           todos: {},
           registerServerMessage: ''
         })
-        await interpretSessionStore(loginUserInfos);
+
       }
     }catch(err){
       this.handleAPIError(err)
@@ -164,12 +176,51 @@ class App extends Component {
           loadMessage: profDelRes.message,
           loggedUser: ''
         })
-        await interpretSessionStore();
+        this.emptySessionStore();
       }
     }catch(err){
       this.handleAPIError(err)
     }
   }
+
+  readBackSessionStoreage(){
+    return {
+      firstName: sessionStorage.getItem('profFullname'),
+      lastName: sessionStorage.getItem(''),
+      age: sessionStorage.getItem('profAge'),
+      occupation: sessionStorage.getItem('profOccup'),
+      manageProfile: sessionStorage.getItem('profManage'),
+      logoutProfile: sessionStorage.getItem('profLogout'),
+      collectTodos:  sessionStorage.getItem('profTodos')
+  }
+  }
+  fillInSessionStore(datas){
+    sessionStorage.setItem('profFullname', datas.first_name + ' ' + datas.last_name)
+    sessionStorage.setItem('profAge', datas.age)
+    sessionStorage.setItem('profOccup', datas.occupation)
+    sessionStorage.setItem('profSetTodo', datas.createNewTodo)
+    sessionStorage.setItem('profManage', datas.changPwdDelAccUrl)
+    sessionStorage.setItem('profLogout', datas.logoutUrl)
+    sessionStorage.setItem('profTodos', datas.collectTodosUrl)
+  }
+  emptySessionStore(){
+    sessionStorage.removeItem('profId')
+    sessionStorage.removeItem('profFullname')
+    sessionStorage.removeItem('profAge')
+    sessionStorage.removeItem('profOccup')
+    sessionStorage.removeItem('profSetTodo')
+    sessionStorage.removeItem('profManage')
+    sessionStorage.removeItem('profLogout')
+    sessionStorage.removeItem('profTodos')
+  }
+
+
+
+
+
+
+
+
 
 
   // TODO EVENTs, PROCESSES //
@@ -183,7 +234,7 @@ class App extends Component {
         this.todoStateChangeProcess(1, todoRegRes.report, todoRegRes.message)
       }
     }catch(err){
-      interpretProblems(err, 'todoMessage', this.handleInputChange)
+      interpretProblems(err, 'todoListMessage', this.handleInputChange)
     }
   }
   async todoStatusChangeProc(url, value){
@@ -200,7 +251,7 @@ class App extends Component {
           ajaxTodoStatusRes.message)
       }
     }catch(err){
-      interpretProblems(err, 'todoMessage', this.handleInputChange)
+      interpretProblems(err, 'todoListMessage', this.handleInputChange)
     }
   }
   async todoNoteChangeProc(url, todoDatas){
@@ -215,7 +266,7 @@ class App extends Component {
            ajaxTodoNoteRes.message)
       }
     }catch(err){
-      interpretProblems(err, 'todoMessage', this.handleInputChange)
+      interpretProblems(err, 'todoListMessage', this.handleInputChange)
     }
   }
   async todoRemoveProc(url, todoId){
@@ -225,7 +276,7 @@ class App extends Component {
         this.todoStateChangeProcess(-1, { id: todoId }, ajaxTodoDeleteRes.message)
       }
     }catch(err){
-      interpretProblems(err, 'todoMessage', this.handleInputChange)
+      interpretProblems(err, 'todoListMessage', this.handleInputChange)
     }
   }
 
@@ -243,7 +294,7 @@ class App extends Component {
       })
     }
     await this.setState({
-      todoMessage: { 
+      todoListMessage: { 
         ident: msgId ? msgId : -1, 
         msg: msg }
     })
@@ -257,7 +308,7 @@ class App extends Component {
       sideAreaContent = <TodoList
         userid={this.state.loggedUser.id}
         todoContent={this.state.todos}
-        todoMessage={this.state.todoMessage}
+        todoListMessage={this.state.todoListMessage}
         funcTodoSave={this.todoAdditionProc}
         funcStatusEdit={this.todoStatusChangeProc}
         funcNoteEdit={this.todoNoteChangeProc}
@@ -287,7 +338,7 @@ class App extends Component {
 
                 funcCardRemoval = {this.removeProfProc}
                 funcLogin = {this.handleLoginProc}
-                funcLogout = {this.handleLogout}
+                funcLogout = {this.handleLogoutProc}
               />
               { sideAreaContent }
             </ErrorHandler>
