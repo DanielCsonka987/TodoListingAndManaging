@@ -23,7 +23,9 @@ module.exports.readAllMock = {
 
     incorResp404: Promise.reject({
         status: 404, 
-        text: 'No such content'
+        text: ()=>{
+            'No such content'
+        }
     }),
     incorResp400: Promise.reject({
         status: 400,

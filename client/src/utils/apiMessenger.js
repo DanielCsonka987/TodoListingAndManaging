@@ -1,36 +1,55 @@
-const { serverException, serverError } = require('./errorObject')
+const { ServerException, ServerError } = require('./errorObject')
 
 module.exports.doAjaxSending = (apiPath, method, input)=>{
-  if(!apiPath){
-    return { message: 'Front development error - no path!' };
-  }
-  if(!method){
-    return { message: 'Front development error - no method!' };
-  }
-  let init = smblTheInit(method);
-  if(input){
-    init.body = input;
-    //console.log(init.body);
-  }
-  return fetch(apiPath, init)
-  .then(async apiResp => {
-    const servJSONMsg = await apiResp.text()
-    return JSON.parse(servJSONMsg)
-
-  }).catch(async errResp=>{
-    let servMsg = ''
-    try{
-      const servJSONMsg = await errResp.text()
-      servMsg = JSON.parse(servJSONMsg)
-    }catch(e){
-      console.log('Error url: ' + apiPath + ' ' + method)
-      throw new Error(serverError('Api error! No such service!'))
+  return new Promise( (resolve, reject)=>{
+    if(!apiPath){
+      reject('Front development error - no path!')
     }
-    throw new Error( serverException(servMsg) )
+    if(!method){
+      reject('Front development error - no method!')
+    }
+    let init = smblTheInit(method);
+    if(input){
+      init.body = input;
+      //console.log(init.body);
+    }
+    resolve({ apiPath, init })
+  })
+  .then( ( msgObj)=>{
+    /*
+    let servJSONMsg = ''
+    await fetch(msgObj.apiPath, msgObj.init)
+    .then(async apiResp => {
+      servJSONMsg = await apiResp.text()
+    })
+
+    return JSON.parse(servJSONMsg)
+    */
+
+    return fetch(msgObj.apiPath, msgObj.init)
+      .then(async apiResp=>{
+        const res = await apiResp.text()
+        return await JSON.parse(res)
+      })
+  }).catch(async errResp=>{
+
+    if( typeof errResp.text === 'function'){
+      let servMsg = ''
+      try{
+        const servJSONMsg = await errResp.text()
+        servMsg = JSON.parse(servJSONMsg)
+
+      }catch(e){  //Server did not send processed JSON message
+        console.log('Error url: ' + apiPath + ' ' + method)
+        throw new ServerError('Api error! No such service!')
+      }
+      throw new ServerException(servMsg)  //Sever defined precisely the problem
+    }else{
+      throw new ServerError('Api error! Response undefined!')
+    }
   })
 }
 function smblTheInit(met){
-
   return {
     method: met,
     mode: 'same-origin',

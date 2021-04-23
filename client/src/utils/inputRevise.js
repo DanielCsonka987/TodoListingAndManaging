@@ -1,5 +1,5 @@
 const usernameTest = new RegExp('^[a-zA-Z0-9_.]{4,80}$');
-const { clientException, clientError } = require('./errorObject')
+const { ClientValidateException, ClientError } = require('./errorObject')
 
 // REVISION helpers
 function reviseUnameMissmatch(unm){
@@ -22,8 +22,8 @@ function reviseAgeMissmatch(age){
 // for RegisterForm //
 module.exports.regInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = []
     try{
-      let errors = []
       if(reviseUnameMissmatch(datas.username)){
         errors.push({ 
           field: 'username', 
@@ -54,13 +54,13 @@ module.exports.regInputRevise = (datas)=>{
           message: `${datas.age} as age is not proper!`
         });
       }
-      if(errors.length === 0){
-        resolve();
-      }
-      reject( clientException(errors) )
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve();
+    }
+    throw new ClientValidateException(errors)
   })
 }
 
@@ -68,8 +68,8 @@ module.exports.regInputRevise = (datas)=>{
 // for ProfileItem //
 module.exports.loginInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = []
     try{
-      let errors = []
       if(reviseUnameMissmatch(datas.username)){
         errors.push({ 
           field: 'username', 
@@ -82,19 +82,19 @@ module.exports.loginInputRevise = (datas)=>{
           message: 'Password is not acceptable!'
         });
       }
-      if(errors.length === 0){
-        resolve();
-      }
-      reject( clientException(errors)  )
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve();
+    }
+    throw new ClientValidateException(errors)
   })
 }
 module.exports.pwdChangeInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = [];
     try{
-      let errors = [];
       if(revisePwdOutRange(datas.old_password)){
         errors.push({ 
           field: 'old_password', 
@@ -113,25 +113,32 @@ module.exports.pwdChangeInputRevise = (datas)=>{
           message: 'New passwords are not matching!'
         });
       }
-      if(errors.length === 0){
-        resolve()
-      }
-      reject( clientException(errors) )
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve()
+    }
+    throw new ClientValidateException(errors)
   })
 }
 module.exports.deleteProfInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = [];
     try{
       if(revisePwdOutRange(datas.old_password)){
-        reject( clientException('Password is not acceptable!') )
+        errors.push( { 
+          field: 'old_password', message: 'Password is not acceptable!' 
+        })
       }
       resolve();
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve();
+    }
+    throw new ClientValidateException()
   })
 
 }
@@ -145,8 +152,8 @@ function reviseNotationOutOfRange(note){
 
 module.exports.todoInputRevise = (datas)=>{
   return new Promise((resolve, reject)=>{
+    let errors = [];
     try{
-      let errors = [];
       if(datas.task === ''){
         errors.push({
           field: 'task',
@@ -168,31 +175,31 @@ module.exports.todoInputRevise = (datas)=>{
           message:'Too long notation text!'});
       }
   
-      if(errors.length === 0){
-        resolve();
-      }
-      reject( clientException(errors) )
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve();
+    }
+    throw new ClientValidateException(errors)
   })
 }
 module.exports.todoNotationInputRevise = (newNotation)=>{
   return new Promise((resolve, reject)=>{
+    let errors = []
     try{
-      let errors = []
       if(reviseNotationOutOfRange(newNotation)){
         errors.push({ 
           field: 'notation', 
           message: 'Too long notation text!'});
       }
-      if(errors.length === 0){
-        resolve();
-      }
-      reject( clientException(errors) )
     }catch(e){
-      reject( clientError(e) )
+      throw new ClientError(e.message)
     }
+    if(errors.length === 0){
+      resolve();
+    }
+    throw new ClientValidateException(errors)
   })
 }
 

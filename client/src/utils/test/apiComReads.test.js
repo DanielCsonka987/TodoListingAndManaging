@@ -9,7 +9,7 @@ describe('Read messages', ()=>{
     fetch.mockClear()
   })
   test('Read all users', async ()=>{
-    expect.assertions(3);
+    expect.assertions(4);
     fetch.mockImplementationOnce(()=>{
       return respObjs.corResp 
     })
@@ -21,10 +21,12 @@ describe('Read messages', ()=>{
       expect(res.message).toEqual('Reading done!')
     }catch(e){
       expect(e).toBeUndefined()
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(1)
     }
   })
   test('Server GET error 404 - not proper processing', async ()=>{
-    expect.assertions(3);
+    expect.assertions(4);
     fetch.mockImplementationOnce(()=>{
       return  respObjs.incorResp404
     })
@@ -34,12 +36,13 @@ describe('Read messages', ()=>{
     }catch(e){
       expect(e).toBeDefined();
       expect( getType(e) ).toBe('object')
-      const content = JSON.parse(e.message)
-      expect(content.message).toBe('Api error! No such service!')
+      expect(e.message).toBe('Api error! No such service!')
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(1)
     }
   })
   test('Server GET error 400 - normal service refuse', async ()=>{
-    expect.assertions(3);
+    expect.assertions(4);
     fetch.mockImplementationOnce(  ()=>{
       return respObjs.incorResp400
     })
@@ -49,12 +52,13 @@ describe('Read messages', ()=>{
     }catch(e){
       expect(e).toBeDefined();
       expect( getType(e) ).toBe('object')
-      const content = JSON.parse(e.message)
-      expect(content.message).toBe('Please login!')
+      expect(e.message).toBe('Please login!')
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(1)
     }
   })
   test('Server GET error 500 - normal service refuse', async ()=>{
-    expect.assertions(3);
+    expect.assertions(4);
     fetch.mockImplementationOnce(  ()=>{
       return respObjs.incorResp500
     })
@@ -64,8 +68,9 @@ describe('Read messages', ()=>{
     }catch(e){
       expect(e).toBeDefined();
       expect( getType(e) ).toBe('object')
-      const content = JSON.parse(e.message)
-      expect(content.message).toBe('DB process error!')
+      expect(e.message).toBe('DB process error!')
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(1)
     }
   })
 })

@@ -1,26 +1,37 @@
-module.exports.clientError = (msg)=>{
-    return JSON.stringify({
-        errorType: 'client',
-        messge: msg
-    })
+export class ServerError extends Error{
+    constructor(msg, args){
+        super(args)
+        this.message = msg
+        this.name = 'MyServerError'
+    }
 }
-module.exports.serverError = (msg)=>{
-    return JSON.stringify({
-        errorType: 'server',
-        message: msg
-    })
+
+
+export class ServerException extends Error{
+    constructor(obj, args){
+        super(args)
+        this.field = obj.report,
+        this.message = obj.message
+        this.name = 'MyServerException'
+    }
 }
-module.exports.serverException = (obj)=>{
-    delete obj.status;
-    obj.errorType = 'exception'
-    return JSON.stringify(
-        obj
-    );
+
+
+export class ClientValidateException extends Error{
+    constructor(errors, args){
+        super(args)
+        this.errorFields = errors
+        this.name = 'MyClientValidateException'
+        this.message = 'Input filed error(s) occured!'
+    }
 }
-module.exports.clientException = (fields)=>{
-    return JSON.stringify({
-        errorType: 'validation',
-        report: fields
-    });
+
+
+export class ClientError extends Error {
+    constructor(msg, args){
+        super(args)
+        this.message = msg
+        this.name = 'MyClientError'
+    }
 }
 
