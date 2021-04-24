@@ -26,10 +26,10 @@ function createNewTodo(req, res){
   model.addNewTodo(req.params.id, todoCotent, result=>{
     if(result.status === 'success'){
       res.status(201);
-      res.json( todoView.todoCreationSuccess(result) )
+      res.json( todoView.todoCreationSuccess(result.report) )
     }else{
       res.status(500);
-      res.json( todoView.todoCreationFailed(result) )
+      res.json( todoView.todoCreationFailed )
     }
   })
 }
@@ -53,10 +53,10 @@ function updateTodoStatus(req, res){
   model.modifyTodoStatus(req.params.id, req.params.index, newStatusText, result=>{
     if(result.status === 'success'){
       res.status(200);
-      res.json( todoView.todoUpdateSuccess(result) );
+      res.json( todoView.todoUpdateSuccess(result.report) );
     }else{
       res.status(500);
-      res.json( todoView.todoUpdateFailed(result) );
+      res.json( todoView.todoUpdateFailed );
     }
   })
 }
@@ -77,10 +77,10 @@ function updateNotation(req, res){
   model.modifyTodoNotation(req.params.id, req.params.index, req.body.notation, result=>{
     if(result.status === 'success'){
       res.status(200);
-      res.json( todoView.todoUpdateSuccess(result) );
+      res.json( todoView.todoUpdateSuccess(result.report) );
     }else{
       res.status(500);
-      res.json( todoView.todoUpdateFailed(result) );
+      res.json( todoView.todoUpdateFailed );
     }
   })
 }
@@ -90,10 +90,10 @@ module.exports.singleTodoRemoval = (req, res)=>{
   model.removeThisTodo(req.params.id, req.params.index, result=>{
     if(result.status === 'success'){
       res.status(200);
-      res.json( todoView.todoRemoveSuccess(result) );
+      res.json( todoView.todoRemoveSuccess );
     }else{
       res.status(500);
-      res.json( todoView.todoRemoveFailed(result) );
+      res.json( todoView.todoRemoveFailed );
     }
   })
 }

@@ -9,10 +9,10 @@ class TodoList extends Component{
         let messageToSingle = '';
         let messageGlobally = '';
         
-        if(this.props.todoMessage.ident === -1){
-            messageGlobally = this.props.todoMessage.msg
+        if(this.props.todoListMessage.ident === -1){
+            messageGlobally = this.props.todoListMessage.msg
         }else{
-            messageToSingle = this.props.todoMessage
+            messageToSingle = this.props.todoListMessage
         }
 
         let todos = '';

@@ -31,6 +31,7 @@ class ProfileList extends Component {
         { regArea }
         {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
         {this.props.allProfilesContent.map((item, index) => {
+
             const isThisUserLoggedIn = loggedInUserId===item.id;
             const showThisProfile = isThisUserLoggedIn || !loggedInUserId;
 
@@ -38,7 +39,7 @@ class ProfileList extends Component {
               return <ProfileItem key={index}
                 userid={item.id}
                 username={item.username}
-                loginProfile={item.loginProfile}
+                loginUrl={item.loginUrl}
                 
                 userExtraDatas={ isThisUserLoggedIn ? 
                   this.props.loggedUser : '' }

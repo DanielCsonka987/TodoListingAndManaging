@@ -9,7 +9,6 @@ import { loginInputRevise,  pwdChangeInputRevise,
 import { doAjaxSending, 
   smblLoginDatas, smblPwdChangeDatas } from '../../utils/apiMessenger.js'
 
-import interpretProblems from '../../utils/interpretProblems'
 
 class ProfileItem extends Component {
   constructor(props){
@@ -50,8 +49,12 @@ class ProfileItem extends Component {
     }
   }
   handleAPIError(err){
-    interpretProblems(err, 'profileMessage', this.handleInputChange)
+    this.setState({
+      profileMessage:  err.name.includes('Validate')?
+        err.errorFields : err.message
+    })
   }
+
   async handleLogin(){
     try{
       await loginInputRevise(this.state);
@@ -59,10 +62,9 @@ class ProfileItem extends Component {
         this.state.username,
         this.state.password
         );
-      const loginRes = await doAjaxSending(this.props.loginProfile, 'POST', ajaxBody);
+      const loginRes = await doAjaxSending(this.props.loginUrl, 'POST', ajaxBody);
       this.setState({password: '', profileMessage: loginRes.message})
-      const todoRes = await doAjaxSending(loginRes.report.getAddTodos, 'GET', '');
-      this.props.funcLoginProc(loginRes.report, todoRes.report);
+      this.props.funcLoginProc(loginRes.report.value, 'login');
 
     }catch(err){
       this.handleAPIError(err);
@@ -71,9 +73,7 @@ class ProfileItem extends Component {
   }
   async handleLogOut(){
     try{
-      const ajaxBody = '';
-      const logoutRes = await doAjaxSending(this.props.userExtraDatas.logoutProfile, 'GET', ajaxBody)
-
+      const logoutRes = await doAjaxSending(this.props.userExtraDatas.logoutUrl, 'GET', '')
       this.props.funcLogoutProc(this.state.userid)
       this.setState({ profileMessage: logoutRes.message });
     }catch(err){
@@ -87,7 +87,7 @@ class ProfileItem extends Component {
         const ajaxBody = smblPwdChangeDatas(
           this.state.old_password, this.state.new_password
         );
-        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.manageProfile,
+        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.manageProfUrl,
            'PUT', ajaxBody)
         this.setState({ 
           password: '', password_repeat: '',

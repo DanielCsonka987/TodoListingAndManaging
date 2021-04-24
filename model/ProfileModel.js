@@ -135,6 +135,17 @@ ProfileItemSchema.statics.removeThisProfile = function(profid, callbFunc){
 
 
 // Todo managing
+ProfileItemSchema.statics.collectAllTodos = function(profId, callbFunc){
+  return this.findOne({_id: profId}, (err, doc)=>{
+    if(err || !doc){
+      callbFunc(view.assembleDBErrorMsg())
+    }else{
+      callbFunc( view.assembleProperMsgContent( 
+        doc.convertAllTodosToSendable()) 
+      )
+    }
+  })
+}
 ProfileItemSchema.statics.addNewTodo = function(profid, todoCont, callbFunc){
   return this.findOne({_id: profid}, (err, doc)=>{
     if(err || !doc){

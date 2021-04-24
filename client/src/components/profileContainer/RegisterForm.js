@@ -4,7 +4,6 @@ import ShowMessages from '../generals/ShowMessages'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 import CardTileTextAndContent from '../generals/CardTileTextAndContent'
 
-import interpretProblems from '../../utils/interpretProblems'
 import { regInputRevise } from '../../utils/inputRevise.js';
 
 class RegisterForm extends Component{
@@ -46,8 +45,10 @@ class RegisterForm extends Component{
     const {name, value} = event.target;
     this.setState({ [name]: value })
   }
-  handleAPIError(err){
-    interpretProblems(err, 'registerMessage', this.handleInputChange)
+  handleAPIError(errCont){
+    this.setState({
+      registerMessage: errCont
+    })
   }
   async handleRegisterClick(){
     try{
@@ -63,8 +64,12 @@ class RegisterForm extends Component{
         occupation: '',
         registerMessage: '' 
       })
-    }catch(err){
-      this.handleAPIError(err)
+    }catch(errLocal){
+      if(errLocal.name === 'MyClientValidateException'){
+        this.handleAPIError(errLocal.errorFields)
+      }else{
+        this.handleAPIError(errLocal.message)
+      }
     }
   }
 

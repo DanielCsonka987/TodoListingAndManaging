@@ -73,5 +73,40 @@ describe('Read messages', ()=>{
       expect(fetch).toHaveBeenCalledTimes(1)
     }
   })
+
+  test('Inproper handled apiMessenger - no path', async ()=>{
+    expect.assertions(4)
+    fetch.mockImplementationOnce(()=>{
+      return Promise.resolve({ status: 200 })
+
+    })
+    try{
+      const res = await apiComm('', 'POST', '')
+      expect(res).toBeUndefined
+    }catch(e){
+      expect( getType(e) ).toBe('object')
+      expect(e.name).toBe('MyClientException')
+      expect(e.message).toBe('Front development error - no path!')
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(0)
+    }
+  })
+
+  test('Inproper handled apiMessenger - no method', async ()=>{
+    expect.assertions(4)
+    fetch.mockImplementationOnce(()=>{
+      return Promise.resolve({ status: 200 })
+    })
+    try{
+      const res = await apiComm('/profile/', '', '')
+      expect(res).toBeUndefined
+    }catch(e){
+      expect( getType(e) ).toBe('object')
+      expect(e.name).toBe('MyClientException')
+      expect(e.message).toBe('Front development error - no method!')
+    }finally{
+      expect(fetch).toHaveBeenCalledTimes(0)
+    }
+  })
 })
 

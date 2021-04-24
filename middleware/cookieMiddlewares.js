@@ -6,10 +6,16 @@ const sessionCookieName = require('../config/appConfig').cookie.sessionCookieNam
 const createSessCookie = require('../utils/cookieManagers').createSessionCookieAtResObj
 
 module.exports.cookieRevisionSteps = [
-  existenceTest, contentStrTest, contentDBTest, sessionCookieRenew
+  existenceTest1, contentStrTest, contentDBTest, sessionCookieRenew
 ]
 
-function existenceTest(req, res, next){ 
+// FRONT REQUEST IF COOKIE IS STILL ACCEPTABLE
+module.exports.reviseLoggedInState = [
+  existenceTest2, contentStrTest, collectAllTodosOfUser ]
+
+
+
+function existenceTest1(req, res, next){ 
   if(req.cookies === undefined ||  req.cookies[sessionCookieName] === undefined){
     res.status(400)
     res.json( cookieView.generalProblemMsg );
@@ -25,7 +31,6 @@ function existenceTest(req, res, next){
 function contentStrTest(req, res, next){
   verifySessionCookie(req.cookies[sessionCookieName])  //structural revision
   .then(possGoodCookieId =>{
-    req.sessionCookie = possGoodCookieId;
     next();
   })
   .catch((err)=>{
@@ -35,7 +40,7 @@ function contentStrTest(req, res, next){
 
 }
 function contentDBTest(req, res, next){
-  model.findThisById(req.sessionCookie, dbresult=>{
+  model.findThisById(req.cookies[sessionCookieName], dbresult=>{
     if(dbresult.status === 'success'){
       req.oldHashedPwd = dbresult.report.pwdHash;  //SAVING IN CASE OF INPUT old_password REVISION
       next();
@@ -50,15 +55,23 @@ function sessionCookieRenew(req, res, next){
   next();
 }
 
+function existenceTest2(req, res, next){ 
+  if(req.cookies === undefined ||  req.cookies[sessionCookieName] === undefined){
+      res.status(200)
+      res.json( cookieView.loggedInStateMsg(false, '') );
+  } else { 
+    next();
+  }
+}
 
-
-// FRONT REQUEST IF COOKIE IS STILL ACCEPTABLE
-module.exports.reviseLoggedInState = (req, res) =>{
-  const sessionCookieCont = req.cookies[sessionCookieName];
-  const sessionCookieExist = sessionCookieCont? true:false;
-  res.status(200)
-  res.json( 
-    cookieView.loggedInStateMsg(
-      sessionCookieExist, sessionCookieCont) 
-  )
+function collectAllTodosOfUser(req, res){
+  model.collectAllTodos(req.cookies[sessionCookieName], result=>{
+    if(result.status === 'success'){
+      res.status(200)
+      res.json(  cookieView.loggedInStateMsg( true, result.report) )
+    }else{
+      res.status(400)
+      res.json(  cookieView.generalProblemMsg )
+    }
+  })
 }

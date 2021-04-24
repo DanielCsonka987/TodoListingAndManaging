@@ -20,15 +20,13 @@ function readAllProfiles(req, res){
   model.collectAllProfiles((result)=>{
     if(result.status === 'success'){
       res.status(200);
-      res.json( profView.readPublicProfilesSuccess(result) );
+      res.json( profView.readPublicProfilesSuccess(result.report) );
     }else{
       res.status(500);    //SERVER INTERNAL ERROR
-      res.json( profView.readPublicProfilesFail(result));
+      res.json( profView.readPublicProfilesFail);
     }
   })
 }
-
-
 function profileOldPwdConfirmation(req, res, next){
   pwdManager.verifyThisPassword(req.body.old_password, req.oldHashedPwd)  
   .then(()=>{
@@ -69,16 +67,15 @@ function profileNewPwdEncoding(req, res, next){
     res.json( profView.pwdHashingFailed );
   })
 }
-
 function profilePwdUpdate(req, res){
   model.changePwdInProfile(req.params.id, req.newHashedPassword, result=>{
     if(result.status === 'success' ){
       res.status(200);
-      res.json( profView.pwdUpdateSuccess(result) );
+      res.json( profView.pwdUpdateSuccess );
       
     }else {
       res.status(500);
-      res.json( profView.pwdUpdateFailed(result) )
+      res.json( profView.pwdUpdateFailed )
     }
   })
 }
@@ -102,10 +99,10 @@ function profileDeletionAndLogout(req, res ){
     if(result.status === 'success'){
       removeSessionCookie(res);
       res.status(200)
-      res.json( profView.profDelsuccess(result) )
+      res.json( profView.profDelsuccess )
     }else{
       res.status(500);
-      res.json( profView.profDelFailed(result) )
+      res.json( profView.profDelFailed )
     }
   })
 }

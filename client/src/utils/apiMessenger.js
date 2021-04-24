@@ -1,12 +1,12 @@
-const { ServerException, ServerError } = require('./errorObject')
+const { ClientException, ServerException, ServerError, ServerValidateException } = require('./errorObject')
 
 module.exports.doAjaxSending = (apiPath, method, input)=>{
   return new Promise( (resolve, reject)=>{
     if(!apiPath){
-      reject('Front development error - no path!')
+      throw new ClientException('Front development error - no path!')
     }
     if(!method){
-      reject('Front development error - no method!')
+      throw new ClientException('Front development error - no method!')
     }
     let init = smblTheInit(method);
     if(input){
@@ -31,19 +31,26 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
         const res = await apiResp.text()
         return await JSON.parse(res)
       })
-  }).catch(async errResp=>{
+  }).catch(async err=>{
 
-    if( typeof errResp.text === 'function'){
+    if(err.name === 'MyClientException'){
+      throw err
+    }
+    if( typeof err.text === 'function'){
       let servMsg = ''
       try{
-        const servJSONMsg = await errResp.text()
+        const servJSONMsg = await err.text()
         servMsg = JSON.parse(servJSONMsg)
-
       }catch(e){  //Server did not send processed JSON message
         console.log('Error url: ' + apiPath + ' ' + method)
         throw new ServerError('Api error! No such service!')
       }
-      throw new ServerException(servMsg)  //Sever defined precisely the problem
+      //Server defined precily the problem, it is validation connected
+      if(servMsg.status=== 'failed' && servMsg.report.type === 'simple'){
+        throw new ServerValidateException(servMsg)
+      }
+      //Sever defined precisely the problem, but not validation connected
+      throw new ServerException(servMsg)  
     }else{
       throw new ServerError('Api error! Response undefined!')
     }

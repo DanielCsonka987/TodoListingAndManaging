@@ -7,7 +7,6 @@ function ShowMessages(props){
     : '';
     */
     if(typeof props.messageContent === 'undefined'){ //TodoItem def. undefined!!
-        console.log('Undef')
         return (<></>)
     }
     const clssnmForErrorLine = 'errorLine'
@@ -29,8 +28,6 @@ function ShowMessages(props){
             })
         )
     }
-
-
 }
 
 export default ShowMessages

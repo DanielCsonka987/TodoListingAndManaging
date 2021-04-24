@@ -4,7 +4,6 @@ import ShowMessages from '../generals/ShowMessages'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 
 import { todoInputRevise } from '../../utils/inputRevise'
-import interpretError from '../../utils/interpretProblems'
 
 class TodoInput extends Component{
     constructor(props){
@@ -27,7 +26,10 @@ class TodoInput extends Component{
         this.setState({ [name]: value })
     }
     handleAPIError(err){
-        interpretError(err, 'todoLocalSaveMessage', this.handleInputChange)
+        this.setState({
+            todoLocalSaveMessage:  err.name.includes('Validate')?
+              err.errorFields : err.message
+        })
     }
     async handleTodoSave(){
         try{

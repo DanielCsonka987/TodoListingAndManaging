@@ -6,16 +6,30 @@ export class ServerError extends Error{
     }
 }
 
-
 export class ServerException extends Error{
-    constructor(obj, args){
+    constructor(args){
         super(args)
-        this.field = obj.report,
-        this.message = obj.message
         this.name = 'MyServerException'
     }
 }
 
+export class ServerValidateException extends Error{
+    constructor(obj, args){
+        super(args)
+        this.errorFields = { 
+            field: obj.report.value,
+            message: obj.message }
+        this.message = obj.message
+        this.name = 'MyServerValidateException'
+    }
+}
+
+export class ClientException extends Error {
+    constructor(args){
+        super(args)
+        this.name = 'MyClientException'
+    }
+}
 
 export class ClientValidateException extends Error{
     constructor(errors, args){

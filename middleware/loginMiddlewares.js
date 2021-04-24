@@ -63,7 +63,8 @@ function readProfileDetailsAndLogin(req, res){
       try{
         createSessionCookie(res, req.loginUserId.toString());
         res.status(200);
-        res.json( loginView.loginSuccess(result) );
+        res.json( loginView.loginSuccess(result.report) );
+
       }catch(e){
         res.status(400);
         res.json( loginView.loginFail(result) )

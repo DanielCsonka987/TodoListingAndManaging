@@ -5,30 +5,26 @@ module.exports = {
     assembleProperMsgContent: function(properContent){
         return {
             status: 'success',
-            report: properContent,
-            message: ''
+            report: properContent
         }
     },
     asembleNoContentMsg: function(){
         return {
             status: 'success',
-            report: 'No content to show!',
-            message: ''
+            report: 'No content to show!'
         }
     },
     assembleDBErrorMsg: function(){
         return {
             status: 'failed',
-            report: 'DB error occured!',
-            message: ''
+            report: 'DB error occured!'
         }
     },
 
     showSystemMsg_isItOccured: function( isItSuccess, systemContent){
         return {
             status: isItSuccess? 'success': 'failed',
-            report: systemContent,
-            message: ''
+            report: systemContent
         }
     },
 
@@ -43,6 +39,7 @@ module.exports = {
     },
     convertProfileBasisToPublic(privProf){
         return {
+            id: privProf._id,
             username: privProf.username,
             loginUrl: paths.basePath + privProf.id + paths.loginPostfix
         }
@@ -59,8 +56,7 @@ module.exports = {
 
             createNewTodo: paths.basePath + privProf._id.toString() + paths.todoInterText,
             changPwdDelAccUrl: paths.basePath + privProf._id.toString(),
-            logoutUrl: paths.basePath + privProf._id.toString() + paths.logoutPostfix,
-            collectTodosUrl: paths.basePath + privProf._id.toString() + paths.todoInterText
+            logoutUrl: paths.basePath + privProf._id.toString() + paths.logoutPostfix
         }
     },
     convertProfileDetailsToRegister: function(privProf){

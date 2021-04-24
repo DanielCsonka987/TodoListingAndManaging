@@ -7,7 +7,6 @@ import TodoDateContent from './TodoDateContent'
 import ShowMessages from '../generals/ShowMessages'
 
 import { todoNotationInputRevise } from '../../utils/inputRevise'
-import interpretError from '../../utils/interpretProblems'
 
 class TodoItem extends Component{
   constructor(props){
@@ -31,6 +30,12 @@ class TodoItem extends Component{
   handleStatusChange(state){
     this.props.funcStatusEdit(this.props.todoDatas.updateStatus, 
       !this.state.status)
+  }
+  handleAPIError(err){
+    this.setState({
+      todoMessage:  err.name.includes('Validate')?
+        err.errorFields : err.message
+    })
   }
   handleModeSwitch(event){
     if(this.state.componentMode === 'normal'){
@@ -61,7 +66,11 @@ class TodoItem extends Component{
       this.props.funcNoteEdit(this.props.todoDatas.updateNotation, this.state.notation);
       this.setState({ todoMessage: '' })
     }catch(err){
-      interpretError(err, 'todoMessage', this.handleInputChange);
+
+
+
+
+
     }
   }
 

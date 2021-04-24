@@ -1,80 +1,50 @@
+function viewUnit(sts, prcs, repType, repValue, msg){
+    return {
+        status: sts,
+        report: {
+            process: prcs,
+            type: repType,
+            value: repValue
+        },
+        message: msg
+    }
+}
 
 // COOKIE MESSAGES //
 module.exports.forCookies = {
-    generalProblemMsg: {
-        status: 'failed',
-        report: '',
-        message: 'Please, log in to use such service!'
-    },
-
-    paramMissmatchMsg: {
-        status: 'failed',
-        report: '',
-        message: 'Management is permitted only at your account!'
-    },
-    loggedInStateMsg(state, profId){
-        return {
-            status: state? 'success' : 'failed',
-            report: state? profId.toString() : '',
-            message: state? 'You are still logged in!'
-                : 'No login state!',
-        }
-    },
-    systemError: {
-        status: 'failed',
-        report: '',
-        message: 'System error occured!'
+    generalProblemMsg:  viewUnit('failed', 'cookie', 'none', '', 
+        'Please, log in to use such service!'),
+    paramMissmatchMsg: viewUnit('failed', 'cookie', 'none', '',
+        'Management is permitted only at your account!'),
+    loggedInStateMsg(state, todosCont){
+        return viewUnit( state? 'success' : 'false', 'cookie', state? 'array' : 'none', 
+            state? todosCont : '', state? 'You are still logged in!' : 'You are not logged in!')
     }
 }
 
 // LOGIN MESSAGES //
 module.exports.forLogin = {
-    noProperLoginDatas: {
-        status: 'failed',
-        report: 'dataFail',
-        message: 'Wrong username or password!'
-    },
-    noSuchUserInSystem: {
-        status: 'failed',
-        report: 'lackOfUser',
-        message: 'Wrong username or password!'
-    },
-    differentParamAndUserid: {
-        status: 'failed',
-        report: 'differentParams',
-        message: 'Wrong username or password!'
-    },
-    passwordNotAcceptable: {
-        status: 'failed',
-        report: 'authentication',
-        message: 'Wrong username or password!'
-    },
-    passwordTestError: {
-        status: 'failed',
-        report: 'authentication',
-        message: 'System error occured!'
-    },
+    noProperLoginDatas: viewUnit('failed', 'loginDataFail', 'none', '',
+        'Wrong username or password!'),
+    noSuchUserInSystem: viewUnit('failed', 'loginLackOfUser', 'none', '', 
+        'Wrong username or password!'), 
+    differentParamAndUserid: viewUnit('failed', 'logindiffParams', 'none', '', 
+        'Wrong username or password!'),
+    passwordNotAcceptable: viewUnit('failed', 'loginAuth', 'none', '', 
+        'Wrong username or password!'), 
+    passwordTestError: viewUnit('failed', 'loginAuth', 'none', '', 
+        'System error occured!'),
     loginSuccess: (dbmsg) =>{
-        dbmsg.message = 'You have logged in!';
-        return  dbmsg
+        return viewUnit('success', 'login', 'object', dbmsg, 
+            'You have logged in!')
     },
-    loginFail: (dbmsg) =>{
-        dbmsg.message = 'System error occured!';
-        return dbmsg
-    }
+    loginFail:  viewUnit('failed', 'login', 'none', '', 
+        'System error occured!')
 }
 
 module.exports.forLogout = {
-    success: {
-        status: 'success',
-        report: '',
-        message: 'You have logged out!'
-    },
-    falied: {
-        status: 'failed',
-        report: '',
-        message: 'System error occured!'
-    }
+    success: viewUnit('success', 'logout', 'none', '', 'You have logged out!'),
+    falied: viewUnit('failed', 'logout', 'none', '', 'System error occured!')
 }
 
 
@@ -95,43 +65,27 @@ module.exports.forRegister ={
             const involvedKey = problemKeyWord.replace('_','');
             msg += `This ${involvedKey} is not permitted!`;
         }
-        return {
-            status: 'failed',
-            report: problemKeyWord,
-            message: msg
-        }
+        return viewUnit( 'failed', 'regValidate', 'simple', problemKeyWord,  msg )
     },
-    usernameOccupied: {
-        status: 'failed',
-        report: 'username',
-        message: 'This username is already in use!'
-    },
-    registeringError: (type)=> {
-        return {
-            status: 'failed',
-            report: type,
-            message: 'System error occured!'
-        }
-    },
-    regProfilePersistFail: (dbmsg)=>{
-        dbmsg.message = 'System error occured!';
-        return dbmsg
-    },
+    usernameOccupied: viewUnit( 'failed', 'regRevise', 'simple', 'username',
+        'This username is already in use!'),
+    registeringError: viewUnit( 'failed', 'regPwdEncode', 'none', '',
+        'System error occured!' ),
+    regProfilePersistFail: viewUnit('failed', 'regPersist', 'none', '',
+        'System error occured!'),
     registerSuccess: (dbmsg)=>{
-        dbmsg.message = 'Registration done!';
-        return dbmsg
+        return viewUnit('success', 'regPersist', 'object', dbmsg,
+            'Registration done!')
     }
 }
 
 module.exports.forProfiles = {
     // loading profile list
-    readPublicProfilesFail: (dbmsg) =>{
-        dbmsg.message = 'Reading error!';
-        return dbmsg
-    },
+    readPublicProfilesFail: viewUnit('failed', 'readProf', 'none', '',
+        'Reading error!'),
     readPublicProfilesSuccess(dbmsg){
-        dbmsg.message = 'Reading done!';
-        return dbmsg
+        return viewUnit('success', 'readProf', 'array', dbmsg, 
+            'Reading done!')
     },
 
     // general update/delete
@@ -143,109 +97,66 @@ module.exports.forProfiles = {
             const problem = problemKeyWord.replace('_', ' ')
             msg += `This ${problem} is not permitted!`
         }
-        return {
-            status: 'failed',
-            report: problemKeyWord,
-            message: msg
-        }
+        return viewUnit( 'failed', 'pwdManage', 'simple', problemKeyWord, msg )
     },
 
     // password change
-    pwdHashRevisionFail: {
-        status: 'failed',
-        report: 'old_password',
-        message: 'This old password is not correct!'
-    },
-    pwdHashRevisionFailed: {
-        status: 'failed',
-        report: 'old_password',
-        message: 'This old password is not correct!'
-    },
-    pwdHashRevisionError:{
-        status: 'failed',
-        report: '',
-        message: 'System error occured!'
-    },
-    pwdHashingFailed: {
-        status: 'failed',
-        report: '',
-        message: 'System error occured!'
-    },
-    pwdUpdateSuccess(dbmsg){
-        dbmsg.message = 'Updating done!';
-        return dbmsg
-    },
-    pwdUpdateFailed(dbmsg){
-        dbmsg.message = 'Updating failed!';
-        return dbmsg
-    },
+    pwdHashRevisionFail: viewUnit( 'failed', 'pwdManage', 'simple', 'old_password', 
+        'This old password is not correct!'),
+    pwdHashRevisionFailed: viewUnit( 'failed', 'pwdManage', 'simple', 'old_password', 
+        'This old password is not correct!'),
+    pwdHashRevisionError: viewUnit('failed', 'pwdManage', 'none', '', 
+        'System error occured!'),
+    pwdHashingFailed:  viewUnit('failed', 'pwdManage', 'none', '', 
+        'System error occured!'),
+    pwdUpdateSuccess: viewUnit( 'success', 'pwdManage', 'none', '', 
+            'Updating done!'),
+    pwdUpdateFailed: viewUnit('failed', 'pwdManage', 'nonte', '',
+        'Updating failed!'),
 
     // profile delete
-    profDelsuccess(dbmsg){
-        dbmsg.message = 'Deletion done!';
-        return dbmsg
-    },
-    profDelFailed(dbmsg){
-        dbmsg.messge = 'Deletion failed!';
-        return dbmsg
-    }
+    profDelsuccess: viewUnit('success', 'delAccount', 'none', '',
+             'Deletion done!'),
+    profDelFailed: viewUnit('failed', 'delAccount', 'none', '',
+        'Deletion failed!'),
 }
 
 
 module.exports.forTodos = {
     // todo creation
     todoVerifyFailed(problemKeyWord) {
-        return {
-            status: 'failed',
-            report: problemKeyWord,
-            message: `This ${problemKeyWord} is not permitted!`
-        }
+        return viewUnit('failed', 'newTodo', 'simple', problemKeyWord, 
+            `This ${problemKeyWord} is not permitted!`)
     },
     todoCreationSuccess(dbmsg){
-        dbmsg.message = 'Creation done!';
-        return dbmsg;
+        return viewUnit('success', 'newTodo', 'object', dbmsg, 
+            'Creation done!');
     },
-    todoCreationFailed(dbmsg){
-        dbmsg.message = 'Creation failed!';
-        return dbmsg
-    },
+    todoCreationFailed: viewUnit('failed', 'newTodo', 'none', '', 
+        'Creation failed!'),
 
 
     // todo status/notation change
-    todoStatusChangeVerifyFailed: {
-        status: 'failed',
-        report: 'status',
-        message: 'System error occured!'
-    },
-    todoNotationChangeVerifyFailed: {
-        status: 'failed',
-        report: 'notation',
-        message: 'System error occured!'
-    },
+    todoStatusChangeVerifyFailed: viewUnit('failed', 'todoChange', 'simple',
+        'status', 'System error occured!'),
+
+
+    todoNotationChangeVerifyFailed: viewUnit('failed', 'todoChange', 'simple',
+        'notation', 'System error occured!'),
 
     todoUpdateSuccess(dbmsg){
-        dbmsg.message = 'Update done!';
-        return dbmsg
+        return viewUnit('success', 'todoChange', 'date', dbmsg, 
+            'Update done!')
     },
-    todoUpdateFailed(dbmsg){
-        dbmsg.message = 'Update failed!';
-        return dbmsg
-    },
+    todoUpdateFailed: viewUnit('failed', 'todoChange', 'none', '',
+        'Update failed!'),
 
 
-    todoRemoveSuccess(dbmsg) {
-        dbmsg.message = 'Deletion done!';
-        return dbmsg
-    },
-    todoRemoveFailed(dbmsg){
-        dbmsg.message = 'Deletion failed!';
-        return dbmsg;
-    }
-
+    todoRemoveSuccess: viewUnit('success', 'removeTodo', 'none', '',
+        'Deletion done!'),
+    todoRemoveFailed: viewUnit('failed', 'removeTodo', 'none', '',
+        'Deletion failed!')
 }
 
-module.exports.forError = {
-    status:'failed',
-    report: 'Geneal error occured!',
-    message: 'System error ovvured!'
-}
+module.exports.forError = viewUnit('failed', 'general', 'none',
+    'System error ovvured!')

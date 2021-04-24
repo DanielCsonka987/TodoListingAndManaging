@@ -46,7 +46,7 @@ function reqProfilePwdEncoding(req, res, next){
   })
   .catch(err=>{
     res.status(500);
-    res.json( regView.registeringError('password_encoding') );
+    res.json( regView.registeringError );
   })
 }
 
@@ -64,12 +64,11 @@ function createNewProfileAndLogin(req, res){
   model.createNewProfile(newProf, result=>{
     if(result.status === 'success'){
       createSessCookie(res, result.report.id);
-      delete result.report.id
       res.status(200)
-      res.json( regView.registerSuccess(result) )
+      res.json( regView.registerSuccess(result.report) )
     }else{
       res.status(500);
-      res.json( regView.regProfilePersistFail(result) );
+      res.json( regView.regProfilePersistFail );
     }
   })
 }
