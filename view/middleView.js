@@ -17,7 +17,7 @@ module.exports.forCookies = {
     paramMissmatchMsg: viewUnit('failed', 'cookie', 'none', '',
         'Management is permitted only at your account!'),
     loggedInStateMsg(state, todosCont){
-        return viewUnit( state? 'success' : 'false', 'cookie', state? 'array' : 'none', 
+        return viewUnit( state? 'success' : 'failed', 'cookie', state? 'array' : 'none', 
             state? todosCont : '', state? 'You are still logged in!' : 'You are not logged in!')
     }
 }
@@ -28,7 +28,7 @@ module.exports.forLogin = {
         'Wrong username or password!'),
     noSuchUserInSystem: viewUnit('failed', 'loginLackOfUser', 'none', '', 
         'Wrong username or password!'), 
-    differentParamAndUserid: viewUnit('failed', 'logindiffParams', 'none', '', 
+    differentParamAndUserid: viewUnit('failed', 'loginDiffParams', 'none', '', 
         'Wrong username or password!'),
     passwordNotAcceptable: viewUnit('failed', 'loginAuth', 'none', '', 
         'Wrong username or password!'), 

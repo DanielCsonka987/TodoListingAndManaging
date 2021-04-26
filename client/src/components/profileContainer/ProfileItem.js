@@ -14,14 +14,19 @@ class ProfileItem extends Component {
   constructor(props){
     super(props)
     this.handleAPIError = this.handleAPIError.bind(this)
-
     this.handleInputChange = this.handleInputChange.bind(this);
+
     this.handleCardFocus = this.handleCardFocus.bind(this)
     this.handleLogin = this.handleLogin.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
     this.handlePwdChange = this.handlePwdChange.bind(this);
     this.handleAccountDel = this.handleAccountDel.bind(this)
     this.handleCancelModify = this.handleCancelModify.bind(this)
+
+    this.setBaseCardState = this.setBaseCardState.bind(this)
+    this.setPwdChangeCardState = this.setPwdChangeCardState.bind(this)
+    this.setAccDelCardState = this.setAccDelCardState.bind(this)
+
     this.state = {
       userid: props.userid,
       username: props.username,
@@ -30,7 +35,7 @@ class ProfileItem extends Component {
       old_password: '',
       new_password: '',
       password_repeat: '',
-      loggedInInputModeChange: 'none',
+      actualCardState: 'none',
 
       profileMessage: ''
 
@@ -61,7 +66,7 @@ class ProfileItem extends Component {
       const ajaxBody = smblLoginDatas(
         this.state.username,
         this.state.password
-        );
+      );
       const loginRes = await doAjaxSending(this.props.loginUrl, 'POST', ajaxBody);
       this.setState({password: '', profileMessage: loginRes.message})
       this.props.funcLoginProc(loginRes.report.value, 'login');
@@ -75,27 +80,23 @@ class ProfileItem extends Component {
     try{
       const logoutRes = await doAjaxSending(this.props.userExtraDatas.logoutUrl, 'GET', '')
       this.props.funcLogoutProc(this.state.userid)
-      this.setState({ profileMessage: logoutRes.message });
+      this.setBaseCardState(logoutRes.message)
     }catch(err){
       this.handleAPIError(err);
     }
   }
   async handlePwdChange(){
     try{
-      if(this.state.loggedInInputModeChange === 'pwd'){
+      if(this.state.actualCardState === 'pwd'){
         await pwdChangeInputRevise(this.state)
         const ajaxBody = smblPwdChangeDatas(
           this.state.old_password, this.state.new_password
         );
-        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.manageProfUrl,
+        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.changPwdDelAccUrl,
            'PUT', ajaxBody)
-        this.setState({ 
-          password: '', password_repeat: '',
-          profileMessage: pwdChangeRes.message,
-          loggedInInputModeChange: 'none'
-        })
+        this.setBaseCardState(pwdChangeRes.message)
       }else{
-        this.setState({ loggedInInputModeChange: 'pwd'  })
+        this.setPwdChangeCardState();
       }
     }catch(err){
       this.handleAPIError(err)
@@ -103,28 +104,35 @@ class ProfileItem extends Component {
   }
   async handleAccountDel(){
     try{
-      if(this.state.loggedInInputModeChange === 'del'){
+      if(this.state.actualCardState === 'del'){
         await deleteProfInputRevise(this.state)
         this.props.funcCardRemoval(this.state.old_password, this.state.userid);
-        this.setState({
-          old_password: '',
-          loggedInInputModeChange: 'none'
-        })
+        this.setBaseCardState('')
       }else{
-        this.setState({ loggedInInputModeChange: 'del' })
+        this.setAccDelCardState()
       }
     }catch(err){
       this.handleAPIError(err);
     }
   }
   handleCancelModify(){
+    this.setBaseCardState('')
+  }
+  setBaseCardState(msg){
     this.setState({
       old_password: '',
       new_password: '',
       password_repeat: '',
-      loggedInInputModeChange: 'none',
-      profileMessage: ''
+      actualCardState: 'none',
+      profileMessage: msg
     })
+  }
+  setPwdChangeCardState(){
+    this.setState({  actualCardState: 'pwd'  })
+
+  }
+  setAccDelCardState(){
+    this.setState({ actualCardState: 'del' })
   }
   render(){
     const isThisCardLoggedIn = typeof this.props.userExtraDatas ==='object';
@@ -145,7 +153,7 @@ class ProfileItem extends Component {
         oldPwd={this.state.old_password}
         newPwd={this.state.new_password}
         repPwd={this.state.password_repeat}
-        inputModeChange={this.state.loggedInInputModeChange}
+        inputModeChange={this.state.actualCardState}
         funcInputChange={this.handleInputChange}
 
         funcPwdChange={this.handlePwdChange}

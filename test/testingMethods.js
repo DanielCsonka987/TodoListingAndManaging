@@ -49,6 +49,18 @@ module.exports.forMsgs = {
     expect(msg.status).to.equal(expState)
     expect(msg.message).to.be.a('string')
   },
+  reviseDBMessageBasics: (msg, statusText)=>{
+    expect(msg).to.have.property('status')
+    expect(msg.status).to.a('string')
+    expect(msg.status).to.equal(statusText)
+    expect(msg).to.have.property('report')
+    expect(msg.report).to.be.a('object')
+    expect(msg.report).to.have.property('process')
+    expect(msg.report.proc).to.be.a('string')
+    expect(msg.report).to.have.property('type')
+    expect(msg.report.type).to.be.a('string')
+    expect(msg.report).to.have.property('value')
+  },
   reviseListOfProfiles: (report, expLength)=>{
     expect(report).to.be.a('array')
     expect(report).to.have.lengthOf(expLength)

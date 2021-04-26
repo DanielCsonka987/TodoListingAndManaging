@@ -50,7 +50,7 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
         throw new ServerValidateException(servMsg)
       }
       //Sever defined precisely the problem, but not validation connected
-      throw new ServerException(servMsg)  
+      throw new ServerException(servMsg.message)  
     }else{
       throw new ServerError('Api error! Response undefined!')
     }

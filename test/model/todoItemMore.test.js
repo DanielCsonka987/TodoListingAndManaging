@@ -8,7 +8,7 @@ const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
 const newProfiles = require('../todoTestDatas').newProfilesWithoutTodos;
 const bareTodos = require('../todoTestDatas').bareNewTodos
 
-const reviseMessageContent = require('../testingMethods').forMsgs.testRespMsgBasics
+const reviseMessageContent = require('../testingMethods').forMsgs.reviseDBMessageBasics
 const reviseProfileContent = require('../testingMethods').forMsgs.reviseProfDetailedContent
 const reviseTodoContent = require('../testingMethods').forMsgs.reviseTodoContent
 
@@ -57,7 +57,6 @@ describe('Integrated profile-todo tests', ()=>{
   it('Create a user, add some todo in a profile', (done)=>{
     ProfileModel.createNewProfile(newProfiles[0], (res)=>{
       reviseMessageContent(res, 'success')
-      expect(res.report).to.be.a('object')
       reviseProfileContent(res.report)
       expect(res.report.todos).to.be.empty
 
@@ -65,7 +64,6 @@ describe('Integrated profile-todo tests', ()=>{
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[0], (result)=>{
         reviseMessageContent(result, 'success')
-        expect(result.report).to.be.a('object')
 
         expect(result.report).to.have.property('removingUrl')
         bareTodos[0].id = extinctTodoId(result.report.removingUrl)
@@ -113,7 +111,7 @@ describe('Integrated profile-todo tests', ()=>{
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[1], (result)=>{
         reviseMessageContent(result, 'success')
-        expect(result.report).to.be.a('object')
+        
         reviseTodoContent(result.report)
         expect(result.report).to.have.own.property('removingUrl')
         bareTodos[1].id = extinctTodoId(result.report.removingUrl);

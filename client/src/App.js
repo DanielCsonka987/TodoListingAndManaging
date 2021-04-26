@@ -177,12 +177,11 @@ class App extends Component {
       lastName: sessionStorage.getItem(''),
       age: sessionStorage.getItem('profAge'),
       occupation: sessionStorage.getItem('profOccup'),
-      manageProfUrl: sessionStorage.getItem('profManage'),
+      changPwdDelAccUrl: sessionStorage.getItem('profManage'),
       logoutUrl: sessionStorage.getItem('profLogout')
     }
   }
   fillInSessionStore(datas){
-    console.log(datas)
     sessionStorage.setItem('profId', datas.id)
     sessionStorage.setItem('profFullname', datas.first_name + ' ' + datas.last_name)
     sessionStorage.setItem('profAge', datas.age)

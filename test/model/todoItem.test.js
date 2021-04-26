@@ -160,7 +160,6 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.report).to.have.own.property('notationChangeUrl')
           expect(res.report).to.have.own.property('statusChangeUrl')
           expect(res.report).to.have.own.property('removingUrl')
-          expect(res).to.have.own.property('message')
           done()
       })
       
@@ -183,7 +182,6 @@ describe('Model TodoItem CRUD operations', ()=>{
           expect(res.report).to.have.own.property('notationChangeUrl')
           expect(res.report).to.have.own.property('statusChangeUrl')
           expect(res.report).to.have.own.property('removingUrl')
-          expect(res).to.have.own.property('message')
           done()
       })
     })
@@ -300,7 +298,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               const todoNow = profDoc2.findThisRawTodo(targetTodo);
               expect(todoNow).to.be.a('undefined')
               done();
-          }, 300)
+          }, 400)
           })
         });
       })
