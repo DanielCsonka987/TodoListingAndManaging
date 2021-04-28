@@ -6,7 +6,6 @@ const profURLSchema = require('./testConfig').profURLRegexp
 const todoURLSchema = require('./testConfig').todoURLRegexp
 
 module.exports.forMsgs = {
-
   testRespMsgBasics: (resp, expStatusCode) =>{
     expect(resp).to.have.status(expStatusCode)
     expect(resp).to.be.json
@@ -39,7 +38,7 @@ module.exports.forMsgs = {
     })
   },
 
-  testJSONMsgBasics: (msg, expState) =>{
+  testJSONMsgBasics: (msg, expState, repCont) =>{
     expect(msg).to.be.a('object');
     expect(msg).to.have.property('status')
     expect(msg).to.have.property('report')
@@ -48,18 +47,42 @@ module.exports.forMsgs = {
     expect(msg.status).to.be.a('string')
     expect(msg.status).to.equal(expState)
     expect(msg.message).to.be.a('string')
-  },
-  reviseDBMessageBasics: (msg, statusText)=>{
-    expect(msg).to.have.property('status')
-    expect(msg.status).to.a('string')
-    expect(msg.status).to.equal(statusText)
-    expect(msg).to.have.property('report')
+    
     expect(msg.report).to.be.a('object')
     expect(msg.report).to.have.property('process')
-    expect(msg.report.proc).to.be.a('string')
+    expect(msg.report.process).to.be.a('string')
     expect(msg.report).to.have.property('type')
     expect(msg.report.type).to.be.a('string')
     expect(msg.report).to.have.property('value')
+
+    if(repCont === ''){
+      expect(msg.report.type).to.equal('none')
+      expect(msg.report.value).to.be.a('string')
+      expect(msg.report.value).to.equal('')
+    }
+    if(repCont === 'obj'){
+      expect(msg.report.type).to.equal('object')
+      expect(msg.report.value).to.be.a('object')
+    }
+    if(repCont === 'arr'){
+      expect(msg.report.type).to.equal('array')
+      expect(msg.report.value).to.be.a('array')
+    }
+    if(repCont === 'date'){
+      expect(msg.report.type).to.equal('date')
+      expect(msg.report.value).to.be.a('string')
+      const actDate = new Date(msg.report.value)
+      expect(actDate).to.be.instanceOf(Date)
+    }
+    if(repCont === 'str'){
+      expect(msg.report.type).to.equal('simple')
+      expect(msg.report.value).to.be.a('string')
+    }
+  },
+  reviseDBMessageBasics: (res, statusText)=>{
+    expect(res).to.have.property('status')
+    expect(res.status).to.equal(statusText)
+    expect(res).to.have.own.property('report')
   },
   reviseListOfProfiles: (report, expLength)=>{
     expect(report).to.be.a('array')
@@ -68,6 +91,7 @@ module.exports.forMsgs = {
       const urlExam = new RegExp(profURLSchema.loginProf)
 
       report.forEach(item=>{
+        expect(item).to.have.property('id')
         expect(item).to.have.property('username')
         expect(item.username).to.be.a('string')
         expect(item).to.have.property('loginUrl')
@@ -77,6 +101,7 @@ module.exports.forMsgs = {
     }
   },
   reviseProfDetailedContent: (report)=>{
+    expect(report).to.have.own.property('id')
     expect(report).to.have.own.property('username')
     expect(report.username).to.be.a('string')
     expect(report.username).to.not.equal('')

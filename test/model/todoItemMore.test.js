@@ -8,7 +8,7 @@ const profilesTodoTestDatas = require('../todoTestDatas').profilesWithTodos;
 const newProfiles = require('../todoTestDatas').newProfilesWithoutTodos;
 const bareTodos = require('../todoTestDatas').bareNewTodos
 
-const reviseMessageContent = require('../testingMethods').forMsgs.reviseDBMessageBasics
+const reviseDBMainStructure = require('../testingMethods').forMsgs.reviseDBMessageBasics
 const reviseProfileContent = require('../testingMethods').forMsgs.reviseProfDetailedContent
 const reviseTodoContent = require('../testingMethods').forMsgs.reviseTodoContent
 
@@ -56,14 +56,16 @@ describe('Integrated profile-todo tests', ()=>{
 
   it('Create a user, add some todo in a profile', (done)=>{
     ProfileModel.createNewProfile(newProfiles[0], (res)=>{
-      reviseMessageContent(res, 'success')
+      expect(res).to.have.property('status')
+      expect(res.status).to.equal('success')
       reviseProfileContent(res.report)
       expect(res.report.todos).to.be.empty
 
       newProfiles[0]._id = res.report.id.toString();
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[0], (result)=>{
-        reviseMessageContent(result, 'success')
+        expect(result).to.have.property('status')
+        expect(result.status).to.equal('success')
 
         expect(result.report).to.have.property('removingUrl')
         bareTodos[0].id = extinctTodoId(result.report.removingUrl)
@@ -80,7 +82,7 @@ describe('Integrated profile-todo tests', ()=>{
   it('Previous user logs in and update todo status', (done)=>{
     const targetProf = newProfiles[0]._id
     ProfileModel.findThisProfileToLogin(targetProf, (res)=>{
-      reviseMessageContent(res, 'success')
+      reviseDBMainStructure(res, 'success')
 
       expect(res.report).to.have.property('logoutUrl')
       expect(extinctProfId(res.report.logoutUrl)).to.equal(targetProf.toString())
@@ -91,9 +93,8 @@ describe('Integrated profile-todo tests', ()=>{
       const targetTodo = extinctTodoId(res.report.todos[0].removingUrl)
 
       ProfileModel.modifyTodoStatus(targetProf, targetTodo, 'Finished', (result)=>{
-        reviseMessageContent(result, 'success')
+        reviseDBMainStructure(result, 'success')
         
-        expect(result).to.have.own.property('report')
         expect(result.report).to.be.instanceOf(Date)
         expect(result.report).to.gt(bareTodos[0].update)
         done()
@@ -105,12 +106,12 @@ describe('Integrated profile-todo tests', ()=>{
     const targetProf = newProfiles[0]._id
     const targetTodo = bareTodos[0].id
     ProfileModel.modifyTodoNotation(targetProf, targetTodo, 'I dont know, stg', res=>{
-      reviseMessageContent(res, 'success')
+      reviseDBMainStructure(res, 'success')
       expect(res.report).to.be.instanceOf(Date)
       expect(res.report).to.gt(bareTodos[0].update)
 
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[1], (result)=>{
-        reviseMessageContent(result, 'success')
+        reviseDBMainStructure(result, 'success')
         
         reviseTodoContent(result.report)
         expect(result.report).to.have.own.property('removingUrl')
@@ -129,12 +130,12 @@ describe('Integrated profile-todo tests', ()=>{
     const targetTodo = bareTodos[0].id
     const remainingTodo = bareTodos[1].id
     ProfileModel.removeThisTodo(targetProf, targetTodo, res=>{
-      reviseMessageContent(res, 'success')
+      reviseDBMainStructure(res, 'success')
       expect(res.report).to.equal('')
 
       setTimeout(()=>{
         ProfileModel.findThisProfileToLogin(targetProf, result=>{
-          reviseMessageContent(result, 'success')
+          reviseDBMainStructure(result, 'success')
           expect(result.report).to.have.own.property('changPwdDelAccUrl')
 
           expect(extinctProfId(result.report.changPwdDelAccUrl)).to.equal(targetProf)

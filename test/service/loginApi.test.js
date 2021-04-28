@@ -72,7 +72,7 @@ describe('Proper login-out attempts', function(){
         testRespBasics(res, 200)
         testRespHeaders(res)
         const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'success')
+        testJSONBasics(resJSON, 'success', 'arr')
         testProfList(resJSON.report.value, 5)
 
         resJSON.report.value.forEach(item=>{
@@ -93,7 +93,7 @@ describe('Proper login-out attempts', function(){
             testRespHeaders(nextResp)
             testRespCookie(nextResp, 'session', actUser.id)
             const loginJSON = JSON.parse(nextResp.text)
-            testJSONBasics(loginJSON, 'success')
+            testJSONBasics(loginJSON, 'success', 'obj')
             testProfDetailes(loginJSON.report.value)
             expect(loginJSON.message).to.equal('You have logged in!');
           })
@@ -109,7 +109,7 @@ describe('Proper login-out attempts', function(){
         testRespBasics(res, 200)
         testRespHeaders(res)
         const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'success')
+        testJSONBasics(resJSON, 'success', 'arr')
         testProfList(resJSON.report.value, 5)
 
         const actUser = {
@@ -127,7 +127,7 @@ describe('Proper login-out attempts', function(){
             testRespHeaders(nextResp)
             testRespCookie(nextResp, 'session', actUser.id)
             const loginJSON = JSON.parse(nextResp.text)
-            testJSONBasics(loginJSON, 'success')
+            testJSONBasics(loginJSON, 'success', 'obj')
             testProfDetailes(loginJSON.report.value)
             expect(loginJSON.message).to.equal('You have logged in!');
 
@@ -139,7 +139,7 @@ describe('Proper login-out attempts', function(){
                 testRespHeaders(thirdResp)
                 testRespNoCookie(thirdResp, 'session')
                 const logoutJSON = JSON.parse(thirdResp.text)
-                testJSONBasics(logoutJSON, 'success')
+                testJSONBasics(logoutJSON, 'success', '')
                 expect(logoutJSON.message).to.equal('You have logged out!')
             })
           })
@@ -162,7 +162,7 @@ describe('Login, than revise the cookie lifetime', ()=>{
       testRespCookie(res, 'session', u1.id)
 
       const resJSON = JSON.parse(res.text)
-      testJSONBasics(resJSON, 'success')
+      testJSONBasics(resJSON, 'success', 'obj')
 
       return agent.get('/profile/revise')
       .then(nextRes=>{
@@ -171,8 +171,7 @@ describe('Login, than revise the cookie lifetime', ()=>{
         testRespNoCookie(nextRes, 'session')  // no cookie renewing
 
         const nextJSON = JSON.parse(nextRes.text)
-        testJSONBasics(nextJSON, 'success')
-        expect(nextJSON.report.value).to.be.a('array')  //at user pointer 1 no content there
+        testJSONBasics(nextJSON, 'success', 'arr')  //at user pointer 1 no content there
         nextJSON.report.value.forEach(item=>{
           testTodoItem(item)
         })
@@ -189,7 +188,7 @@ describe('Login, than revise the cookie lifetime', ()=>{
       testRespNoCookie(nextRes, 'session')
 
       const nextJSON = JSON.parse(nextRes.text)
-      testJSONBasics(nextJSON, 'failed')
+      testJSONBasics(nextJSON, 'failed', '')
       expect(nextJSON.report.value).to.be.a('string')
       expect(nextJSON.report.value).to.equal('')
       expect(nextJSON.message).to.equal('You are not logged in!')
@@ -214,7 +213,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginDataFail')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -234,7 +233,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginDataFail')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -254,7 +253,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginDataFail')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -273,7 +272,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginDataFail')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -290,7 +289,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginLackOfUser')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -312,7 +311,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginDiffParams')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })
@@ -334,7 +333,7 @@ describe('Uncorrect login-out attempts', function(){
         testRespHeaders(res)
         testRespNoCookie(res, 'session')
         const resJSON = JSON.parse(res.text)
-        testJSONBasics(resJSON, 'failed')
+        testJSONBasics(resJSON, 'failed', '')
         expect(resJSON.report.process).to.equal('loginAuth')
         expect(resJSON.message).to.equal('Wrong username or password!') 
       })

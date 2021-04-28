@@ -190,7 +190,6 @@ ProfileItemSchema.statics.modifyTodoStatus = function(profid, todoid, newStatus,
         doc.save();
         callbFunc(view.assembleProperMsgContent(newDate))
       }catch(e){
-        console.log(e)
         callbFunc(view.assembleDBErrorMsg())
       }
     }

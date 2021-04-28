@@ -57,10 +57,12 @@ describe('Register on api empty db', function(){
         testRespBasics(res, 200)
         testHeaders(res)
         const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'success')
-        testProfDetailedContent(resJSON.report)
+        testJSONBasics(resJSON, 'success', 'obj')
+        testProfDetailedContent(resJSON.report.value)
+        expect(resJSON.report.process).to.equal('regPersist')
         expect(resJSON.message).to.equal('Registration done!')
-        alreadyRegUserID.push( findProfId(resJSON.report.logoutUrl) )
+
+        alreadyRegUserID.push( findProfId(resJSON.report.value.logoutUrl) )
         testRespCookie(res, 'session', alreadyRegUserID[0])
 
         return agent.get(`/profile/`)
@@ -69,9 +71,12 @@ describe('Register on api empty db', function(){
           .then((nextRes)=>{
             testRespBasics(nextRes, 200)
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 1)
-            const readBackID = findProfId(resNextJSON.report[0].loginUrl)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).equal('readProf')
+            expect(resNextJSON.message).to.equal('Reading done!')
+
+            testProfileList(resNextJSON.report.value, 1)
+            const readBackID = findProfId(resNextJSON.report.value[0].loginUrl)
             expect(readBackID).to.be.a('string')
             expect(readBackID).to.equal(alreadyRegUserID[0])
           })
@@ -86,11 +91,12 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 200)
         const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'success')
-        testProfDetailedContent(resJSON.report)
+        testJSONBasics(resJSON, 'success', 'obj')
+        testProfDetailedContent(resJSON.report.value)
         
+        expect(resJSON.report.process).equal('regPersist')
         expect(resJSON.message).to.equal('Registration done!')
-        alreadyRegUserID.push( findProfId(resJSON.report.logoutUrl) )
+        alreadyRegUserID.push( findProfId(resJSON.report.value.logoutUrl) )
         testRespCookie(res, 'session', alreadyRegUserID[1])
 
         return agent.get(`/profile/`)
@@ -100,10 +106,13 @@ describe('Register on api empty db', function(){
             testRespBasics(nextRes, 200)
             testHeaders(res)
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
-            const readBackID1 = findProfId(resNextJSON.report[0].loginUrl)
-            const readBackID2 = findProfId(resNextJSON.report[1].loginUrl)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).equal('readProf')
+            expect(resNextJSON.message).to.equal('Reading done!')
+
+            testProfileList(resNextJSON.report.value, 2)
+            const readBackID1 = findProfId(resNextJSON.report.value[0].loginUrl)
+            const readBackID2 = findProfId(resNextJSON.report.value[1].loginUrl)
             expect(readBackID1).to.not.equal(readBackID2)
 
             expect(readBackID2).to.be.a('string')
@@ -123,21 +132,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
 
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('username')
-        expect(resJSON.message).to.be.a('string')
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.process).to.equal('regValidate')
+        expect(resJSON.report.value).to.equal('username')
         expect(resJSON.message).to.equal('Validation error! The chosen username is not permitted!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).to.equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })
@@ -152,20 +162,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('password')
-        expect(resJSON.message).to.be.a('string')
+
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.process).to.equal('regValidate')
+        expect(resJSON.report.value).to.equal('password')
         expect(resJSON.message).to.equal('Validation error! The chosen password is not permitted!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).to.equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })
@@ -179,20 +191,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('password_repeat')
-        expect(resJSON.message).to.be.a('string')
+
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.value).to.equal('password_repeat')
+        expect(resJSON.report.process).to.equal('regValidate')
         expect(resJSON.message).to.equal('Validation error! No match between the password and its confirmation!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).to.equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })
@@ -206,20 +220,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('first_name')
-        expect(resJSON.message).to.be.a('string')
+
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.process).to.equal('regValidate')
+        expect(resJSON.report.value).to.equal('first_name')
         expect(resJSON.message).to.equal('Validation error! This firstname is not permitted!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).to.equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })
@@ -234,20 +250,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('username')
-        expect(resJSON.message).to.be.a('string')
+
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.process).to.equal('regValidate')
+        expect(resJSON.report.value).to.equal('username')
         expect(resJSON.message).to.equal('Validation error! The chosen username is not permitted!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).to.equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })
@@ -262,20 +280,22 @@ describe('Register on api empty db', function(){
       .then((res)=>{
         testRespBasics(res, 400);
         testHeaders(res)
-        const resJSON = JSON.parse(res.text);
-        testJSONBasics(resJSON, 'failed')
         expect(res.header['session']).to.be.a('undefined');
-        expect(resJSON.report).to.be.a('string')
-        expect(resJSON.report).to.equal('password_repeat')
-        expect(resJSON.message).to.be.a('string')
+
+        const resJSON = JSON.parse(res.text);
+        testJSONBasics(resJSON, 'failed', 'str')
+        expect(resJSON.report.process).to.be.a('string')
+        expect(resJSON.report.value).to.equal('password_repeat')
         expect(resJSON.message).to.equal('Validation error! No match between the password and its confirmation!')
 
         return chaiAgent.get('/profile/')
           .then((nextRes)=>{
             testRespBasics(nextRes, 200);
             const resNextJSON = JSON.parse(nextRes.text);
-            testJSONBasics(resNextJSON, 'success')
-            testProfileList(resNextJSON.report, 2)
+            testJSONBasics(resNextJSON, 'success', 'arr')
+            expect(resNextJSON.report.process).equal('readProf')
+            expect(resNextJSON.message).equal('Reading done!')
+            testProfileList(resNextJSON.report.value, 2)
           })
       })
   })

@@ -22,6 +22,7 @@ const testLoginResp = require('../testingMethods').forMsgs.reviseProfDetailedCon
 const testTodoItem = require('../testingMethods').forMsgs.reviseTodoContent
 const testTodoDates = require('../testingMethods').forMsgs.testThisTodoDating
 const testTodoFrontAndBack = require('../testingMethods').forMsgs.testBackAndFrontTodoEquality
+const testDBRes = require('../testingMethods').forMsgs.reviseDBMessageBasics
 
 const findRespCookieDate = require('../testingMethods').forMsgs.extinctRespCookieExpireDate
 const findPwd = require('../testingMethods').forFormParams.extinctPwd
@@ -76,14 +77,17 @@ describe('CRUD of todos', function(){
       testRespBasics(res, 200)
       testRespHeader(res)
       const jsonRes = JSON.parse(res.text)
-      testJSONContent(jsonRes, 'success')
-      testProfList(jsonRes.report, 5)
+      testJSONContent(jsonRes, 'success', 'array')
+      expect(jsonRes.report.process).to.equal('readProf')
+      expect(jsonRes.message).to.equal('Reading done!')
+
+      testProfList(jsonRes.report.value, 5)
       for(let i = 0; i <= 2; i++){
         const user = {
-          id: findProfId(jsonRes.report[i].loginUrl),
-          srnm: jsonRes.report[i].username,
-          psswrd: findPwd(jsonRes.report[i].username, registDatas),
-          lgnurl: jsonRes.report[i].loginUrl
+          id: findProfId(jsonRes.report.value[i].loginUrl),
+          srnm: jsonRes.report.value[i].username,
+          psswrd: findPwd(jsonRes.report.value[i].username, registDatas),
+          lgnurl: jsonRes.report.value[i].loginUrl
         }
         userToManage.push(user)
       }
@@ -100,10 +104,11 @@ describe('CRUD of todos', function(){
       .then(res=>{
         testRespBasics(res, 200)
         testRespCookie(res, 'session', actUser.id)
+
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
-        const todos = logJSON.report.todos;
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
+        const todos = logJSON.report.value.todos;
         expect(todos).to.have.lengthOf(3)
         todos.forEach(item=>{
           testTodoItem(item)
@@ -121,10 +126,11 @@ describe('CRUD of todos', function(){
       .then(res=>{
         testRespBasics(res, 200)
         testRespCookie(res, 'session', actUser.id)
+
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
-        expect(logJSON.report.todos).to.have.lengthOf(0)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
+        expect(logJSON.report.value.todos).to.have.lengthOf(0)
       })
     })
   })
@@ -142,11 +148,11 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
         //const cookieDate1 = findRespCookieDate(res, 'session')
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const newTodoUrl = logJSON.report.createNewTodo
-        const beforeCreateTodoAmount = logJSON.report.todos.length
+        const newTodoUrl = logJSON.report.value.createNewTodo
+        const beforeCreateTodoAmount = logJSON.report.value.todos.length
         const newTodo = testTodos[0]
         return chaiAgent
         .post(newTodoUrl)
@@ -160,18 +166,19 @@ describe('CRUD of todos', function(){
           //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
           const respJSON = JSON.parse(nextRes.text)
-          testJSONContent(respJSON, 'success')
-          const newTodoFrontVer = respJSON.report
+          testJSONContent(respJSON, 'success', 'obj')
+          expect(respJSON.report.process).to.equal('newTodo')
+          expect(respJSON.message).to.equal('Creation done!')
+          const newTodoFrontVer = respJSON.report.value
           testTodoItem(newTodoFrontVer)
           testTodoDates(newTodoFrontVer, 'equal')
-          const newTodoID = respJSON.report.id
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
 
             expect(doc.todos).to.have.lengthOf(beforeCreateTodoAmount + 1)
-            const newTodoInDB = doc.findThisRawTodo(newTodoID)
+            const newTodoInDB = doc.findThisRawTodo(newTodoFrontVer.id)
             testTodoFrontAndBack(newTodoFrontVer, newTodoInDB)
           })
 
@@ -192,11 +199,11 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
         //const cookieDate1 = findRespCookieDate(res, 'session')
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const newTodoUrl = logJSON.report.createNewTodo
-        const beforeCreateTodoAmount = logJSON.report.todos.length
+        const newTodoUrl = logJSON.report.value.createNewTodo
+        const beforeCreateTodoAmount = logJSON.report.value.todos.length
         const newTodo = testTodos[0]
         return chaiAgent
         .post(newTodoUrl)
@@ -210,18 +217,20 @@ describe('CRUD of todos', function(){
           //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
           const respJSON = JSON.parse(nextRes.text)
-          testJSONContent(respJSON, 'success')
-          const newTodoFrontVer = respJSON.report
+          testJSONContent(respJSON, 'success', 'obj')
+          expect(respJSON.report.process).to.equal('newTodo')
+          expect(respJSON.message).to.equal('Creation done!')
+
+          const newTodoFrontVer = respJSON.report.value
           testTodoItem(newTodoFrontVer)
           testTodoDates(newTodoFrontVer, 'equal')
-          const newTodoID = respJSON.report.id
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
 
             expect(doc.todos).to.have.lengthOf(beforeCreateTodoAmount + 1)
-            const newTodoInDB = doc.findThisRawTodo(newTodoID)
+            const newTodoInDB = doc.findThisRawTodo(newTodoFrontVer.id)
             testTodoFrontAndBack(newTodoFrontVer, newTodoInDB)
           })
         })
@@ -242,10 +251,10 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const todoActManage = logJSON.report.todos[0]
+        const todoActManage = logJSON.report.value.todos[0]
         const statusChangeUrl = todoActManage.statusChangeUrl
         return chaiAgent
         .put( statusChangeUrl )
@@ -256,9 +265,11 @@ describe('CRUD of todos', function(){
           testRespHeader(nextRes)
           testRespCookie(nextRes, 'session', actUser.id)
           const noteChangeJSON = JSON.parse(nextRes.text)
-          testJSONContent(noteChangeJSON, 'success')
+          testJSONContent(noteChangeJSON, 'success', 'date')
+          expect(noteChangeJSON.report.process).to.equal('changeTodo')
+          expect(noteChangeJSON.message).to.equal('Update done!')
+          const frontUpdateDate = new Date(noteChangeJSON.report.value)
 
-          const frontUpdateDate = new Date(noteChangeJSON.report)
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
@@ -286,10 +297,10 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const todoActManage = logJSON.report.todos[0]
+        const todoActManage = logJSON.report.value.todos[0]
         const statusChangeUrl = todoActManage.statusChangeUrl
         return chaiAgent
         .put( statusChangeUrl )
@@ -300,9 +311,11 @@ describe('CRUD of todos', function(){
           testRespHeader(nextRes)
           testRespCookie(nextRes, 'session', actUser.id)
           const noteChangeJSON = JSON.parse(nextRes.text)
-          testJSONContent(noteChangeJSON, 'success')
+          testJSONContent(noteChangeJSON, 'success', 'date')
+          expect(noteChangeJSON.report.process).to.equal('changeTodo')
+          expect(noteChangeJSON.message).to.equal('Update done!')
+          const frontUpdateDate = new Date(noteChangeJSON.report.value)
 
-          const frontUpdateDate = new Date(noteChangeJSON.report)
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
@@ -330,10 +343,10 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const todoActManage = logJSON.report.todos[1] //without notation sure
+        const todoActManage = logJSON.report.value.todos[1] //without notation sure
         const todoOldNotation = todoActManage.notation
         expect(todoOldNotation).to.be.a('string')
         const newNotationText = 'This must be a string to DB'
@@ -348,8 +361,11 @@ describe('CRUD of todos', function(){
           testRespHeader(nextRes)
           testRespCookie(nextRes, 'session', actUser.id)
           const noteChangeJSON = JSON.parse(nextRes.text)
-          testJSONContent(noteChangeJSON, 'success')
-          const frontUpdateDate = new Date(noteChangeJSON.report)
+          testJSONContent(noteChangeJSON, 'success', 'date')
+          expect(noteChangeJSON.report.process).to.equal('changeTodo')
+          expect(noteChangeJSON.message).to.equal('Update done!')
+          const frontUpdateDate = new Date(noteChangeJSON.report.value)
+
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
@@ -378,10 +394,10 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const todoActManage = logJSON.report.todos[0] // with notation sure
+        const todoActManage = logJSON.report.value.todos[0] // with notation sure
         const todoOldNotation = todoActManage.notation
         expect(todoOldNotation).to.be.a('string')
         const newNotationText = ''
@@ -396,9 +412,11 @@ describe('CRUD of todos', function(){
           testRespHeader(nextRes)
           testRespCookie(nextRes, 'session', actUser.id)
           const noteChangeJSON = JSON.parse(nextRes.text)
-          testJSONContent(noteChangeJSON, 'success')
+          testJSONContent(noteChangeJSON, 'success', 'date')
+          expect(noteChangeJSON.report.process).to.equal('changeTodo')
+          expect(noteChangeJSON.message).to.equal('Update done!')
+          const frontUpdateDate = new Date(noteChangeJSON.report.value)
 
-          const frontUpdateDate = new Date(noteChangeJSON.report)
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
             expect(doc).to.be.a('object')
@@ -427,11 +445,11 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const todosAmount = logJSON.report.todos.length
-        const todoActManage = logJSON.report.todos[0] // with notation sure
+        const todosAmount = logJSON.report.value.todos.length
+        const todoActManage = logJSON.report.value.todos[0] // with notation sure
         const deleteUrl = todoActManage.removingUrl
 
         return chaiAgent
@@ -442,9 +460,9 @@ describe('CRUD of todos', function(){
           testRespCookie(nextRes, 'session', actUser.id)
 
           const delJSON = JSON.parse(nextRes.text)
-          testJSONContent(delJSON, 'success')
-          expect(delJSON.report).to.be.a('string')
-          expect(delJSON.report).to.equal('')
+          testJSONContent(delJSON, 'success', '')
+          expect(delJSON.report.process).to.equal('removeTodo')
+          expect(delJSON.message).to.equal('Deletion done!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
@@ -474,11 +492,10 @@ describe('CRUD of todos', function(){
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-
-        const todoActManage = logJSON.report.todos[0] // with notation sure
+        const todoActManage = logJSON.report.value.todos[0] // with notation sure
         const deleteUrl = todoActManage.removingUrl
 
         return chaiAgent
@@ -489,9 +506,9 @@ describe('CRUD of todos', function(){
           testRespCookie(nextRes, 'session', actUser.id)
 
           const delJSON = JSON.parse(nextRes.text)
-          testJSONContent(delJSON, 'success')
-          expect(delJSON.report).to.be.a('string')
-          expect(delJSON.report).to.equal('')
+          testJSONContent(delJSON, 'success', '')
+          expect(delJSON.report.process).to.equal('removeTodo')
+          expect(delJSON.message).to.equal('Deletion done!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
             expect(err).to.be.a('null')
@@ -521,11 +538,11 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
         const todoActAount = 0
-        const createTodoUrl = logJSON.report.createNewTodo
+        const createTodoUrl = logJSON.report.value.createNewTodo
         const newTodo = {
           task: '',
           priority: testTodos[0].priority,
@@ -539,11 +556,9 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('task')
-          expect(finalJSON.message).to.be.a('string')
+          testJSONContent(finalJSON, 'failed', 'str')
+          expect(finalJSON.report.process).to.equal('newTodo')
+          expect(finalJSON.report.value).to.equal('task')
           expect(finalJSON.message).to.equal('This task is not permitted!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -568,11 +583,11 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
         const todoActAount = 0
-        const createTodoUrl = logJSON.report.createNewTodo
+        const createTodoUrl = logJSON.report.value.createNewTodo
         const newTodo = {
           task: testTodos[0].task,
           priority: '',
@@ -586,11 +601,9 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('priority')
-          expect(finalJSON.message).to.be.a('string')
+          testJSONContent(finalJSON, 'failed', 'str')
+          expect(finalJSON.report.process).to.equal('newTodo')
+          expect(finalJSON.report.value).to.equal('priority')
           expect(finalJSON.message).to.equal('This priority is not permitted!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -617,10 +630,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const stateChangeUrl = actTodo.statusChangeUrl.replace(
           new RegExp('[0-9a-f]{24}\/status$'), '0123456789adcdef01234567/status'
         )
@@ -632,9 +645,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 500)
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('DB error occured!')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('changeTodo')
           expect(finalJSON.message).to.equal('Update failed!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -660,10 +672,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const stateChangeUrl = actTodo.statusChangeUrl.replace(
           new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
         )
@@ -675,9 +687,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Management is permitted only at your account!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -703,10 +714,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const stateChangeUrl = actTodo.statusChangeUrl
         return chaiAgent
         .put(stateChangeUrl)
@@ -716,10 +727,9 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('status')
+          testJSONContent(finalJSON, 'failed', 'str')
+          expect(finalJSON.report.process).to.equal('changeTodo')
+          expect(finalJSON.report.value).to.equal('status')
           expect(finalJSON.message).to.equal('System error occured!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -746,10 +756,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const stateChangeUrl = actTodo.statusChangeUrl
         return chaiAgent
         .put(stateChangeUrl)
@@ -759,10 +769,9 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('status')
+          testJSONContent(finalJSON, 'failed', 'str')
+          expect(finalJSON.report.process).to.equal('changeTodo')
+          expect(finalJSON.report.value).to.equal('status')
           expect(finalJSON.message).to.equal('System error occured!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -790,10 +799,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[1]
+        const actTodo = logJSON.report.value.todos[1]
         const noteChangeUrl = actTodo.notationChangeUrl.replace(
           new RegExp('[0-9a-f]{24}\/notation$'), '0123456789adcdef01234567/notation'
         )
@@ -806,9 +815,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 500)
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('DB error occured!')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('changeTodo')
           expect(finalJSON.message).to.equal('Update failed!')
 
           return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
@@ -835,10 +843,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[1]
+        const actTodo = logJSON.report.value.todos[1]
         const noteChangeUrl = actTodo.notationChangeUrl.replace(
           new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
         )
@@ -852,9 +860,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Management is permitted only at your account!')
 
           return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
@@ -881,10 +888,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const oldNotation = actTodo.notation
         const noteChangeUrl = actTodo.notationChangeUrl
         return chaiAgent
@@ -895,10 +902,9 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('notation')
+          testJSONContent(finalJSON, 'failed', 'str')
+          expect(finalJSON.report.process).to.equal('changeTodo')
+          expect(finalJSON.report.value).to.equal('notation')
           expect(finalJSON.message).to.equal('System error occured!')
 
           return ProfileModel.findOne( {_id: actUser.id}, (err, doc)=>{
@@ -927,10 +933,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'obj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const deleteTodoUrl = actTodo.removingUrl.replace(
           new RegExp('[0-9a-f]{24}$'), '0123456789adcdef01234567'
         )
@@ -940,9 +946,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 500)
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('DB error occured!')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('removeTodo')
           expect(finalJSON.message).to.equal('Deletion failed!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -968,10 +973,10 @@ describe('Negaitve CRUD tests', ()=>{
         testRespCookie(res, 'session', actUser.id)
 
         const logJSON = JSON.parse(res.text)
-        testJSONContent(logJSON, 'success')
-        testLoginResp(logJSON.report)
+        testJSONContent(logJSON, 'success', 'boj')
+        testLoginResp(logJSON.report.value)
 
-        const actTodo = logJSON.report.todos[0]
+        const actTodo = logJSON.report.value.todos[0]
         const deleteTodoUrl = actTodo.notationChangeUrl.replace(
           new RegExp('^\/profile\/[0-9a-f]{24}'), '/profile/0123456789adcdef01234567'
         )
@@ -982,9 +987,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespBasics(nextRes, 400)
           const finalJSON = JSON.parse(nextRes.text)
 
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Management is permitted only at your account!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -1007,7 +1011,7 @@ describe('Negaitve CRUD tests', ()=>{
       return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
         expect(dbresp).to.be.a('object')
         
-        testJSONContent(dbresp, 'success')
+        testDBRes(dbresp, 'success')
         testLoginResp(dbresp.report)
 
         const todoAmount = dbresp.report.todos.length
@@ -1023,9 +1027,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespNoCookie(nextRes, 'session')
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Please, log in to use such service!')
 
           return ProfileModel.findOne({ _id: actUser.id }, (err, doc)=>{
@@ -1043,7 +1046,7 @@ describe('Negaitve CRUD tests', ()=>{
       return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
         expect(dbresp).to.be.a('object')
         
-        testJSONContent(dbresp, 'success')
+        testDBRes(dbresp, 'success')
         testLoginResp(dbresp.report)
 
         const todoTarget = dbresp.report.todos[0]
@@ -1060,9 +1063,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespNoCookie(nextRes, 'session')
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Please, log in to use such service!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -1083,8 +1085,7 @@ describe('Negaitve CRUD tests', ()=>{
 
       return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
         expect(dbresp).to.be.a('object')
-        
-        testJSONContent(dbresp, 'success')
+        testDBRes(dbresp, 'success')
         testLoginResp(dbresp.report)
 
         const todoTarget = dbresp.report.todos[0]
@@ -1102,8 +1103,7 @@ describe('Negaitve CRUD tests', ()=>{
 
           const finalJSON = JSON.parse(nextRes.text)
           testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Please, log in to use such service!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{
@@ -1124,7 +1124,7 @@ describe('Negaitve CRUD tests', ()=>{
       return ProfileModel.findThisProfileToLogin(actUser.id, (dbresp)=>{
         expect(dbresp).to.be.a('object')
         
-        testJSONContent(dbresp, 'success')
+        testDBRes(dbresp, 'success')
         testLoginResp(dbresp.report)
 
         const todoAmount = dbresp.report.todos.length
@@ -1139,9 +1139,8 @@ describe('Negaitve CRUD tests', ()=>{
           testRespNoCookie(nextRes, 'session')
 
           const finalJSON = JSON.parse(nextRes.text)
-          testJSONContent(finalJSON, 'failed')
-          expect(finalJSON.report).to.be.a('string')
-          expect(finalJSON.report).to.equal('')
+          testJSONContent(finalJSON, 'failed', '')
+          expect(finalJSON.report.process).to.equal('cookie')
           expect(finalJSON.message).to.equal('Please, log in to use such service!')
 
           return ProfileModel.findOne({_id: actUser.id}, (err, doc)=>{

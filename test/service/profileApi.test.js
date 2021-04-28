@@ -75,9 +75,9 @@ describe('Password change attempts',function(){
       testRespHeader(res)
       const resJSON = JSON.parse(res.text)
 
-      testJSONContent(resJSON, 'success')
-      testProfList(resJSON.report, 5)
-      const u1 = resJSON.report[0]
+      testJSONContent(resJSON, 'success', 'arr')
+      testProfList(resJSON.report.value, 5)
+      const u1 = resJSON.report.value[0]
       const loginPwdParam = findPwd(u1.username, registDatas) 
       userToManage = { 
         id: findProfId(u1.loginUrl),
@@ -101,11 +101,13 @@ describe('Password change attempts',function(){
       testRespCookie(res, 'session', userToManage.id)
       //const cookieDating1 = findRespCookieDate(res, 'session');
       
-      const firtsJSON = JSON.parse(res.text);
-      testJSONContent(firtsJSON, 'success')
-      testLoginResp(firtsJSON.report)
+      const firstJSON = JSON.parse(res.text);
+      testJSONContent(firstJSON, 'success', 'obj')
+      expect(firstJSON.report.process).to.equal('login')
+      expect(firstJSON.message).to.equal('You have logged in!')
+      testLoginResp(firstJSON.report.value)
 
-      userToManage.pwdChngPrfDl = firtsJSON.report.changPwdDelAccUrl
+      userToManage.pwdChngPrfDl = firstJSON.report.value.changPwdDelAccUrl
 
       const newPwd = 'testPwd'
       return chaiAgent.keepOpen()
@@ -122,7 +124,10 @@ describe('Password change attempts',function(){
         //expect(cookieDating1).to.not.deep.equal(cookieDating2)
 
         const secJSON = JSON.parse(nextRes.text)
-        testJSONContent(secJSON, 'success')
+        testJSONContent(secJSON, 'success', '')
+        expect(secJSON.report.process).to.equal('pwdChange')
+        expect(secJSON.message).to.equal('Updating done!')
+
         userToManage.nwpsswrd = newPwd
 
         return ProfileModel.findOne({ _id: userToManage.id}, (err, doc)=>{
@@ -150,8 +155,10 @@ describe('Password change attempts',function(){
       testRespHeader(res)
       testRespCookie(res, 'session', userToManage.id)
       const resJSON = JSON.parse(res.text);
-      testJSONContent(resJSON, 'success')
-      testLoginResp(resJSON.report)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
+      testLoginResp(resJSON.report.value)
 
       return chaiAgent.keepOpen()
       .delete(userToManage.pwdChngPrfDl)
@@ -163,7 +170,9 @@ describe('Password change attempts',function(){
         testRespNoCookie(nextRes, 'session')
 
         const secJSON = JSON.parse(nextRes.text)
-        testJSONContent(secJSON, 'success')
+        testJSONContent(secJSON, 'success', '')
+        expect(secJSON.report.process).to.equal('delAccount')
+        expect(secJSON.message).to.equal('Deletion done!')
 
         return chaiAgent.keepOpen()
         .get('/profile/')
@@ -173,11 +182,13 @@ describe('Password change attempts',function(){
           testRespNoCookie(thirdRes, 'session')
 
           const thirdJSON = JSON.parse(thirdRes.text)
-          testJSONContent(thirdJSON, 'success')
-          testProfList(thirdJSON.report, 4)
+          testJSONContent(thirdJSON, 'success', 'arr')
+          expect(thirdJSON.report.process).to.equal('readProf')
+          expect(thirdJSON.message).to.equal('Reading done!')
+          testProfList(thirdJSON.report.value, 4)      
 
-          const noUser = thirdJSON.report.filter(item=>{
-            item.uername === userToManage.srrnm
+          const noUser = thirdJSON.report.value.filter(item=>{
+            item.username === userToManage.srrnm
           })[0]
           expect(noUser).to.be.a('undefined')
         })
@@ -197,10 +208,11 @@ describe('Negative account change tests', ()=>{
       testRespBasics(res, 200)
       testRespHeader(res)
       const resJSON = JSON.parse(res.text)
-
-      testJSONContent(resJSON, 'success')
-      testProfList(resJSON.report, 4)
-      const u2 = resJSON.report[3]
+      expect(resJSON.report.process).to.equal('readProf')
+      expect(resJSON.message).to.equal('Reading done!')
+      testJSONContent(resJSON, 'success', 'arr')
+      testProfList(resJSON.report.value, 4)
+      const u2 = resJSON.report.value[3]
 
       userToNegativeManage = { 
         id: findProfId(u2.loginUrl),
@@ -220,33 +232,35 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd))
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
-
-      userToNegativeManage.pwdDelUrl = nextJSON.report.changPwdDelAccUrl
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
+      userToNegativeManage.pwdDelUrl = resJSON.report.value.changPwdDelAccUrl
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( pwdChangeForm( '', 'testPwd') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
 
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -266,31 +280,33 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( pwdChangeForm( 'sureNotPwd', 'testPwd') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
-
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not correct!')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
+        expect(secJSON.report.process).to.equal('pwdManage')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not correct!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -308,31 +324,34 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( pwdChangeForm( userToNegativeManage.psswrd, '') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
 
-        expect(thirdJSON.report).to.equal('new_password')
-        expect(thirdJSON.message).to.equal('This new password is not permitted!')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('new_password')
+        expect(secJSON.message).to.equal('This new password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -349,31 +368,34 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( pwdChangeForm( userToNegativeManage.psswrd, 't') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed')
 
-        expect(thirdJSON.report).to.equal('new_password')
-        expect(thirdJSON.message).to.equal('This new password is not permitted!')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('new_password')
+        expect(secJSON.message).to.equal('This new password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -390,31 +412,34 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( '' )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
 
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -432,13 +457,15 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
       
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       const alteredPwdChangeUrl = userToNegativeManage.pwdDelUrl.replace(
         new RegExp('[0-9a-f]{24}'), '0123456789adcdef01234567'
@@ -448,16 +475,16 @@ describe('Negative account change tests', ()=>{
       .put(alteredPwdChangeUrl)
       .type('form')
       .send( pwdChangeForm(userToNegativeManage.psswrd, 'newPwd') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespNoCookie(secRes, 'session') //no cookie renewing this case!!
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', '')
 
-        expect(thirdJSON.report).to.equal('')
-        expect(thirdJSON.message).to.equal('Management is permitted only at your account!')
+        expect(secJSON.report.process).to.equal('cookie')
+        expect(secJSON.message).to.equal('Management is permitted only at your account!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -475,31 +502,33 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .delete(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( deleteProfForm('') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
-
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -516,31 +545,33 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .delete(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( deleteProfForm('sureNotGood') )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(resRes=>{
+        testRespBasics(resRes, 400)
+        testRespHeader(resRes)
+        testRespCookie(resRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(resRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
-
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not correct!')
+        const secJSON = JSON.parse(resRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
+        expect(secJSON.report.process).to.equal('pwdManage')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not correct!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -557,31 +588,33 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
-      //const cookieDate1 = findRespCookieDate(nextRes, 'session') 
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
+      //const cookieDate1 = findRespCookieDate(res, 'session') 
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       return chaiAgent.keepOpen()
       .delete(userToNegativeManage.pwdDelUrl)
       .type('form')
       .send( '' )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespCookie(thirdRes, 'session', userToNegativeManage.id)
-        //const cookieDate2 = findRespCookieDate(thirdRes, 'session') 
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespCookie(secRes, 'session', userToNegativeManage.id)
+        //const cookieDate2 = findRespCookieDate(secRes, 'session') 
         //expect(cookieDate1).to.not.deep.equal(cookieDate2)
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
-
-        expect(thirdJSON.report).to.equal('old_password')
-        expect(thirdJSON.message).to.equal('This old password is not permitted!')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', 'str')
+        expect(secJSON.report.process).to.equal('pwdValidate')
+        expect(secJSON.report.value).to.equal('old_password')
+        expect(secJSON.message).to.equal('This old password is not permitted!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -598,13 +631,15 @@ describe('Negative account change tests', ()=>{
     .post(userToNegativeManage.lgnurl)
     .type('form')
     .send( loginForm(userToNegativeManage.srnm, userToNegativeManage.psswrd) )
-    .then(nextRes=>{
-      testRespBasics(nextRes, 200)
-      testRespHeader(nextRes)
-      testRespCookie(nextRes, 'session', userToNegativeManage.id)
+    .then(res=>{
+      testRespBasics(res, 200)
+      testRespHeader(res)
+      testRespCookie(res, 'session', userToNegativeManage.id)
 
-      const nextJSON = JSON.parse(nextRes.text)
-      testJSONContent(nextJSON, 'success')
+      const resJSON = JSON.parse(res.text)
+      testJSONContent(resJSON, 'success', 'obj')
+      expect(resJSON.report.process).to.equal('login')
+      expect(resJSON.message).to.equal('You have logged in!')
 
       const alteredPwdChangeUrl = userToNegativeManage.pwdDelUrl.replace(
         new RegExp('[0-9a-f]{24}'), '0123456789adcdef01234567'
@@ -614,16 +649,17 @@ describe('Negative account change tests', ()=>{
       .delete(alteredPwdChangeUrl)
       .type('form')
       .send( deleteProfForm(userToNegativeManage.psswrd) )
-      .then(thirdRes=>{
-        testRespBasics(thirdRes, 400)
-        testRespHeader(thirdRes)
-        testRespNoCookie(thirdRes, 'session') //no cookie renewing this case!!
+      .then(secRes=>{
+        testRespBasics(secRes, 400)
+        testRespHeader(secRes)
+        testRespNoCookie(secRes, 'session') //no cookie renewing this case!!
 
-        const thirdJSON = JSON.parse(thirdRes.text)
-        testJSONContent(thirdJSON, 'failed')
+        const secJSON = JSON.parse(secRes.text)
+        testJSONContent(secJSON, 'failed', '')
 
-        expect(thirdJSON.report).to.equal('')
-        expect(thirdJSON.message).to.equal('Management is permitted only at your account!')
+        expect(secJSON.report.process).to.equal('cookie')
+        expect(secJSON.report.value).to.equal('')
+        expect(secJSON.message).to.equal('Management is permitted only at your account!')
 
         return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
           expect(err).to.be.a('null')
@@ -640,16 +676,17 @@ describe('Negative account change tests', ()=>{
     .put(userToNegativeManage.pwdDelUrl)
     .type('form')
     .send( pwdChangeForm( userToNegativeManage.psswrd, 'testPwd') )
-    .then(thirdRes=>{
-      testRespBasics(thirdRes, 400)
-      testRespHeader(thirdRes)
-      testRespNoCookie(thirdRes, 'session')
+    .then(secRes=>{
+      testRespBasics(secRes, 400)
+      testRespHeader(secRes)
+      testRespNoCookie(secRes, 'session')
 
-      const thirdJSON = JSON.parse(thirdRes.text)
-      testJSONContent(thirdJSON, 'failed')
+      const secJSON = JSON.parse(secRes.text)
+      testJSONContent(secJSON, 'failed', '')
 
-      expect(thirdJSON.report).to.equal('')
-      expect(thirdJSON.message).to.equal('Please, log in to use such service!')
+      expect(secJSON.report.process).to.equal('cookie')
+      expect(secJSON.report.value).to.equal('')
+      expect(secJSON.message).to.equal('Please, log in to use such service!')
 
       return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
         expect(err).to.be.a('null')
@@ -665,16 +702,16 @@ describe('Negative account change tests', ()=>{
     .delete(userToNegativeManage.pwdDelUrl)
     .type('form')
     .send( deleteProfForm(userToNegativeManage.psswrd) )
-    .then(thirdRes=>{
-      testRespBasics(thirdRes, 400)
-      testRespHeader(thirdRes)
-      testRespNoCookie(thirdRes, 'session')
+    .then(secRes=>{
+      testRespBasics(secRes, 400)
+      testRespHeader(secRes)
+      testRespNoCookie(secRes, 'session')
 
-      const thirdJSON = JSON.parse(thirdRes.text)
-      testJSONContent(thirdJSON, 'failed')
-
-      expect(thirdJSON.report).to.equal('')
-      expect(thirdJSON.message).to.equal('Please, log in to use such service!')
+      const secJSON = JSON.parse(secRes.text)
+      testJSONContent(secJSON, 'failed', '')
+      expect(secJSON.report.process).to.equal('cookie')
+      expect(secJSON.report.value).to.equal('')
+      expect(secJSON.message).to.equal('Please, log in to use such service!')
 
       return ProfileModel.findOne({ _id: userToNegativeManage.id }, (err, doc)=>{
         expect(err).to.be.a('null')

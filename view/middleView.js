@@ -97,7 +97,7 @@ module.exports.forProfiles = {
             const problem = problemKeyWord.replace('_', ' ')
             msg += `This ${problem} is not permitted!`
         }
-        return viewUnit( 'failed', 'pwdManage', 'simple', problemKeyWord, msg )
+        return viewUnit( 'failed', 'pwdValidate', 'simple', problemKeyWord, msg )
     },
 
     // password change
@@ -109,14 +109,15 @@ module.exports.forProfiles = {
         'System error occured!'),
     pwdHashingFailed:  viewUnit('failed', 'pwdManage', 'none', '', 
         'System error occured!'),
-    pwdUpdateSuccess: viewUnit( 'success', 'pwdManage', 'none', '', 
-            'Updating done!'),
-    pwdUpdateFailed: viewUnit('failed', 'pwdManage', 'nonte', '',
+
+    pwdUpdateSuccess: viewUnit( 'success', 'pwdChange', 'none', '', 
+        'Updating done!'),
+    pwdUpdateFailed: viewUnit('failed', 'pwdChange', 'nonte', '',
         'Updating failed!'),
 
     // profile delete
     profDelsuccess: viewUnit('success', 'delAccount', 'none', '',
-             'Deletion done!'),
+        'Deletion done!'),
     profDelFailed: viewUnit('failed', 'delAccount', 'none', '',
         'Deletion failed!'),
 }
@@ -137,18 +138,18 @@ module.exports.forTodos = {
 
 
     // todo status/notation change
-    todoStatusChangeVerifyFailed: viewUnit('failed', 'todoChange', 'simple',
+    todoStatusChangeVerifyFailed: viewUnit('failed', 'changeTodo', 'simple',
         'status', 'System error occured!'),
 
 
-    todoNotationChangeVerifyFailed: viewUnit('failed', 'todoChange', 'simple',
+    todoNotationChangeVerifyFailed: viewUnit('failed', 'changeTodo', 'simple',
         'notation', 'System error occured!'),
 
     todoUpdateSuccess(dbmsg){
-        return viewUnit('success', 'todoChange', 'date', dbmsg, 
+        return viewUnit('success', 'changeTodo', 'date', dbmsg, 
             'Update done!')
     },
-    todoUpdateFailed: viewUnit('failed', 'todoChange', 'none', '',
+    todoUpdateFailed: viewUnit('failed', 'changeTodo', 'none', '',
         'Update failed!'),
 
 
@@ -159,4 +160,4 @@ module.exports.forTodos = {
 }
 
 module.exports.forError = viewUnit('failed', 'general', 'none',
-    'System error ovvured!')
+    'System error occured!')
