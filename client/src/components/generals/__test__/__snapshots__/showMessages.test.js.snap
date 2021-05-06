@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Message definitions Accidenty undefined message 1`] = `null`;
+
+exports[`Message definitions Array of problems, from the front validator 1`] = `
+Array [
+  <div
+    className="errorLine"
+  >
+    <span
+      className="errorText"
+    >
+      Too long firstname!
+    </span>
+    <a
+      href="#first_name"
+    >
+      <i
+        className="material-icons"
+      >
+        arrow_back
+      </i>
+    </a>
+  </div>,
+  <div
+    className="errorLine"
+  >
+    <span
+      className="errorText"
+    >
+      Too short password text!
+    </span>
+    <a
+      href="#password"
+    >
+      <i
+        className="material-icons"
+      >
+        arrow_back
+      </i>
+    </a>
+  </div>,
+  <div
+    className="errorLine"
+  >
+    <span
+      className="errorText"
+    >
+      Not correct password confirmation!
+    </span>
+    <a
+      href="#password_repeat"
+    >
+      <i
+        className="material-icons"
+      >
+        arrow_back
+      </i>
+    </a>
+  </div>,
+]
+`;
+
+exports[`Message definitions Simple string message 1`] = `
+<div
+  className="errorLine"
+>
+  <p
+    className="errorText"
+  >
+    Server error, no such content!
+  </p>
+</div>
+`;

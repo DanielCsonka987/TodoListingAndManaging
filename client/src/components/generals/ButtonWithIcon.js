@@ -31,10 +31,10 @@ function ButtonWithIcon(props){
         btnConfig[0] = 'btnObjBig';
         btnConfig[1] = 'iconAndTextTogether'
         if(props.children){
-            btnTextContent =  <span className={'textNextToIcon ' 
-                + props.textClasses}> {props.children} </span>
+            btnTextContent =  <span className={'textNextToIcon' 
+                + ' ' + props.textClasses}> {props.children} </span>
         }
-    }else{
+    }else{  //at small mode, the button text appears as bubble at focus/noMouse
         btnConfig[0] = 'btnObjSmall'
         btnConfig[1] = 'iconWithoutText'
         if(props.children){

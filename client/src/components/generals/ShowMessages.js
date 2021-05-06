@@ -12,7 +12,7 @@ function ShowMessages(props){
     const clssnmForErrorLine = 'errorLine'
     const clssnmForText = 'errorText'
     if(typeof props.messageContent === 'string'){
-        // SIMPLE MESSAGE - loggedin, logged out, ect. // 
+        // SIMPLE MESSAGE - loggedin, logged out, ect. from server eg. // 
         return (
             <div className={clssnmForErrorLine}>
                 <p className={clssnmForText}>{props.messageContent}</p>
