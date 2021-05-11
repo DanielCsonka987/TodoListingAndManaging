@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Card entity tests Normal assembling 1`] = `
+<div
+  className="cardArea profileCardWidth wrapperColumnAllCenter cardStyleClass"
+>
+  <p
+    className="iconTextTogether cardContnetnClass"
+    onClick={[MockFunction]}
+    onKeyPress={[MockFunction]}
+    tabIndex="0"
+  >
+    <i
+      className="material-icons iconItself"
+    >
+      cancel
+    </i>
+    <span
+      className="textNextToIcon tileNameText undefined"
+    >
+      Test Tile Text
+    </span>
+  </p>
+  <span>
+    <p
+      className="stgToTest"
+    >
+      Test text for card content
+    </p>
+  </span>
+</div>
+`;
