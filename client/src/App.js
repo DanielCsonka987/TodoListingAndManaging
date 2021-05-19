@@ -155,7 +155,7 @@ class App extends Component {
   async removeProfProc(pwd, profid){
     try{
       const ajaxBody = smblProfDeletDatas(pwd)
-      const profDelRes = await doAjaxSending(this.state.loggedUser.manageProfile,
+      const profDelRes = await doAjaxSending(this.state.loggedUser.changePwdDelAccUrl,
         'DELETE', ajaxBody)
       if(profDelRes.report.status === 'success'){
         this.setState({ 
@@ -177,7 +177,7 @@ class App extends Component {
       lastName: sessionStorage.getItem(''),
       age: sessionStorage.getItem('profAge'),
       occupation: sessionStorage.getItem('profOccup'),
-      changPwdDelAccUrl: sessionStorage.getItem('profManage'),
+      changePwdDelAccUrl: sessionStorage.getItem('profManage'),
       logoutUrl: sessionStorage.getItem('profLogout')
     }
   }
@@ -187,7 +187,7 @@ class App extends Component {
     sessionStorage.setItem('profAge', datas.age)
     sessionStorage.setItem('profOccup', datas.occupation)
     sessionStorage.setItem('profSetTodo', datas.createNewTodo)
-    sessionStorage.setItem('profManage', datas.changPwdDelAccUrl)
+    sessionStorage.setItem('profManage', datas.changePwdDelAccUrl)
     sessionStorage.setItem('profLogout', datas.logoutUrl)
   }
   emptySessionStore(){

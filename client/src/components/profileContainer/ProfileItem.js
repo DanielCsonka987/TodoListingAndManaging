@@ -54,10 +54,14 @@ class ProfileItem extends Component {
     }
   }
   handleAPIError(err){
-    this.setState({
-      profileMessage:  err.name.includes('Validate')?
-        err.errorFields : err.message
-    })
+    let errmsg = ''
+    if(err.name.includes('Validate')){
+      errmsg = err.errorFields
+    }else{
+      //console.log(err.name + '-' + err.message)
+      errmsg = err.message;
+    }
+    this.setState({ profileMessage:  errmsg })
   }
 
   async handleLogin(){
@@ -92,7 +96,7 @@ class ProfileItem extends Component {
         const ajaxBody = smblPwdChangeDatas(
           this.state.old_password, this.state.new_password
         );
-        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.changPwdDelAccUrl,
+        const pwdChangeRes = await doAjaxSending(this.props.userExtraDatas.changePwdDelAccUrl,
            'PUT', ajaxBody)
         this.setBaseCardState(pwdChangeRes.message)
       }else{

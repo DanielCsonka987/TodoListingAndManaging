@@ -131,14 +131,13 @@ module.exports.deleteProfInputRevise = (datas)=>{
           field: 'old_password', message: 'Password is not acceptable!' 
         })
       }
-      resolve();
     }catch(e){
       throw new ClientError(e.message)
     }
     if(errors.length === 0){
       resolve();
     }
-    throw new ClientValidateException()
+    throw new ClientValidateException(errors)
   })
 
 }

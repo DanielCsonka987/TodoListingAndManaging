@@ -145,7 +145,7 @@ class RegisterForm extends Component{
             Not mandatory!
           </FormInputUnit>
         </div>
-        <div className='cardErrorMessage'>{errormessages}</div>
+        <div className='cardErrorMessage' data-testid='regErrors'>{errormessages}</div>
 
         <div className='buttonGroupWrapper'>
           <ButtonWithIcon sizing='big'

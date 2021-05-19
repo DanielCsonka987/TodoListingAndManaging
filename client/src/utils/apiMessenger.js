@@ -29,10 +29,11 @@ module.exports.doAjaxSending = (apiPath, method, input)=>{
     return fetch(msgObj.apiPath, msgObj.init)
       .then(async apiResp=>{
         const res = await apiResp.text()
+        //console.log(res)
         return await JSON.parse(res)
       })
   }).catch(async err=>{
-
+    //console.log(err.message)
     if(err.name === 'MyClientException'){
       throw err
     }
