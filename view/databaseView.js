@@ -48,14 +48,13 @@ module.exports = {
         return{
             id: privProf._id,
             username: privProf.username, 
-            first_name: privProf.first_name,
-            last_name: privProf.last_name,
+            fullname: privProf.first_name + ' ' + privProf.last_name,
             age: privProf.age,
             occupation: privProf.occupation,
             todos: privProf.convertAllTodosToSendable(),
 
             createNewTodo: paths.basePath + privProf._id.toString() + paths.todoInterText,
-            changPwdDelAccUrl: paths.basePath + privProf._id.toString(),
+            changePwdDelAccUrl: paths.basePath + privProf._id.toString(),
             logoutUrl: paths.basePath + privProf._id.toString() + paths.logoutPostfix
         }
     },

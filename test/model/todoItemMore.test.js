@@ -62,7 +62,6 @@ describe('Integrated profile-todo tests', ()=>{
       expect(res.report.todos).to.be.empty
 
       newProfiles[0]._id = res.report.id.toString();
-
       ProfileModel.addNewTodo(newProfiles[0]._id, bareTodos[0], (result)=>{
         expect(result).to.have.property('status')
         expect(result.status).to.equal('success')
@@ -136,9 +135,9 @@ describe('Integrated profile-todo tests', ()=>{
       setTimeout(()=>{
         ProfileModel.findThisProfileToLogin(targetProf, result=>{
           reviseDBMainStructure(result, 'success')
-          expect(result.report).to.have.own.property('changPwdDelAccUrl')
+          expect(result.report).to.have.own.property('changePwdDelAccUrl')
 
-          expect(extinctProfId(result.report.changPwdDelAccUrl)).to.equal(targetProf)
+          expect(extinctProfId(result.report.changePwdDelAccUrl)).to.equal(targetProf)
           expect(result.report).to.have.own.property('todos')
           expect(result.report.todos).to.be.a('array')
           expect(result.report.todos).to.have.lengthOf(1)

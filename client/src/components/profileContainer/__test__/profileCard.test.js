@@ -486,7 +486,7 @@ describe('Profile item componenet tests', ()=>{
         unmount()
     })
 
-    test('Login, delete account, front validate issue', async()=>{
+    test('Delete account, front validate issue', async()=>{
         const funcOnFocus = jest.fn()
         const funcLogin = jest.fn()
         const funcDel = jest.fn()

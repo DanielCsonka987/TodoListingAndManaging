@@ -107,7 +107,7 @@ describe('Password change attempts',function(){
       expect(firstJSON.message).to.equal('You have logged in!')
       testLoginResp(firstJSON.report.value)
 
-      userToManage.pwdChngPrfDl = firstJSON.report.value.changPwdDelAccUrl
+      userToManage.pwdChngPrfDl = firstJSON.report.value.changePwdDelAccUrl
 
       const newPwd = 'testPwd'
       return chaiAgent.keepOpen()
@@ -242,7 +242,7 @@ describe('Negative account change tests', ()=>{
       testJSONContent(resJSON, 'success', 'obj')
       expect(resJSON.report.process).to.equal('login')
       expect(resJSON.message).to.equal('You have logged in!')
-      userToNegativeManage.pwdDelUrl = resJSON.report.value.changPwdDelAccUrl
+      userToNegativeManage.pwdDelUrl = resJSON.report.value.changePwdDelAccUrl
 
       return chaiAgent.keepOpen()
       .put(userToNegativeManage.pwdDelUrl)

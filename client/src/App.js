@@ -177,6 +177,7 @@ class App extends Component {
       lastName: sessionStorage.getItem(''),
       age: sessionStorage.getItem('profAge'),
       occupation: sessionStorage.getItem('profOccup'),
+      createNewTodo: sessionStorage.getItem('profSetTodo'),
       changePwdDelAccUrl: sessionStorage.getItem('profManage'),
       logoutUrl: sessionStorage.getItem('profLogout')
     }
@@ -310,15 +311,15 @@ class App extends Component {
 
             <ErrorHandler location='profile area'>
               <ProfileList
-                loadMessage={this.state.loadMessage}
+                loadMessage={this.state.loadMessage}  //for the list heading
+                regServMsg={this.state.registerServerMessage} //for register area
+                funcCartInFocus={this.handleCardFocus}
+
                 allProfilesContent={this.state.profiles}
                 loggedUser={this.state.loggedUser}
-                regServMsg={this.state.registerServerMessage}
-
                 actCardFocus={this.state.cardOnFocusId}
-                funcCartInFocus={this.handleCardFocus}
+                
                 funcRegister={this.registerProfProc}
-
                 funcCardRemoval = {this.removeProfProc}
                 funcLogin = {this.handleLoginProc}
                 funcLogout = {this.handleLogoutProc}

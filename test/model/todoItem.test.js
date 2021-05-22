@@ -272,7 +272,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               const todoNow = profDoc2.findThisRawTodo(targetTodo);
               expect(todoNow).to.be.a('undefined')
               done();
-          }, 300)
+          }, 1000)
           })
         });
       })
@@ -298,7 +298,7 @@ describe('Model TodoItem CRUD operations', ()=>{
               const todoNow = profDoc2.findThisRawTodo(targetTodo);
               expect(todoNow).to.be.a('undefined')
               done();
-          }, 400)
+          }, 1000)
           })
         });
       })

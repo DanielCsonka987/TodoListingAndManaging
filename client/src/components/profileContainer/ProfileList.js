@@ -15,13 +15,13 @@ class ProfileList extends Component {
     this.props.funcLogout()
   }
   render() {
-    const loggedInUserId = typeof this.props.loggedUser === 'object' ?
+    const loggedUser = typeof this.props.loggedUser === 'object' ?
       this.props.loggedUser.id : '';
 
-    const regArea = loggedInUserId? '' : <>
+    const regArea = loggedUser? '' : <>
         <RegisterForm
           regServMsg={this.props.regServMsg}
-          funcRegister={this.props.registerProfProc}
+          funcRegister={this.props.funcRegister}
         />
         <p className='columnTitleText'>Accounts in the system:</p>
       </>
@@ -29,11 +29,11 @@ class ProfileList extends Component {
     return (
       <div className='profileList wrapperColumHorCentVertUp'>
         { regArea }
-        {this.props.loadMessage? '': <p>{this.props.loadMessage}</p>}
+        <p>{this.props.loadMessage}</p>
         {this.props.allProfilesContent.map((item, index) => {
 
-            const isThisUserLoggedIn = loggedInUserId===item.id;
-            const showThisProfile = isThisUserLoggedIn || !loggedInUserId;
+            const isThisUserLoggedIn = loggedUser===item.id;
+            const showThisProfile = isThisUserLoggedIn || !loggedUser;
 
             if(showThisProfile){
               return <ProfileItem key={index}

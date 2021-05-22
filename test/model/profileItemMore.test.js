@@ -179,8 +179,7 @@ describe('Profile processes complex tests',()=>{
                 expect(idString).to.be.a('string')
                 expect(idString).to.deep.equal(doc._id.toString())
 
-                expect(extr.first_name).to.equal(uFirstName)
-                expect(extr.last_name).to.equal(uLastName)
+                expect(extr.fullname).to.equal(uFirstName + ' ' + uLastName)
                 expect(extr.age).to.equal(uAge)
                 done();
             })
@@ -203,8 +202,7 @@ describe('Profile processes complex tests',()=>{
                 expect(idString).to.deep.equal(doc._id.toString())
 
                 expect(extr.id).to.be.a('object')
-                expect(extr.first_name).to.equal(uFirstName)
-                expect(extr.last_name).to.equal(uLastName)
+                expect(extr.fullname).to.equal(uFirstName + ' ' + uLastName)
                 expect(extr.age).to.equal(uAge)
                 done();
             })

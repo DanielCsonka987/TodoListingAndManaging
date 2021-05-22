@@ -105,19 +105,18 @@ module.exports.forMsgs = {
     expect(report).to.have.own.property('username')
     expect(report.username).to.be.a('string')
     expect(report.username).to.not.equal('')
-    expect(report).to.have.own.property('first_name')
-    expect(report.first_name).to.be.a('string')
-    expect(report.first_name).to.not.equal('')
-    expect(report).to.have.own.property('last_name')
+    expect(report).to.have.own.property('fullname')
+    expect(report.fullname).to.be.a('string')
+    expect(report.fullname).to.not.equal('')
     expect(report).to.have.own.property('age')
     expect(report).to.have.own.property('occupation')
     expect(report).to.have.own.property('todos')
     expect(report.todos).to.be.a('array')
     
-    expect(report).to.have.own.property('changPwdDelAccUrl')
-    expect(report.changPwdDelAccUrl).to.be.a('string')
+    expect(report).to.have.own.property('changePwdDelAccUrl')
+    expect(report.changePwdDelAccUrl).to.be.a('string')
     const urlExam1 = new RegExp(profURLSchema.changePwdRemoveProf)
-    expect( urlExam1.test(report.changPwdDelAccUrl) ).to.be.true
+    expect( urlExam1.test(report.changePwdDelAccUrl) ).to.be.true
     
     expect(report).to.have.own.property('logoutUrl')
     expect(report.logoutUrl).to.be.a('string')
