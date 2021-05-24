@@ -2,9 +2,10 @@ import React from 'react'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 
 function DetailsStatusArea(props){
-    const btnIcon = props.actStatus? 'close' : 'done'
-    const btnTypeClass = props.actStatus? 'btnChange' : 'btnCreate'
-    const btnBubbleText = props.actStatus? 'Cancel this task!' 
+    const actState = props.actStatusText === 'Finished'
+    const btnIcon = actState? 'close' : 'done'
+    const btnTypeClass = actState? 'btnChange' : 'btnCreate'
+    const btnBubbleText = actState? 'Cancel this task!' 
         : 'Make this task to done!'
     return(
         <div className='todoItemCardAreas wrapperRowAllCenter'>

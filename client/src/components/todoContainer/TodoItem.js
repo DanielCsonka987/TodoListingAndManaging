@@ -19,8 +19,7 @@ class TodoItem extends Component{
     this.state = {
       componentMode: 'normal',
       todoMessage: '',
-      notation: '',
-      status:  this.props.todoDatas.status === 'Finished'
+      notation: ''
     }
   }
   handleInputChange(event){
@@ -66,11 +65,7 @@ class TodoItem extends Component{
       this.props.funcNoteEdit(this.props.todoDatas.updateNotation, this.state.notation);
       this.setState({ todoMessage: '' })
     }catch(err){
-
-
-
-
-
+      this.handleAPIError(err)
     }
   }
 
@@ -103,7 +98,7 @@ class TodoItem extends Component{
 
         <div className='wrapperRowAllCenter'>
           <DetailsStatusArea
-            actStatus={this.state.status} actStatusText={this.props.todoDatas.status}
+            actStatusText={this.props.todoDatas.status}
             funcStatusChange={this.handleStatusChange}
           />
           <DetailsDeleteArea 
@@ -112,8 +107,8 @@ class TodoItem extends Component{
           />
         </div>
         <ShowMessages 
-          messageContent={this.props.messageFromAbove // from notation change, API errors
-            || this.state.todoMessage}
+          messageContent={this.state.todoMessage  // for local errors
+            || this.props.messageFromAbove }  // from notation change, API errors
         />
       </div>
     )
