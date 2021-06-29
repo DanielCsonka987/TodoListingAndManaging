@@ -677,7 +677,7 @@ describe('Negative account change tests', ()=>{
     .type('form')
     .send( pwdChangeForm( userToNegativeManage.psswrd, 'testPwd') )
     .then(secRes=>{
-      testRespBasics(secRes, 400)
+      testRespBasics(secRes, 200)   //not an error - failure is marked elswhere
       testRespHeader(secRes)
       testRespNoCookie(secRes, 'session')
 
@@ -703,7 +703,7 @@ describe('Negative account change tests', ()=>{
     .type('form')
     .send( deleteProfForm(userToNegativeManage.psswrd) )
     .then(secRes=>{
-      testRespBasics(secRes, 400)
+      testRespBasics(secRes, 200)   //not an error - failure is marked elswhere
       testRespHeader(secRes)
       testRespNoCookie(secRes, 'session')
 
