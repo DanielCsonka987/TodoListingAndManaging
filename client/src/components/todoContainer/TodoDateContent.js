@@ -11,10 +11,10 @@ const options ={
 function TodoDateContent(props){
     const theDate = new Date(props.dateContent).toLocaleDateString('en-US', options);
     return (
-        <div className={ 'todoItemCardAreas' }>
+        <p>
             <span className='dataLabelMarking'>{props.children} </span>
             <span>   {`${theDate} `}  </span>
-        </div>
+        </p>
     )
 }
 

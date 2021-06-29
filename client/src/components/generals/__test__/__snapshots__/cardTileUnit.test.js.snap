@@ -2,7 +2,7 @@
 
 exports[`Card entity tests Normal assembling 1`] = `
 <div
-  className="cardArea profileCardWidth wrapperColumnAllCenter cardStyleClass"
+  className="cardAreaPadding cardAreaEdge cardStyleClass"
 >
   <p
     className="iconTextTogether cardContnetnClass"

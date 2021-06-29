@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import FromInputUnit from '../generals/FormInputUnit'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 
@@ -10,15 +10,13 @@ const DetailsLoggedOut = (props)=>{
   }
 
   return(
-    <div className='wrapperColumnAllCenter'>
-      <div className='profileInputContainer'>
-        <FromInputUnit 
-              label='Password:' classes='userDetail'
-              type='password' name='password' id='pwdLog'
-              value={props.pwd} funcChange={props.funcInputChange}
-              funcHitEnter={handleHitEnterOnInput}
-        />
-      </div>
+    <div className='contentSetCenter'>
+      <FromInputUnit 
+            label='Password:' classes='userDetail'
+            type='password' name='password' id='pwdLog'
+            value={props.pwd} funcChange={props.funcInputChange}
+            funcHitEnter={handleHitEnterOnInput}
+      />
       <div className='buttonGroupWrapper'>
         <ButtonWithIcon sizing='big'
           wrapperBlockClasses='btnLogin' iconDef='lock_open'

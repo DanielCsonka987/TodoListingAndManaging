@@ -1,0 +1,197 @@
+
+/* Logged in profile card  config */
+.userDetail{
+  margin: 0.4rem;
+}
+
+/* Form input unit configs */
+.formInputOuterWrapper{
+  position: relative;
+  width: 100%;
+}
+.formInputInnerWrapper{
+  padding: 0.2rem 1rem;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.formUnitInputNumberStyle{
+  width: 3.5rem;
+}
+.formUnitInputGeneralStyle{
+  width: 12rem;
+}
+
+
+/* Form textarea unit configs */
+.formTextareaOuterWrapper{
+  position: relative;
+  width: 100%;
+}
+.formTextareaInnerWrapper{
+  padding: 0.2rem 1rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.formTextareaInput{
+  width: 100%;
+  resize: none;
+}
+
+.textareaTooltipBubble{
+  display: block;
+  position: absolute;
+  left: 5rem;
+  opacity: 0.0;
+  z-index: 13;
+  padding: 0.4rem;
+  
+  color: black;
+  font-size: 1.0rem;
+  background-color: #FFF0C3;
+  border-radius: 13%;
+
+  transition: opacity 1600ms ease-in-out;
+  animation: tooltips 4s;
+}
+
+/* Todos intputa card layout */
+.InputLayout{  }
+.todoInputForTask{
+
+}
+.todoInputForNote{
+
+}
+.todoInputForPrior{
+
+}
+.todoInputForBtn{
+
+}
+.todoInputForMsg{
+
+}
+  
+
+
+/* Todo item card layout */
+.todoitem{
+
+}
+.todoItemtForTask{
+
+
+}
+.todoItemForNotation{
+  
+
+}
+
+.todoItemForDates{
+  font-size: smaller;
+}
+.todoItemForDates p{
+  margin: 0.1rem;
+}
+.todoItemForSatus{
+
+}
+.todoItemForDel{
+
+}
+
+.todoItemForShowNote{
+  width: 100%;
+}
+
+
+/* General card unit config */
+.cardAreaPadding{
+  padding: 0.2rem;
+  margin: 0.4rem;
+}
+
+/* Messages */
+.msgLine{
+    margin: 0.7rem 0rem;
+}
+
+/* at todo input */
+.contentSetCenter{ 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+/* Contorllers, tooltips  */
+
+.iconAndTextTogether{   
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+  /* at big btn-s */
+  .btnObjBig{
+    padding: 0.4rem;
+    width: 100%;
+  }
+
+  /* at small btn-s */
+  .btnObjSmall{
+    padding: 0.1rem;
+  }
+  .iconWithoutText{
+    margin: 0 auto;
+  }
+  .textNextToIcon{
+    margin-left: 0.3rem;
+    line-height: 1.1rem;
+    letter-spacing: 0.04rem;
+  }
+
+.buttonGroupWrapper{
+  margin: 0.4rem 0rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.smallButtonGroupWrapper{
+  margin: 0.6rem 0rem;
+
+}
+.btnWrapper{
+  display: block;
+  position: relative;
+}
+.btnTooltipBubble{
+  display: block;
+  position: absolute;
+  top: 1.5rem;
+  opacity: 0.0;
+  z-index: 13;
+  padding: 0.4rem;
+  
+  color: black;
+  font-size: 1.0rem;
+  background-color: #FFF0C3;
+  border-radius: 13%;
+
+  transition: opacity 1600ms ease-in-out;
+  animation: tooltips 4s;
+}
+
+
+@keyframes tooltips {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

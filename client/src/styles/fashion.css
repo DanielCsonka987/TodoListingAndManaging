@@ -12,13 +12,14 @@
 .whiteBackgr{
     color: black;
 }
-.cardArea{
+.cardAreaEdge{
     box-shadow: -1px 2px 5px  grey;
     border-radius: 10%;
 }
 .columnTitleText{
     font-size: 1.2rem;
     font-weight: bold;
+    margin: 1rem 0rem;
 }
 .tileNameText{
     font-size: 1.4rem;
@@ -27,22 +28,30 @@
     cursor: pointer;
 }
 .clickable:hover, .clickable:focus{
-    font-weight: 700;
+    font-weight: 500;
     font-style: italic;
 }
 .clickable:active{
     color: blue;
 }
-.errorLine{
 
+.msgText{
+    color: rgb(5, 150, 5);
+    font-weight: bold;
 }
 .errorText{
-
+    color: rgb(200, 5, 5);
+    font-weight: bold;
 }
-.dataLabelMarking{
+.formAndCardLabels{
     font-weight: 600;
     font-style: italic;
 }
+.formTextareaCounter{
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
 .aboutContent{
     text-align: justify;
 }
@@ -59,23 +68,18 @@
 
 
 /* Button styling */
-
-.btnObjBig{ /* outer wrapper */
-    padding: 0.4rem;
-    width: 100%;
+.btnObjBig{
     color: #FFFAE8;
     font-size: 1.1rem;
     border-radius: 10%;
 }
-.btnObjSmall{ /* outer wrapper */
-    padding: 0.1rem;
+.btnObjSmall{
     color: #FFFAE8;
     font-size: 1.0rem;
     border-radius: 10%;
 }
 .iconItself{
     font-size: 1.4rem;
-
 }
 
 .btnLogin{
@@ -107,13 +111,5 @@
 .regSymbol{
     font-size: 1.2rem;
 }
-
-
-/* Profile stylings */
-.userDetail{
-    margin: 0.4rem;
-}
-
-
 
 

@@ -11,6 +11,9 @@ const SchemaTodo = Joi.object({
 });
 
 module.exports = (todoData)=>{
+  if(todoData.notation === ''){
+    delete todoData.notation
+  }
   return new Promise((resolve, reject)=>{
     const {error, value} = SchemaTodo.validate(todoData);
     if(error){

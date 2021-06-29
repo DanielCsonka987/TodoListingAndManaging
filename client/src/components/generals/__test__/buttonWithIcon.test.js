@@ -12,7 +12,6 @@ describe('Button complex, big and small version', ()=>{
 
         const testingFunc = jest.fn()
         const comp = <ButtonWithIcon 
-            classes = 'identifier'
             sizing='big' wrapperBlockClasses='noticable'
             naming='buttonAndInner'
             iconDef='cancel' funcClickActivity={ testingFunc }
@@ -23,7 +22,7 @@ describe('Button complex, big and small version', ()=>{
         
         const { container, unmount } = render(comp)
         const wrapperContainer = container.firstChild
-        expect(wrapperContainer).toHaveClass('identifier')
+        expect(wrapperContainer).toHaveClass('noticable')
     
         const theButton = screen.getByRole('button')
         expect(theButton).toBeInTheDocument()

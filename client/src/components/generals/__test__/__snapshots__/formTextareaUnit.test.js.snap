@@ -1,0 +1,565 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Textarea unit testing Textarea unit with some tooltip 1`] = `
+<div
+  className="formTextareaOuterWrapper undefined"
+>
+  <div
+    className="formTextareaInnerWrapper"
+  >
+    <span>
+      <label
+        className="formAndCardLabels"
+        htmlFor="txt"
+      >
+        For test:
+      </label>
+      <span
+        className="formTextareaCounter"
+      >
+         (Remained 
+        80 
+        from 
+        80
+        )
+      </span>
+    </span>
+    <textarea
+      className="formTextareaInput"
+      id="txt"
+      maxLength="80"
+      name="txtarea"
+      onBlur={[Function]}
+      onChange={[MockFunction]}
+      onFocus={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
+      rows={4}
+      value=""
+    />
+  </div>
+  
+</div>
+`;
+
+exports[`Textarea unit testing Textarea unit with some tooltip 2`] = `
+"Snapshot Diff:
+Compared values have no visual difference."
+`;
+
+exports[`Textarea unit testing Textarea unit without tooltip, starting with empty input 1`] = `
+<div
+  className="formTextareaOuterWrapper TestingClass"
+>
+  <div
+    className="formTextareaInnerWrapper"
+  >
+    <span>
+      <label
+        className="formAndCardLabels"
+        htmlFor="txt"
+      >
+        For test:
+      </label>
+      <span
+        className="formTextareaCounter"
+      >
+         (Remained 
+        80 
+        from 
+        80
+        )
+      </span>
+    </span>
+    <textarea
+      className="formTextareaInput"
+      id="txt"
+      maxLength="80"
+      name="txtarea"
+      onBlur={[Function]}
+      onChange={[MockFunction]}
+      onFocus={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
+      rows={4}
+      value=""
+    />
+  </div>
+  
+</div>
+`;
+
+exports[`Textarea unit testing Textarea unit without tooltip, starting with empty input 2`] = `
+<div
+  className="formTextareaOuterWrapper TestingClass"
+>
+  <div
+    className="formTextareaInnerWrapper"
+  >
+    <span>
+      <label
+        className="formAndCardLabels"
+        htmlFor="txt"
+      >
+        For test:
+      </label>
+      <span
+        className="formTextareaCounter"
+      >
+         (Remained 
+        80 
+        from 
+        80
+        )
+      </span>
+    </span>
+    <textarea
+      className="formTextareaInput"
+      id="txt"
+      maxLength="80"
+      name="txtarea"
+      onBlur={[Function]}
+      onChange={[MockFunction]}
+      onFocus={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
+      rows={4}
+      value=""
+    />
+  </div>
+  
+</div>
+`;
+
+exports[`Textarea unit testing Textarea unit without tooltip, starting with empty input 3`] = `
+<div
+  className="formTextareaOuterWrapper TestingClass"
+>
+  <div
+    className="formTextareaInnerWrapper"
+  >
+    <span>
+      <label
+        className="formAndCardLabels"
+        htmlFor="txt"
+      >
+        For test:
+      </label>
+      <span
+        className="formTextareaCounter"
+      >
+         (Remained 
+        69 
+        from 
+        80
+        )
+      </span>
+    </span>
+    <textarea
+      className="formTextareaInput"
+      id="txt"
+      maxLength="80"
+      name="txtarea"
+      onBlur={[Function]}
+      onChange={
+        [MockFunction] {
+          "calls": Array [
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126233,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126239,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126243,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126257,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126264,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126271,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126276,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126279,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126285,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126290,
+                "type": "change",
+              },
+            ],
+            Array [
+              SyntheticBaseEvent {
+                "_reactName": "onChange",
+                "_targetInst": null,
+                "bubbles": true,
+                "cancelable": false,
+                "currentTarget": null,
+                "defaultPrevented": false,
+                "eventPhase": 3,
+                "isDefaultPrevented": [Function],
+                "isPropagationStopped": [Function],
+                "isTrusted": false,
+                "nativeEvent": InputEvent {
+                  "isTrusted": false,
+                },
+                "target": <textarea
+                  class="formTextareaInput"
+                  id="txt"
+                  maxlength="80"
+                  name="txtarea"
+                  rows="4"
+                >
+                  Stg to test
+                </textarea>,
+                "timeStamp": 1624874126294,
+                "type": "change",
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        }
+      }
+      onFocus={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
+      rows={4}
+      value="Stg to test"
+    />
+  </div>
+  
+</div>
+`;
+
+exports[`Textarea unit testing Textarea unit without tooltip, starting with empty input 4`] = `
+"Snapshot Diff:
+- First value
++ Second value
+
+@@ -13,11 +13,11 @@
+        </label>
+        <span
+          className=\\"formTextareaCounter\\"
+        >
+           (Remained 
+-         80 
++         69 
+          from 
+          80
+          )
+        </span>
+      </span>
+@@ -30,10 +30,10 @@
+        onChange={[Function mockConstructor]}
+        onFocus={[Function bound showBubbleOnScreen]}
+        onMouseOut={[Function bound removeBubbleOnScreen]}
+        onMouseOver={[Function bound showBubbleOnScreen]}
+        rows={4}
+-       value=\\"\\"
++       value=\\"Stg to test\\"
+      />
+    </div>
+    
+  </div>"
+`;

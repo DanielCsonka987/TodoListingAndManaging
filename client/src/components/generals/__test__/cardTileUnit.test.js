@@ -34,9 +34,8 @@ describe('Card entity tests', ()=>{
         const { container, debug, unmount } = render(comp)
 
         const baseTag = container.firstChild
-        expect(baseTag).toHaveClass('cardArea')
-        expect(baseTag).toHaveClass('profileCardWidth')
-        expect(baseTag).toHaveClass('wrapperColumnAllCenter')
+        expect(baseTag).toHaveClass('cardAreaEdge')
+        expect(baseTag).toHaveClass('cardAreaPadding')
         expect(baseTag).toHaveClass('cardStyleClass')
 
         //header examination

@@ -2,10 +2,10 @@
 
 exports[`Message definitions Accidenty undefined message 1`] = `null`;
 
-exports[`Message definitions Array of problems, from the front validator 1`] = `
+exports[`Message definitions Proper type/msg container with array of problems, from the front validator 1`] = `
 Array [
   <div
-    className="errorLine"
+    className="msgLine"
   >
     <span
       className="errorText"
@@ -23,7 +23,7 @@ Array [
     </a>
   </div>,
   <div
-    className="errorLine"
+    className="msgLine"
   >
     <span
       className="errorText"
@@ -41,7 +41,7 @@ Array [
     </a>
   </div>,
   <div
-    className="errorLine"
+    className="msgLine"
   >
     <span
       className="errorText"
@@ -61,9 +61,42 @@ Array [
 ]
 `;
 
-exports[`Message definitions Simple string message 1`] = `
+exports[`Message definitions Proper type/msg container with normal string message 1`] = `
 <div
-  className="errorLine"
+  className="msgLine"
+>
+  <p
+    className="msgText"
+  >
+    You have updated your account!
+  </p>
+</div>
+`;
+
+exports[`Message definitions Proper type/msg container with server error msg 1`] = `
+<div
+  className="msgLine"
+>
+  <span
+    className="errorText"
+  >
+    You should give the proper password!
+  </span>
+  <a
+    href="#password"
+  >
+    <i
+      className="material-icons"
+    >
+      arrow_back
+    </i>
+  </a>
+</div>
+`;
+
+exports[`Message definitions Proper type/msg container with string error message 1`] = `
+<div
+  className="msgLine"
 >
   <p
     className="errorText"

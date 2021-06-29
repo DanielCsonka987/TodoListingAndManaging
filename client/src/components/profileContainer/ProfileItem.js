@@ -28,9 +28,6 @@ class ProfileItem extends Component {
     this.setAccDelCardState = this.setAccDelCardState.bind(this)
 
     this.state = {
-      userid: props.userid,
-      username: props.username,
-
       password: '',
       old_password: '',
       new_password: '',
@@ -47,10 +44,10 @@ class ProfileItem extends Component {
   }
   handleCardFocus(e){
     if(e.type === 'click'){
-      this.props.funcCardFocus(this.state.userid);
+      this.props.funcCardFocus(this.props.userid);
     }
     if(e.type === 'keypress' && ( e.code === 'Space' || e.code === 'Enter' )){
-      this.props.funcCardFocus(this.state.userid);
+      this.props.funcCardFocus(this.props.userid);
     }
   }
   handleAPIError(err){
@@ -61,19 +58,26 @@ class ProfileItem extends Component {
       //console.log(err.name + '-' + err.message)
       errmsg = err.message;
     }
-    this.setState({ profileMessage:  errmsg })
+    this.setState({ 
+      profileMessage:  { type: 'warn', msg: errmsg }
+    })
   }
 
   async handleLogin(){
     try{
       await loginInputRevise(this.state);
       const ajaxBody = smblLoginDatas(
-        this.state.username,
+        this.props.username,
         this.state.password
       );
       const loginRes = await doAjaxSending(this.props.loginUrl, 'POST', ajaxBody);
-      this.setState({password: '', profileMessage: loginRes.message})
-      this.props.funcLoginProc(loginRes.report.value, 'login');
+      this.setState({
+        password: '', 
+        profileMessage: { 
+          type: loginRes.status === 'success'? 'norm':'warn',
+          msg: loginRes.message }
+      })
+      this.props.funcLoginProc(loginRes, 'login');
 
     }catch(err){
       this.handleAPIError(err);
@@ -83,8 +87,8 @@ class ProfileItem extends Component {
   async handleLogOut(){
     try{
       const logoutRes = await doAjaxSending(this.props.userExtraDatas.logoutUrl, 'GET', '')
-      this.props.funcLogoutProc(this.state.userid)
-      this.setBaseCardState(logoutRes.message)
+      this.props.funcLogoutProc(this.props.userid, logoutRes.message)
+      this.setBaseCardState('')
     }catch(err){
       this.handleAPIError(err);
     }
@@ -100,7 +104,7 @@ class ProfileItem extends Component {
            'PUT', ajaxBody)
         this.setBaseCardState(pwdChangeRes.message)
       }else{
-        this.setPwdChangeCardState();
+        this.setPwdChangeCardState('');
       }
     }catch(err){
       this.handleAPIError(err)
@@ -110,11 +114,9 @@ class ProfileItem extends Component {
     try{
       if(this.state.actualCardState === 'del'){
         await deleteProfInputRevise(this.state)
-        this.props.funcCardRemoval(this.state.old_password, this.state.userid);
-        this.setBaseCardState('')
-      }else{
-        this.setAccDelCardState()
+        this.props.funcCardRemoval(this.state.old_password, this.props.userid);
       }
+      this.setAccDelCardState()
     }catch(err){
       this.handleAPIError(err);
     }
@@ -128,15 +130,21 @@ class ProfileItem extends Component {
       new_password: '',
       password_repeat: '',
       actualCardState: 'none',
-      profileMessage: msg
+      profileMessage: { type: 'norm', msg: msg }
     })
   }
   setPwdChangeCardState(){
-    this.setState({  actualCardState: 'pwd'  })
+    this.setState({  
+      actualCardState: 'pwd',
+      profileMessage: { type: 'norm', msg: 'For password change fill the form!' }
+    })
 
   }
   setAccDelCardState(){
-    this.setState({ actualCardState: 'del' })
+    this.setState({ 
+      actualCardState: 'del',
+      profileMessage: { type: 'norm', msg: 'For deletion give the password!' }
+    })
   }
   render(){
     const isThisCardLoggedIn = typeof this.props.userExtraDatas ==='object';
@@ -148,7 +156,7 @@ class ProfileItem extends Component {
         funcInputHitEnter={this.handleLogin}
         funcLogin={this.handleLogin}
       />
-      <ShowMessages messageContent={this.state.profileMessage} />
+      <ShowMessages messageContent={ this.state.profileMessage } />
     </>      
 
     const loggedInContent = <>
@@ -165,7 +173,7 @@ class ProfileItem extends Component {
         funcCancelModify={this.handleCancelModify}
         funcLogOut={this.handleLogOut}
       />
-      <ShowMessages messageContent={this.state.profileMessage} />
+      <ShowMessages messageContent={ this.state.profileMessage || this.props.userExtraMessage} />
     </>
 
     const cardFocusState = this.state.cardOnFocus? 'cardUserActive' : 'cardUserInactive'
@@ -179,7 +187,7 @@ class ProfileItem extends Component {
         funcKeyPressActivity={this.handleCardFocus}
         funcClickActivity={this.handleCardFocus}
         tabIndexing='0' iconDef='account_circle'
-        tileText={this.state.username}
+        tileText={this.props.username}
       >
       { cardContent } </CardTileTextAndContent>
 

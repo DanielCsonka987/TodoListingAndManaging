@@ -1,14 +1,11 @@
-const dbname = 'todositedb';
-const dbUser = 'test_user001';
-const dbPwd = 'R6KD4GlLKh362g8e';
+const db = require('./connectConfig')
 
 module.exports.server = {
   port: 8080
 }
 module.exports.db = {
-  db_access_cloud: 'mongodb+srv://' + dbUser + ':' + dbPwd +
-   '@cluster0.rols0.mongodb.net/' + dbname + '?retryWrites=true&w=majority',
-  db_access_local: 'mongodb://127.0.0.1:27017/'+ dbname,
+  db_access_cloud: db.db_access_cloud,
+  db_access_local: db.db_access_local
 }
 module.exports.validation = {
   encryption_saltrounds: 12,
@@ -51,10 +48,3 @@ module.exports.headers = [
     ['Content-Type','application/json; charset=utf-8']
 ]
 
-
-
-
-
-//full url durring the testing phase - using easily the MongoAtlas app
-//'mongodb+srv://test_user001:mp6jh2p0doKKiohH@cluster0.rols0.mongodb.net/todositedb?retryWrites=true&w=majority'
-// mongodb+srv://test_user001:R6KD4GlLKh362g8e@cluster0.rols0.mongodb.net/todositedb?retryWrites=true&w=majority

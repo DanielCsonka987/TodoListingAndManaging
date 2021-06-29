@@ -1,34 +1,36 @@
 import React from 'react'
-import FormInputUnit from '../generals/FormInputUnit'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
+import FormTextareaUnit from '../generals/FormTextareaUnit'
 
 function DetailsNotationArea(props){
 
     const preNotationChangePhase = <>
-        <FormInputUnit
-            neededInputWidth='75%'
-            id='notation' label='Notation:' name='notation'
-          type='textarea' value={props.noteValue}
-          funcChange={props.funcChangeNotation}
+
+        <FormTextareaUnit classes='todoInputForNote'
+            id='noteTodo' label='Notation:'
+            name='notation' maxCharLength={'150'}
+            value={props.noteValue}
+            funcChange={props.funcChangeNotation}
         >
-          You can write at most 150 character!
-        </FormInputUnit>
-        <ButtonWithIcon 
-            iconDef='send' wrapperBlockClasses='btnCreate'
-            funcClickActivity={props.funcExecNotify}
-        >Save the new notation!</ButtonWithIcon>
-        <ButtonWithIcon naming='forNotation' 
-            iconDef='cancel' wrapperBlockClasses='btnBack'
-            funcClickActivity={props.funcModeSwitch}
-        >Cancel notation editing!</ButtonWithIcon>
+            If you define this, it must be max 150 character!
+        </FormTextareaUnit>
+        <div>
+            <ButtonWithIcon 
+                iconDef='send' wrapperBlockClasses='btnCreate'
+                funcClickActivity={props.funcExecNotify}
+            >Save the new notation!</ButtonWithIcon>
+            <ButtonWithIcon naming='forNotation' 
+                iconDef='cancel' wrapperBlockClasses='btnBack'
+                funcClickActivity={props.funcModeSwitch}
+            >Cancel notation editing!</ButtonWithIcon>
+        </div>
 
     </>
 
     const  beforeNotationChangePhase = <>
-        <span className='todoItemForNote' >
-            <span className='dataLabelMarking'>Notation: </span>
-            <span>{props.notation}</span>
-        </span>
+        <p className='todoItemForShowNote' >
+            {props.notation?props.notation : 'Notation none...'}
+        </p>
 
         <ButtonWithIcon naming='forNotation' 
             iconDef = 'edit' wrapperBlockClasses='btnChange'
@@ -37,7 +39,7 @@ function DetailsNotationArea(props){
     </>
 
     return(
-        <div className='todoItemCardAreas wrapperRowAllCenter' >
+        <div className='todoItemForNotation' >
             { props.notationAreaMode === 'notationChange'? 
             preNotationChangePhase : beforeNotationChangePhase }
         </div>

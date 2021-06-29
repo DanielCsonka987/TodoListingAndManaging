@@ -145,7 +145,7 @@ module.exports.deleteProfInputRevise = (datas)=>{
 
 // for TodoItem //
 function reviseNotationOutOfRange(note){
-  if(typeof note === null){ return true }
+  if(typeof note === 'undefined'){ return true }
   return note !== '' && note.length > 150
 }
 

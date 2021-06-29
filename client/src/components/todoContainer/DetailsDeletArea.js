@@ -20,7 +20,7 @@ function DetailsDeleteArea(props){
             funcClickActivity={props.funcModeSwitch}
         >Delete this task!</ButtonWithIcon>
     return (
-      <div className='todoItemCardArea wrapperRowAllCenter'>
+      <div className='todoItemForDel'>
         { props.deleteAreaMode === 'deleteConfirm'?
            preDeletePhase : beforeDeletePhase  }
       </div>

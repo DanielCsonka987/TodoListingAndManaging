@@ -60,7 +60,7 @@ module.exports = {
     },
     convertProfileDetailsToRegister: function(privProf){
         let datas = this.convertProfileDetailsToLogin(privProf)
-        datas.id = privProf._id;
+        datas.loginRegUrl = paths.basePath + privProf.id + paths.loginPostfix;
         return datas
     },
     convertTodoDetailsToPublic: function(profileId, privTodo){

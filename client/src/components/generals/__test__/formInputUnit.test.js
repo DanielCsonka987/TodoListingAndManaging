@@ -3,8 +3,6 @@ import { waitFor, fireEvent, screen, render } from '@testing-library/react'
 import FormInputUnit from '../FormInputUnit'
 import '@testing-library/jest-dom/extend-expect'
 import renderer from 'react-test-renderer';
-import { toMatchDiffSnapshot } from 'snapshot-diff'
-import { expect as chaiExpect } from 'chai';
 import userEvent from '@testing-library/user-event'
 
 describe('Form input test', ()=>{
@@ -32,19 +30,14 @@ describe('Form input test', ()=>{
         expect(theInputItem1).toHaveAttribute('name', 'username')
         expect(theInputItem1).toHaveAttribute('type', 'text')
         expect(theInputItem1).toHaveAttribute('id', 'unameLabelBound')
-
-        const emptyBubble = itemOuterContainer.lastChild
-        expect(emptyBubble).toHaveTextContent('')
         
         fireEvent.change(theInputItem2, { target: { value: 'different' } })
         await waitFor(()=>{
             expect(changeFunc.mock.calls.length).toBe(1)
+            expect(document.querySelector('.btnTooltipBubble'))
+                .not.toBeInTheDocument()
         })
 
-        /*fireEvent.keyPress(theInputItem1, { key: 'Enter', code: 'Enter' })
-        await waitFor(()=>{
-            expect(enterFunc.mock.calls.length).toBe(1)
-        })*/
         userEvent.type(theInputItem1, 'another')
         expect(enterFunc.mock.calls.length).toBe(7)
 
@@ -78,7 +71,6 @@ describe('Form input test', ()=>{
         await waitFor(()=>{
             const bubbleTag = screen.queryByText(bubbleText)
             expect(bubbleTag).toBeInTheDocument()
-            expect(bubbleTag).toHaveStyle('position: absolute')
         })
         fireEvent.focusOut(theInputItem2)
         await waitFor(()=>{

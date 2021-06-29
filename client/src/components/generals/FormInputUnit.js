@@ -1,37 +1,4 @@
 import React, { Component } from 'react'
-import { Transition } from 'react-transition-group'
-
-const outerWrapperStyle = {
-    position:"relative",
-    width: '100%'
-}
-const innerWrapperStyle = {
-    padding: "0.2rem 1rem",
-
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-}
-const inputNumberStyle = {
-    width: '2.5rem'
-}
-const inputTextStyle = {
-    width: '45%'
-}
-const bubbleStyle = {
-    position: 'absolute',
-    zIndex: '3',
-    opacity: '0.0',
-    maxWidth: '6.5rem',
-    padding: '0.4rem',
-    top: '-1.2rem',
-    right: '-7rem',
-    background: '#FFF0C3',
-    borderRadius: '13%',
-    border: '1px solid grey',
-    fontSize: '0.8rem',
-    transition: 'opacity 16000ms ease'
-}
 
 class FormInputUnit extends Component{
     constructor(props){
@@ -49,16 +16,14 @@ class FormInputUnit extends Component{
       this.setState({ bubbleAppearance: false })
     }
     render(){
-        const hiddenBubble = this.state.bubbleAppearance?
-            this.props.children? <span key={1} style={ bubbleStyle } >{this.props.children}</span> 
-                : <span key={1}></span>
-            : 
-            <span key={1}></span>
-        let inputStylingConfig = {}
+        const hiddenTooltipBubble = this.state.bubbleAppearance && this.props.children?
+            <span className={'btnTooltipBubble'}>{this.props.children}</span>  : ''
+
+        let inputStylingConfig = ''
         if(this.props.type === 'number'){
-            inputStylingConfig =  inputNumberStyle
+            inputStylingConfig =  'formUnitInputNumberStyle'
         }else{
-            inputStylingConfig.width = this.props.neededInputWidth || inputTextStyle.width
+            inputStylingConfig =  'formUnitInputGeneralStyle'
         }
         let defMinMax = {};
         if(this.props.numberMinMax){
@@ -67,11 +32,11 @@ class FormInputUnit extends Component{
         }
         
         return (
-            <div style={ {...outerWrapperStyle, ...this.props.additWrapperStyles} } 
-                className={this.props.classes}>
-                <div style={innerWrapperStyle}>
-                    <label className='dataLabelMarking' htmlFor={this.props.id}>{this.props.label}</label>
-                    <input style={ inputStylingConfig }
+            <div className={ 'formInputOuterWrapper ' + this.props.classes}>
+                <div className='formInputInnerWrapper'>
+                    <label className='formAndCardLabels' 
+                        htmlFor={this.props.id}>{this.props.label}</label>
+                    <input className={ inputStylingConfig }
                         name={this.props.name} type={this.props.type}
                         id={this.props.id} value={this.props.value} { ...defMinMax }
                         onChange={this.props.funcChange}  onKeyPress={this.props.funcHitEnter}
@@ -79,13 +44,7 @@ class FormInputUnit extends Component{
                         onBlur={this.removeBubbleOnScreen } onMouseOut={this.removeBubbleOnScreen}
                     />
                 </div>
-                <Transition 
-                    transitionentertimeout={500}
-                    transitionleavetimeout={500}
-                    timeout={500}
-                >
-                    { hiddenBubble  }
-                </Transition >
+                { hiddenTooltipBubble  }
             </div>
             
         )

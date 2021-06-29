@@ -5,17 +5,24 @@ import ButtonWithIcon from '../generals/ButtonWithIcon'
 const DetailsLoggedIn = (props)=>{
   const stateOfComponent = props.inputModeChange;
 
-  let areaContent1, areaContent2, areaContentForButton = '';
-
-  const titleAtModifyState = stateOfComponent === 'del'?
-    'For deletion give the password!' : 'For password change fill the form!'
-  const titleForFirstPwdTag = stateOfComponent === 'del'?
-    'Password:' : 'Old password:'
+  let areaInputContent,  areaContentForButton = '';
+  if(stateOfComponent === 'none'){
+    areaContentForButton = <>
+      <ButtonWithIcon sizing='big'
+        wrapperBlockClasses='btnChange' iconDef='edit' 
+        funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
+      <ButtonWithIcon sizing='big'
+        wrapperBlockClasses='btnDelete' iconDef='delete' 
+        funcClickActivity={props.funcProfDel}>Delete account</ButtonWithIcon>
+      <ButtonWithIcon sizing='big'
+        wrapperBlockClasses='btnLogout' iconDef='lock' 
+        funcClickActivity={props.funcLogOut}>Logout</ButtonWithIcon>
+    </>
+  }
   if(stateOfComponent === 'pwd'){
-    areaContent2 = <>
-      <p>{ titleAtModifyState }</p>
+    areaInputContent = <>
         <FromInputUnit 
-        label={titleForFirstPwdTag}
+        label={'Old password:'}
         type='password' name='old_password' id='old_password'
         value={props.oldPwd} funcChange={props.funcInputChange}
       />
@@ -30,52 +37,50 @@ const DetailsLoggedIn = (props)=>{
         value={props.repPwd} funcChange={props.funcInputChange}
       />
     </>
-    areaContentForButton = <ButtonWithIcon sizing='big'
-      wrapperBlockClasses='btnBack' iconDef='cancel' 
-      funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
+    areaContentForButton = <>
+      <ButtonWithIcon sizing='big'
+        wrapperBlockClasses='btnChange' iconDef='send' 
+        funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
+      <ButtonWithIcon sizing='big'
+        wrapperBlockClasses='btnBack' iconDef='cancel' 
+        funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
+    </> 
   }
 
   if(stateOfComponent === 'del'){
-    areaContent1 = <>
-      <p>{ titleAtModifyState }</p>
+    areaInputContent = <>
       <FromInputUnit 
-        label={titleForFirstPwdTag}
+        label={'Password:'}
         type='password' name='old_password' id='old_password'
         value={props.oldPwd} funcChange={props.funcInputChange}
       /></>
-      areaContentForButton = <ButtonWithIcon sizing='big'
-        wrapperBlockClasses='btnBack' iconDef='cancel'
-        funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
+      areaContentForButton = <>
+        <ButtonWithIcon sizing='big'
+          wrapperBlockClasses='btnDelete' iconDef='delete' 
+          funcClickActivity={props.funcProfDel}>Delete account</ButtonWithIcon>  
+        <ButtonWithIcon sizing='big'
+          wrapperBlockClasses='btnBack' iconDef='cancel'
+          funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
+      </>
   }
 
   return(
-    <div className='wrapperColumnAllCenter'>
+    <div className='contentSetCenter'>
         <p className='userDetail'>
-          <span className='dataLabelMarking'>Fullname:</span>
+          <span className='formAndCardLabels'>Fullname:</span>
           <span> {props.extraDatas.fullname}</span></p>
         <p className='userDetail'>
-          <span className='dataLabelMarking'>Age: </span>
+          <span className='formAndCardLabels'>Age: </span>
           <span>{props.extraDatas.age}</span></p>
         <p className='userDetail'>
-          <span className='dataLabelMarking'>Occupation: </span>
+          <span className='formAndCardLabels'>Occupation: </span>
           <span>{props.extraDatas.occupation}</span></p>
-        <div className='profileInputContainer'>
-        { areaContent1 } { areaContent2 } 
-        </div>
-        <div className='buttonGroupWrapper'>
+        <section className='profileInputContainer'>
+        { areaInputContent } 
+        </section>
+        <section className='buttonGroupWrapper'>
           { areaContentForButton }
-
-          <ButtonWithIcon sizing='big'
-            wrapperBlockClasses='btnChange' iconDef='edit' 
-            funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
-          <ButtonWithIcon sizing='big'
-            wrapperBlockClasses='btnDelete' iconDef='delete' 
-            funcClickActivity={props.funcProfDel}>Delete account</ButtonWithIcon>
-          <ButtonWithIcon sizing='big'
-            wrapperBlockClasses='btnLogout' iconDef='lock' 
-            funcClickActivity={props.funcLogOut}>Logout</ButtonWithIcon>
-
-        </div>
+        </section>
     </div>
   )
   

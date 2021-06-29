@@ -33,11 +33,11 @@ class RegisterForm extends Component{
   }
 
   handleFormToggle(e){
-    if(e.type === 'keypress' && (e.code === 'Space' || e.code === 'Enter')){
-      this.setState({ areaVisibilityIsNeeded: !this.state.areaVisibilityIsNeeded })
-    }
-    if(e.type==='click'){
-      this.setState({ areaVisibilityIsNeeded: !this.state.areaVisibilityIsNeeded })
+    if((e.type === 'keypress' && (e.code === 'Space' || e.code === 'Enter')) || e.type==='click'){
+      this.setState({ 
+        areaVisibilityIsNeeded: !this.state.areaVisibilityIsNeeded,
+        registerMessage: ''
+      })
     }
   }
 
@@ -47,7 +47,7 @@ class RegisterForm extends Component{
   }
   handleAPIError(errCont){
     this.setState({
-      registerMessage: errCont
+      registerMessage: { type: 'warn', msg: errCont }
     })
   }
   async handleRegisterClick(){
@@ -158,7 +158,7 @@ class RegisterForm extends Component{
 
     return (
       <CardTileTextAndContent
-        wrapperBlockClasses='wrapperColumnAllCenter'
+        wrapperBlockClasses='contentSetCenter'
         wrapperInlineClasses='clickable'
         funcKeyPressActivity={this.handleFormToggle}
         funcClickActivity={this.handleFormToggle}

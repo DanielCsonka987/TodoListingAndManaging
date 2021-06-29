@@ -2,31 +2,19 @@
 
 exports[`Form input test Component set to textbox with little popup bubble 1`] = `
 <div
-  className="stgNoticable"
-  style={
-    Object {
-      "position": "relative",
-      "width": "100%",
-    }
-  }
+  className="formInputOuterWrapper stgNoticable"
 >
   <div
-    style={
-      Object {
-        "display": "flex",
-        "flexDirection": "row",
-        "justifyContent": "space-between",
-        "padding": "0.2rem 1rem",
-      }
-    }
+    className="formInputInnerWrapper"
   >
     <label
-      className="dataLabelMarking"
+      className="formAndCardLabels"
       htmlFor="unameLabelBound"
     >
       Username area
     </label>
     <input
+      className="formUnitInputGeneralStyle"
       id="unameLabelBound"
       name="username"
       onBlur={[Function]}
@@ -35,49 +23,29 @@ exports[`Form input test Component set to textbox with little popup bubble 1`] =
       onKeyPress={[MockFunction]}
       onMouseOut={[Function]}
       onMouseOver={[Function]}
-      style={
-        Object {
-          "width": "45%",
-        }
-      }
       type="textbox"
       value="stg"
     />
   </div>
-  <span
-    transitionentertimeout={500}
-    transitionleavetimeout={500}
-  />
+  
 </div>
 `;
 
 exports[`Form input test Component set to textbox without popup bubble 1`] = `
 <div
-  className="stgNoticable"
-  style={
-    Object {
-      "position": "relative",
-      "width": "100%",
-    }
-  }
+  className="formInputOuterWrapper stgNoticable"
 >
   <div
-    style={
-      Object {
-        "display": "flex",
-        "flexDirection": "row",
-        "justifyContent": "space-between",
-        "padding": "0.2rem 1rem",
-      }
-    }
+    className="formInputInnerWrapper"
   >
     <label
-      className="dataLabelMarking"
+      className="formAndCardLabels"
       htmlFor="unameLabelBound"
     >
       Username area
     </label>
     <input
+      className="formUnitInputGeneralStyle"
       id="unameLabelBound"
       name="username"
       onBlur={[Function]}
@@ -86,18 +54,10 @@ exports[`Form input test Component set to textbox without popup bubble 1`] = `
       onKeyPress={[MockFunction]}
       onMouseOut={[Function]}
       onMouseOver={[Function]}
-      style={
-        Object {
-          "width": "45%",
-        }
-      }
       type="text"
       value="stg"
     />
   </div>
-  <span
-    transitionentertimeout={500}
-    transitionleavetimeout={500}
-  />
+  
 </div>
 `;

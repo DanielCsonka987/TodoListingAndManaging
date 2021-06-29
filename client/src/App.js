@@ -1,24 +1,24 @@
 import './styles/modernLayout.css';
+import './styles/subElementsLayout.css';
 import './styles/olderLayout.css';
 import './styles/fashion.css'
-import React, {Component} from 'react';
-import ProfileList from './components/profileContainer/ProfileList.js';
-import TodoList from './components/todoContainer/TodoList.js';
+import React, {Component, Fragment} from 'react';
+
 import AbourContent from './components/generals/AboutContent.js'
 import Header from './components/generals/Header'
 import ErrorHandler from './components/generals/ErrorHandler.js'
+import ShowMessages from './components/generals/ShowMessages';
+import { doAjaxSending, smblRegisDatas, smblProfDeletDatas } from './utils/apiMessenger.js';
 
-import { doAjaxSending, 
-  smblRegisDatas, smblProfDeletDatas, smblNewTodoDatas, smblStateChangeTodoDatas, 
-  smblNotationChangeTodoDatas } from './utils/apiMessenger.js';
+import ProfileItem from './components/profileContainer/ProfileItem.js';
+import RegisterForm from './components/profileContainer/RegisterForm.js'
+import TodoList from './components/todoContainer/TodoList.js';
 
 class App extends Component {
   constructor(props){
     super()
     this.handleCardFocus = this.handleCardFocus.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
     this.handleAPIError = this.handleAPIError.bind(this)
-    this.handleTodoError = this.handleTodoError.bind(this)
 
     this.handleLoginProc = this.handleLoginProc.bind(this);
     this.handleLogoutProc = this.handleLogoutProc.bind(this);
@@ -29,67 +29,101 @@ class App extends Component {
 
     this.registerProfProc = this.registerProfProc.bind(this);
     this.removeProfProc = this.removeProfProc.bind(this);
-
-    this.todoAdditionProc = this.todoAdditionProc.bind(this)
-    this.todoStatusChangeProc = this.todoStatusChangeProc.bind(this);
-    this.todoNoteChangeProc = this.todoNoteChangeProc.bind(this);
-    this.todoRemoveProc = this.todoRemoveProc.bind(this)
-    this.todoStateChangeProcess = this.todoStateChangeProcess.bind(this)
-
-
+    //this.updateProfileTodos = this.updateProfileTodos.bind(this)
     this.state = {
-      loadMessage: '',
-      registerServerMessage: '',
-      todoListMessage: {ident: -1, msg: ''},
-      
+      profiles: '',
+      profileColumnMsg: '',
+      profileAreaMsg: '',
+      registerAreaMsg: '',
       cardOnFocusId: -1,
-      profiles: [],
+    
       loggedUser: ''
     }
-  }
-  
-  componentDidCatch(error, info){
-    console.log(error)
-    console.log(info)
-  }
-  handleInputChange(event){
-    const { name, value } = event.target;
-    this.setState({ [name]: value})
-  }
-  handleAPIError(err){
-    this.setState({
-      loadMessage:  err.name.includes('Validate')?
-        err.errorFields : err.message
-    })
-  }
-  handleTodoError(todoid, err){
-    this.setState({
-      todoListMessage: { ident: todoid, msg: err.message }
-    })
   }
   async componentDidMount(){
     try{
       const systemProfiles = await doAjaxSending('/profile/', 'GET', '');
       if(systemProfiles.status === 'failed' || systemProfiles.report.value.length === 0){
-        this.setState({ loadMessage: systemProfiles.message})
+        this.setState({profiles: [] });
+        this.setState({ 
+          profileColumnMsg: { type: 'norm', msg: systemProfiles.message }
+        })
       }else{
         this.setState({profiles: systemProfiles.report.value });
-
-      // REVISE LOGGED IN STATUS (at expl. page reload) AND REGENERATE STATUS IN NEED
+        
+        // REVISE LOGGED IN STATUS (at expl. page reload) AND REGENERATE STATUS IN NEED
         const loggingRevisionMsg = await doAjaxSending('/profile/revise', 'GET', '');
         if(loggingRevisionMsg.status === 'success'){
-          const userDet = await this.readBackSessionStoreage()
-          userDet.todos = loggingRevisionMsg.report.value
-          this.handleCardFocus(userDet.id)
-          this.handleLoginProc(userDet, 'reload')
+          this.handleLoginProc(loggingRevisionMsg, 'reload')
         }else{
-          this.handleLogoutProc();
+          this.handleLogoutProc(true, systemProfiles.message);
         }
       }
     }catch(err){
       this.handleAPIError(err)
     }
   }
+
+  async registerProfProc(datas){
+    try{
+      const ajaxBody = smblRegisDatas(datas);
+      const profRegRes = await doAjaxSending('/profile/register', 'POST', ajaxBody)
+      if(profRegRes.status === 'success'){
+        const newUserToList = {
+          id: profRegRes.report.value.id,
+          username: datas.username,
+          loginProfile: profRegRes.report.value.loginUrl
+        }
+        this.setState({
+          profiles: [...this.state.profiles, newUserToList],
+          cardOnFocusId: profRegRes.report.value.id,
+          loggedUser: profRegRes.report.value,
+          profileColumnMsg: {
+            type: 'norm',
+            msg: profRegRes.message,
+          },
+          registerAreaMsg: ''
+        })
+      }
+    }catch(errRemote){
+      this.handleAPIError(errRemote)
+    }
+  }
+  async removeProfProc(pwd, profid){
+    try{
+      const ajaxBody = smblProfDeletDatas(pwd)
+      const profDelRes = await doAjaxSending(this.state.loggedUser.changePwdDelAccUrl,
+        'DELETE', ajaxBody)
+      if(profDelRes.status === 'success'){
+        this.setState({
+          profiles: this.state.profiles.filter(p=>p.id!==profid)
+        })
+        this.setState({ 
+          profileColumnMsg: { type: 'norm', msg: profDelRes.message, },
+          loggedUser: '',
+          cardOnFocusId: -1
+        })
+        this.emptySessionStore();
+      }
+    }catch(errRemote){
+      this.handleAPIError(errRemote)
+    }
+  }
+
+  componentDidCatch(error, info){
+    console.log(error)
+    console.log(info)
+  }
+
+  handleAPIError(err){
+    this.setState({
+      profileColumnMsg: {
+        type: 'warn',
+        msg: err.name.includes('Validate')? err.errorFields : err.message
+      } 
+    })
+  }
+
 
 
 
@@ -106,75 +140,45 @@ class App extends Component {
 
 
   // LOGIN-OUT EVENTS, PROCESSES //
-  async handleLoginProc(user, procMode){
-    this.setState({
-      loggedUser: user,
-      todoListMessage: {ident: -1, msg: 'Content loaded!'}
-    })
+  async handleLoginProc(respDatas, procMode){
     if(procMode === 'login'){
-      await this.fillInSessionStore(user);
-    }
-  }
-  async handleLogoutProc(){
-    this.setState({
-      loggedUser: '',
-      todos: '',
-      todoListMessage: {ident: '', msg: ''},
-    })
-
-  }
-
-
-
-
-
-
-  // PROFILE EVENTS, PROCESSES //
-  async registerProfProc(datas){
-    try{
-      const ajaxBody = smblRegisDatas(datas);
-      const profRegRes = await doAjaxSending('/api/register', 'POST', ajaxBody)
-      if(profRegRes.status === 'success'){
-        const newUserToList = {
-          username: datas.username,
-          loginProfile: profRegRes.report.value.loginUrl
-        }
-        this.setState({
-          profiles: [...this.state.profiles, newUserToList],
-          cardOnFocusId: newUserToList.id,
-          loggedUser: profRegRes.report.value,
-          todos: {},
-          registerServerMessage: ''
-        })
-
-      }
-    }catch(errRemote){
-      this.handleAPIError(errRemote)
-    }
-  }
-  async removeProfProc(pwd, profid){
-    try{
-      const ajaxBody = smblProfDeletDatas(pwd)
-      const profDelRes = await doAjaxSending(this.state.loggedUser.changePwdDelAccUrl,
-        'DELETE', ajaxBody)
-      if(profDelRes.report.status === 'success'){
+      this.setState({
+        loggedUser: respDatas.report.value,
+        profileColumnMsg: '',
+        profileAreaMsg: ''
+      })
+      await this.fillInSessionStore(respDatas.report.value);
+    }else{
+      const logDatas = await this.readBackSessionStoreage()
+      if(logDatas.id){
+        logDatas.todos = respDatas.report.value
+        this.handleCardFocus(logDatas.id)
         this.setState({ 
-          profiles: [...this.state.profiles.filter(p=>p.id!==profid)],
-          loadMessage: profDelRes.message,
-          loggedUser: ''
+          loggedUser: logDatas,
+          profileAreaMsg: {id: logDatas.id, messageContent: { type: 'norm', msg: respDatas.message } }
         })
-        this.emptySessionStore();
+      }else{
+        /// COOKIE DELETION NEEDED AT SERVER SIDE /// = NO MORE POSSIBILITY RELOADING
+        await doAjaxSending('/profile/logout', 'GET', '')
+        this.handleLogoutProc(false, 'Local datas are missing. Please login again!')
       }
-    }catch(errRemote){
-      this.handleAPIError(errRemote)
     }
   }
+  async handleLogoutProc(profid, message){
+    this.setState({
+      cardOnFocusId: -1,
+      profileColumnMsg: { type: profid? 'norm':'warn', msg: message },
+      profileAreaMsg: '',
+      loggedUser: ''
+    })
+  }
+
+
 
   readBackSessionStoreage(){
     return {
       id: sessionStorage.getItem('profId'),
-      firstName: sessionStorage.getItem('profFullname'),
-      lastName: sessionStorage.getItem(''),
+      fullname: sessionStorage.getItem('profFullname'),
       age: sessionStorage.getItem('profAge'),
       occupation: sessionStorage.getItem('profOccup'),
       createNewTodo: sessionStorage.getItem('profSetTodo'),
@@ -184,7 +188,7 @@ class App extends Component {
   }
   fillInSessionStore(datas){
     sessionStorage.setItem('profId', datas.id)
-    sessionStorage.setItem('profFullname', datas.first_name + ' ' + datas.last_name)
+    sessionStorage.setItem('profFullname', datas.fullname)
     sessionStorage.setItem('profAge', datas.age)
     sessionStorage.setItem('profOccup', datas.occupation)
     sessionStorage.setItem('profSetTodo', datas.createNewTodo)
@@ -201,138 +205,79 @@ class App extends Component {
     sessionStorage.removeItem('profLogout')
   }
 
-
-
-
-
-
-
-
-
-
-  // TODO EVENTs, PROCESSES //
-  async todoAdditionProc(todoDatas){
-    try{
-      const ajaxBody = smblNewTodoDatas(todoDatas)
-      const todoRegRes = await doAjaxSending(
-        this.state.loggedUser.createNewTodo, 'POST', ajaxBody)
-      if(todoRegRes){
-        this.todoStateChangeProcess(1, todoRegRes.report.value, todoRegRes)
-      }
-    }catch(err){
-      this.handleTodoError(err, -1)
-    }
-  }
-  async todoStatusChangeProc(url, newValue, todoid){
-    try{
-      const ajaxBody = smblStateChangeTodoDatas(newValue);
-      const ajaxTodoStatusRes = await doAjaxSending(url, 'PUT', ajaxBody)
-      if(ajaxTodoStatusRes.status === 'success'){
-        const todoUnderProcRes = this.state.loggedUser.todos.filter(item=> item.id === todoid);
-        todoUnderProcRes[0].status = newValue;
-        todoUnderProcRes[0].update = new Date(ajaxTodoStatusRes.report.value)
-        this.todoStateChangeProcess(0, todoUnderProcRes[0], ajaxTodoStatusRes)
-      }
-    }catch(err){
-      this.handleTodoError(err, todoid)
-
-      
-    }
-  }
-  async todoNoteChangeProc(url, value, todoid){
-    try{
-      const ajaxBody = smblNotationChangeTodoDatas(value);
-      const ajaxTodoNoteRes = await doAjaxSending(url, 'PUT', ajaxBody)
-      const todoUnderProcRes = this.state.loggedUser.todos.filter(item=> item.id === todoid)
-      if(todoUnderProcRes.status === 'success'){
-        todoUnderProcRes[0].notation = value;
-        todoUnderProcRes[0].update = new Date(todoUnderProcRes.report.value)
-        this.todoStateChangeProcess(0, todoUnderProcRes[0], ajaxTodoNoteRes)
-      }
-    }catch(err){
-      this.handleTodoError(err, todoid)
-    }
-  }
-  async todoRemoveProc(url, todoid){
-    try{
-      const ajaxTodoDeleteRes = await doAjaxSending(url, 'DELETE', '');
-      if(ajaxTodoDeleteRes.status === 'success'){
-        this.todoStateChangeProcess(-1, { id: todoid }, ajaxTodoDeleteRes)
-      }
-    }catch(err){
-      this.handleTodoError(err, todoid)
-    }
-  }
-
-  // -1 removal, 0 replace, 1 addition
-  async todoStateChangeProcess(process, contentToChange, servMsg){
-
-    if(process === 0 || process === -1){  //removing todo from array
-      await this.setState({
-        todos: [...this.state.loggedUser.todos.filter(item=>item.id !== contentToChange.id)]
-      })
-    }
-    if(process === 0 || process === 1){   //inserting todo to array
-      await this.setState({
-        todos: [...this.state.loggedUser.todos, contentToChange]
-      })
-    }
-    await this.setState({
-      todoListMessage: { 
-        ident: process === -1 ? -1 : contentToChange.id,
-        msg: servMsg.message }
-    })
-  }
-
-
   render(){
-    let sideAreaContent = '';
-    if(typeof this.state.loggedUser === 'object'){
-
-      sideAreaContent = <TodoList
-        userid={this.state.loggedUser.id}
-        todoContent={this.state.loggedUser.todos}
-        todoListMessage={this.state.todoListMessage}
-        funcTodoSave={this.todoAdditionProc}
-        funcStatusEdit={this.todoStatusChangeProc}
-        funcNoteEdit={this.todoNoteChangeProc}
-        funcTodoRemove={this.todoRemoveProc}
+    const regArea = this.state.loggedUser? '' : <>
+      <h4 className='columnTitleText'>Accessing for your activity list, login or register an account!</h4>
+      <RegisterForm
+        regServMsg={this.state.registerAreaMsg}
+        funcRegister={this.registerProfProc}
       />
-    } else {
-      
-      sideAreaContent = <AbourContent />
+      <h4 className='columnTitleText'>Accounts in the system:</h4>
+    </>
+    let profileList = ''
+    if(typeof this.state.profiles === 'object'){
+      profileList = <section  className='profileList' >
+        { regArea }
+        <ShowMessages messageContent={this.state.profileColumnMsg} ></ShowMessages>
+        {this.state.profiles.map((item, index) => {
+
+            const isThisUserLoggedIn = this.state.loggedUser.id === item.id;
+            const showThisProfile = isThisUserLoggedIn || !this.state.loggedUser;
+            const msgFromAbove = this.state.profileAreaMsg.id === item.id? 
+              this.state.profileAreaMsg.messageContent: ''
+            if(showThisProfile){
+              return <ProfileItem key={item.id}
+                userid={item.id}
+                username={item.username}
+                loginUrl={item.loginUrl}
+                userExtraDatas={ isThisUserLoggedIn ? this.state.loggedUser : '' }
+                userExtraMessage={ msgFromAbove }
+
+                cardOnFocus={this.state.cardOnFocusId === item.id}
+        
+                funcCardFocus={this.handleCardFocus}
+                funcLoginProc={this.handleLoginProc}
+                funcLogoutProc={this.handleLogoutProc}
+                funcCardRemoval={this.removeProfProc}
+              />
+            }else{
+              return (<Fragment key={index}></Fragment>)
+            }
+          })
+        }
+      </section>
+    }else{
+      profileList = <section className='profileList' key={'a1'}>
+        { regArea } 
+        <ShowMessages messageContent={this.state.profileColumnMsg} ></ShowMessages>
+        <div className='profileList'></div>
+      </section>
     }
- 
+
+    const todoListAndInput = this.state.loggedUser? 
+        <TodoList
+          createNewTodo={this.state.loggedUser.createNewTodo}
+          todoContent={this.state.loggedUser.todos} />
+        : ''
+        const aboutArea = this.state.loggedUser? '' : <AbourContent />
+
     return (
       <div className="appContainer">
         <Header />
         <main className='mainApp'>
-          <ErrorHandler location='main area' >
-
-            <ErrorHandler location='profile area'>
-              <ProfileList
-                loadMessage={this.state.loadMessage}  //for the list heading
-                regServMsg={this.state.registerServerMessage} //for register area
-                funcCartInFocus={this.handleCardFocus}
-
-                allProfilesContent={this.state.profiles}
-                loggedUser={this.state.loggedUser}
-                actCardFocus={this.state.cardOnFocusId}
-                
-                funcRegister={this.registerProfProc}
-                funcCardRemoval = {this.removeProfProc}
-                funcLogin = {this.handleLoginProc}
-                funcLogout = {this.handleLogoutProc}
-              />
-              { sideAreaContent }
-            </ErrorHandler>
+          <ErrorHandler location='main profiles' >
+          { profileList }
           </ErrorHandler>
+          <ErrorHandler location='main todos' >
+          { todoListAndInput }
+          </ErrorHandler>
+        { aboutArea }
         </main>
         <footer className='footerApp blackBackgr'>
-
+        { /* Cookie usage user permission is needed!! */ }
         </footer>
       </div>
-    );
+    )
   }
 }
 

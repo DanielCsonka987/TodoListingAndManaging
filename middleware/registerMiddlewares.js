@@ -16,7 +16,7 @@ function regDatasVerification(req, res, next){
   if(req.body.age === '0'){
     delete req.body['age'];
   }
-  if(req.body.occupaton === ''){
+  if(req.body.occupation === ''){
     delete req.body['occupation'];
   }
 

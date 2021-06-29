@@ -8,17 +8,17 @@ function DetailsStatusArea(props){
     const btnBubbleText = actState? 'Cancel this task!' 
         : 'Make this task to done!'
     return(
-        <div className='todoItemCardAreas wrapperRowAllCenter'>
-            <span className='dataLabelMarking' >Status: </span>
-            <span>{props.actStatusText}</span>
-            <ButtonWithIcon 
+        <p className='todoItemForSatus'>
+            <span><span className='formAndCardLabels'>State: </span>{props.actStatusText}</span>
+            <ButtonWithIcon
                 wrapperBlockClasses = { btnTypeClass }
+                naming='forStatus'
                 funcClickActivity={props.funcStatusChange}
                 iconDef={btnIcon}
             >
                 { btnBubbleText }
             </ButtonWithIcon> 
-        </div>
+        </p>
     )
 }
 

@@ -1,49 +1,77 @@
-@supports not (display:grid) {
-    @media screen and (min-width: 1000px){
+/* Site containers that no changes */
 
-        .mainApp::after{
-            content: '';
-            clear: both;
-            display: block;
+* {
+    box-sizing: border-box;
+  }
+  #root{
+    margin: 0;
+    padding: 0;
+  }
+  .appContainer {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    min-width: 95vw;
+  }
+  .mainApp{
+    padding: 2% 3%;
+  }
+  .aboutContent{
+    width: 80%;
+    margin: 0 auto;
+    padding: 0rem 1.4rem;
+    z-index: 1;
+  }
+
+
+@supports ( not (display:grid)) and ( not (display: flex)) {
+
+  .appHeader1{
+    overflow: auto;
+  }
+    .mainApp{  }
+      .profileList{
+        max-width: 450px;
+      }
+        .todoCardArea{
+          column-width: 22rem;
         }
-        .appHeader1{
-            padding-top: 1rem;
-        }
-        .profileList{
-            float: left;
-            width: 35vw;
-        }
-        .todoList, .aboutContent{
+          .todoItem{
+            max-width: 450px;
+            margin: 0 auto;
+          }
+  footer{
+    height: 5rem;
+  }
+
+  @media screen and (min-width: 1024px){
+      .mainApp{
+        overflow: auto;
+      }
+          .profileList{
+              float:left;
+              width: 30vw;
+          }
+          .aboutContent, .todoInput, .todoList{
             float: right;
-            width: 50vw;
-        }
+            width: 60vw;
+          }
+          .todoList{ }
 
-    }
-    @media screen and (max-width: 1000px){
-        .profileList{
-            width: 50vw;
-        }
-        .todoList{
-            width: 50vw;
-        }
-    }
-    
+
+  }
+  @media screen and (max-width: 1024px){
+      .appContainer{ }
+      .appHeader1{
+          vertical-align: middle;
+      }
+      .appHeader2{ }
+      .mainApp{ }
+          .profileList{
+            margin: 0 auto;
+          }
+  }
 }
 
-@supports not (display: flex){
 
-    /* for lot of things*/
-    .wrapperColumnAllCenter{  
-      margin: 10px auto;
-    }
-    /* for profile columns */
-    .wrapperColumHorCentVertUp{ 
-      margin: 10px auto;
-    }
 
-    .buttonGroupWrapper{
-      width: 70%;
-      margin: 10px auto;
-    
-    }
-}

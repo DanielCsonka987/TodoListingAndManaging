@@ -13,11 +13,9 @@ module.exports.cookieRevisionSteps = [
 module.exports.reviseLoggedInState = [
   existenceTest2, contentStrTest, collectAllTodosOfUser ]
 
-
-
 function existenceTest1(req, res, next){ 
   if(req.cookies === undefined ||  req.cookies[sessionCookieName] === undefined){
-    res.status(400)
+    res.status(200)
     res.json( cookieView.generalProblemMsg );
   } else { 
     if(req.cookies[sessionCookieName] !== req.params.id ){
@@ -34,7 +32,7 @@ function contentStrTest(req, res, next){
     next();
   })
   .catch((err)=>{
-    res.status(400);  //somehow it is empty, ex. logged in later
+    res.status(200);  //somehow it is empty, ex. logged in later
     res.json( cookieView.generalProblemMsg ); 
   })
 

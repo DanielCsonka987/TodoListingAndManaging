@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AboutContent compontent snapshot test 1`] = `
-<div
+<aside
   className="aboutContent"
 >
   <h3>
@@ -11,7 +11,10 @@ exports[`AboutContent compontent snapshot test 1`] = `
     This site is made with the purpose demonstrating the theoretical and technical IT knowledges, capabilities of the creator.
   </p>
   <p>
-    It is a dummy, typically MERN, REST-full web application, a full-stack development of the latter mentinoed person with own content and idea. The capabilities mainly cover simple CRUD, session-cookie managmement, basic password handling processes. Front-styling is made with the requirement of being resposible, minimally cross-browser tested and being resistent to older browser rendering errors that connot execute grid or flex laying out. It is tested by manual and automated methods.
+    The main role of this app is to maintain the activity list of a previously registered and logged in person. The registration not requires real personal datas - suggested the usage of dummy details for manual testing. For simplier usage, it shows the registered users of the system by a unique username. After registration and/or login it is recording the activity, its priority, some notation, present the date of creation, last update of that. It can manage some details of the account - password change or delet the account.
+  </p>
+  <p>
+    It is a typically MERN, REST-full web application, a full-stack development of the latter mentinoed person with own content and idea. The capabilities mainly cover simple CRUD, session-cookie managmement, basic password handling processes. Front-styling is made with the requirement of being resposible, minimally cross-browser tested and being resistent to older browser rendering errors that connot execute grid or flex laying out. It is tested by manual and automated methods.
   </p>
   <p>
      All rigths reserved!
@@ -30,7 +33,7 @@ exports[`AboutContent compontent snapshot test 1`] = `
       Unique CSS definitions and Google Icons
     </li>
     <li>
-      JavaScript Jest test framework
+      JavaScript Jest test framework and Testing Library
     </li>
   </ul>
   <p>
@@ -53,5 +56,5 @@ exports[`AboutContent compontent snapshot test 1`] = `
       JavaScript Mocha-Chai test framework and library
     </li>
   </ul>
-</div>
+</aside>
 `;

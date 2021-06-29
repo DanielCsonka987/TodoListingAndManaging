@@ -1,82 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Button complex, big and small version Component test - big config structure and activity 1`] = `
-<div
-  className="identifier"
+<button
+  className="clickable btnObjBig noticable"
+  name="buttonAndInner"
+  onBlur={[Function]}
+  onClick={[MockFunction]}
+  onFocus={[Function]}
+  onMouseOut={[Function]}
+  onMouseOver={[Function]}
 >
-  <button
-    className="clickable btnObjBig noticable"
+  <span
+    className="iconAndTextTogether undefined"
     name="buttonAndInner"
-    onBlur={[Function]}
-    onClick={[MockFunction]}
-    onFocus={[Function]}
-    onMouseOut={[Function]}
-    onMouseOver={[Function]}
   >
-    <span
-      className="iconAndTextTogether undefined"
+    <i
+      className="material-icons iconItself"
       name="buttonAndInner"
-      style={
-        Object {
-          "display": "block",
-          "position": "relative",
-        }
-      }
     >
-      <i
-        className="material-icons iconItself"
-        name="buttonAndInner"
-      >
-        cancel
-      </i>
-      <span
-        className="textNextToIcon undefined"
-      >
-         
-        Cancel button
-         
-      </span>
+      cancel
+    </i>
+    <span
+      className="textNextToIcon undefined"
+    >
+      Cancel button
+       
     </span>
-  </button>
-</div>
+  </span>
+</button>
 `;
 
 exports[`Button complex, big and small version Component test - small config structure and activity 1`] = `
-<div
-  className="identifier"
+<button
+  className="clickable btnObjSmall noticable"
+  name="buttonAndInner"
+  onBlur={[Function]}
+  onClick={[MockFunction]}
+  onFocus={[Function]}
+  onMouseOut={[Function]}
+  onMouseOver={[Function]}
 >
-  <button
-    className="clickable btnObjSmall noticable"
+  <span
+    className="iconWithoutText btnWrapper undefined"
     name="buttonAndInner"
-    onBlur={[Function]}
-    onClick={[MockFunction]}
-    onFocus={[Function]}
-    onMouseOut={[Function]}
-    onMouseOver={[Function]}
   >
-    <span
-      className="iconWithoutText undefined"
+    <i
+      className="material-icons iconItself"
       name="buttonAndInner"
-      style={
-        Object {
-          "display": "block",
-          "position": "relative",
-        }
-      }
     >
-      <i
-        className="material-icons iconItself"
-        name="buttonAndInner"
-      >
-        cancel
-      </i>
-      <span
-        transitionentertimeout={500}
-        transitionleavetimeout={500}
-      />
-    </span>
-  </button>
-</div>
+      cancel
+    </i>
+    
+  </span>
+</button>
 `;
 
 exports[`Button complex, big and small version Component test - small config structure and activity 2`] = `
@@ -84,37 +60,20 @@ exports[`Button complex, big and small version Component test - small config str
 - First value
 + Second value
 
-@@ -25,11 +25,31 @@
-          name=\\"buttonAndInner\\"
-        >
-          cancel
-        </i>
-        <span
-+         style={
-+           Object {
-+             \\"background\\": \\"#FFF0C3\\",
-+             \\"border\\": \\"1px solid grey\\",
-+             \\"borderRadius\\": \\"13%\\",
-+             \\"color\\": \\"black\\",
-+             \\"display\\": \\"block\\",
-+             \\"fontSize\\": \\"0.8rem\\",
-+             \\"maxWidth\\": \\"6.5rem\\",
-+             \\"opacity\\": \\"0.0\\",
-+             \\"padding\\": \\"0.4rem\\",
-+             \\"position\\": \\"absolute\\",
-+             \\"right\\": \\"-5rem\\",
-+             \\"top\\": \\"1.5rem\\",
-+             \\"transition\\": \\"opacity 16000ms ease\\",
-+             \\"zIndex\\": \\"3\\",
-+           }
-+         }
-          transitionentertimeout={500}
-          transitionleavetimeout={500}
--       />
-+       >
-+         Cancel button
-+       </span>
-      </span>
-    </button>
-  </div>"
+@@ -15,8 +15,14 @@
+        className=\\"material-icons iconItself\\"
+        name=\\"buttonAndInner\\"
+      >
+        cancel
+      </i>
+-     
++     <span
++       className=\\"btnTooltipBubble\\"
++       name=\\"buttonAndInner\\"
++     >
++       Cancel button
++        
++     </span>
+    </span>
+  </button>"
 `;

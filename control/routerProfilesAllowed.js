@@ -12,19 +12,18 @@ const paths = require('../config/appConfig').routing
 // COMMON API response common response configuration //
 router.all('/*', apiResponseHeaders)
 
-
 // READ all user //
 router.get('/', profileMiddle.readPublicPrfilesSteps)
-
 
 // LOGGED IN STATE REVISON //
 router.get(paths.logRevisPostfix, cookieMiddle.reviseLoggedInState)
 
+// IN CASE TAB CLOSED BUT COOKIE EXISTS -> NO CHANCE TO RELOAD CONTENT
+router.get(paths.logoutPostfix, logoutMiddle.logoutSteps)
 
 // REGISETER a new user //
 // with creating session cookie
 router.post(paths.registerPostfix, registrateMiddle.registerSteps)
-
 
 // LOGIN //
 router.post('/:id'+ paths.loginPostfix, loginMiddle.loginSteps)

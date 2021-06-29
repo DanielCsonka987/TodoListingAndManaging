@@ -2,9 +2,6 @@ import React from 'react'
 import { waitFor, fireEvent, screen, render } from '@testing-library/react'
 import RegisterForm from '../RegisterForm'
 import '@testing-library/jest-dom/extend-expect'
-import renderer from 'react-test-renderer';
-import { toMatchDiffSnapshot } from 'snapshot-diff'
-import { expect as chaiExpect } from 'chai';
 import userEvent from '@testing-library/user-event'
 
 const fillInInputAndRevise = (nodes, label, input)=>{
@@ -44,20 +41,19 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start register, filling input
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInputAndRevise(screen, 'Username*:', regInput.username)
         fillInInputAndRevise(screen, 'Password*:', regInput.password)
         fillInInputAndRevise(screen, 'Password again*:', regInput.passwordRepeat)
         fillInInputAndRevise(screen, 'Firstname*:', regInput.firstName)
         fillInInputAndRevise(screen, 'Lastname:', regInput.lastName)
-
         const seekedInput = screen.getByLabelText('Age:')
         userEvent.type(seekedInput, regInput.age)
         expect(seekedInput).toHaveValue(17)
-
         fillInInputAndRevise(screen, 'Occupation:', regInput.occupation)
 
+        //finsih registration, analyze reg method calling
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
         await waitFor(()=>{
@@ -85,12 +81,14 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registration, filling the form
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInputAndRevise(screen, 'Username*:', regInput.username)
         fillInInputAndRevise(screen, 'Password*:', regInput.password)
         fillInInputAndRevise(screen, 'Password again*:', regInput.passwordRepeat)
         fillInInputAndRevise(screen, 'Firstname*:', regInput.firstName)
+
+        //finish reg, analyze reg method calling
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
         await waitFor(()=>{
@@ -98,7 +96,9 @@ describe('Register Component tests', ()=>{
         })
         unmount()
     })
+})
 
+describe('Registring issue tests', ()=>{
     test('Not proper inputs at fields 1 - diff pwd', async ()=>{
         const regInput = {
             username: 'StgToTest',
@@ -117,8 +117,8 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registring, fill up the form
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInput(screen, 'Username*:', regInput.username)
         fillInInput(screen, 'Password*:', regInput.password)
         fillInInput(screen, 'Password again*:', regInput.passwordRepeat)
@@ -127,21 +127,22 @@ describe('Register Component tests', ()=>{
         fillInInput(screen, 'Age:', regInput.age)
         fillInInput(screen, 'Occupation:', regInput.occupation)
 
+        //finish registrate, analyze errors
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
-        await waitFor(()=>{
+        expect(await screen.findByText('Password confirmation is not matching!')).toBeInTheDocument()
+        expect(funcToReg).toHaveBeenCalledTimes(0)
 
-            const errorMsgs = screen.getByTestId('regErrors')
-            expect(errorMsgs.firstChild).toHaveClass('errorLine')
-            expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('span')[0].textContent)
-                .toBe('Password confirmation is not matching!')
-            expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('a')[0])
-                .toHaveAttribute('href', '#password_repeat')
+        const errorMsgs = screen.getByTestId('regErrors')
+        expect(errorMsgs.firstChild).toHaveClass('msgLine')
+        expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('span')[0])
+            .toHaveTextContent('Password confirmation is not matching!')
+        expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('a')[0])
+            .toHaveAttribute('href', '#password_repeat')
 
-            expect(funcToReg).toHaveBeenCalledTimes(0)
-        })
+
         unmount()
     })
 
@@ -163,8 +164,8 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registration, filling the form
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInput(screen, 'Username*:', regInput.username)
         fillInInput(screen, 'Password*:', regInput.password)
         fillInInput(screen, 'Password again*:', regInput.passwordRepeat)
@@ -173,21 +174,22 @@ describe('Register Component tests', ()=>{
         fillInInput(screen, 'Age:', regInput.age)
         fillInInput(screen, 'Occupation:', regInput.occupation)
 
+        //finish registration, analyze errors
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
-        await waitFor(()=>{
+        expect(await screen.findByText('Password is not acceptable!')).toBeInTheDocument()
+        expect(funcToReg).toHaveBeenCalledTimes(0)
 
-            const errorMsgs = screen.getByTestId('regErrors')
-            expect(errorMsgs.firstChild).toHaveClass('errorLine')
-            expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('span')[0].textContent)
-                .toBe('Password is not acceptable!')
-            expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('a')[0])
-                .toHaveAttribute('href', '#password')
+        const errorMsgs = screen.getByTestId('regErrors')
+        expect(errorMsgs.firstChild).toHaveClass('msgLine')
+        expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('span')[0])
+            .toHaveTextContent('Password is not acceptable!')
+        expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('a')[0])
+            .toHaveAttribute('href', '#password')
 
-            expect(funcToReg).toHaveBeenCalledTimes(0)
-        })
+
         unmount()
     })
 
@@ -209,8 +211,8 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registration, filling th form
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInput(screen, 'Username*:', regInput.username)
         fillInInput(screen, 'Password*:', regInput.password)
         fillInInput(screen, 'Password again*:', regInput.passwordRepeat)
@@ -219,21 +221,25 @@ describe('Register Component tests', ()=>{
         fillInInput(screen, 'Age:', regInput.age)
         fillInInput(screen, 'Occupation:', regInput.occupation)
 
+        //finish register, find errormessage
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
-        await waitFor(()=>{
 
-            const errorMsgs = screen.getByTestId('regErrors')
-            expect(errorMsgs.firstChild).toHaveClass('errorLine')
-            expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('span')[0].textContent)
-                .toBe('Username is not acceptable! ' + regInput.username)
-            expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('a')[0])
-                .toHaveAttribute('href', '#username')
+        expect(await screen.findByText(`Username is not acceptable! ${regInput.username}`))
+            .toBeInTheDocument()
+        expect(funcToReg).toHaveBeenCalledTimes(0)
 
-            expect(funcToReg).toHaveBeenCalledTimes(0)
-        })
+        //analyze the errormessaging datas
+        const errorMsgs = screen.getByTestId('regErrors')
+        expect(errorMsgs.firstChild).toHaveClass('msgLine')
+        expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('span')[0])
+            .toHaveTextContent('Username is not acceptable! ' + regInput.username)
+        expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('a')[0])
+            .toHaveAttribute('href', '#username')
+
+        
         unmount()
     })
 
@@ -255,8 +261,8 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registration, filling the form
         userEvent.click(screen.getByText('Registration').parentElement)
-
         fillInInput(screen, 'Username*:', regInput.username)
         fillInInput(screen, 'Password*:', regInput.password)
         fillInInput(screen, 'Password again*:', regInput.passwordRepeat)
@@ -265,21 +271,22 @@ describe('Register Component tests', ()=>{
         fillInInput(screen, 'Age:', regInput.age)
         fillInInput(screen, 'Occupation:', regInput.occupation)
 
+        //finish registration, analyze error contennt
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
-        await waitFor(()=>{
+        expect(await screen.findByText(`${regInput.age} as age is not proper!`)).toBeInTheDocument()
+        expect(funcToReg).toHaveBeenCalledTimes(0)
 
-            const errorMsgs = screen.getByTestId('regErrors')
-            expect(errorMsgs.firstChild).toHaveClass('errorLine')
-            expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('span')[0].textContent)
-                .toBe(`${regInput.age} as age is not proper!`)
-            expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
-            expect(errorMsgs.getElementsByTagName('a')[0])
-                .toHaveAttribute('href', '#age')
+        const errorMsgs = screen.getByTestId('regErrors')
+        expect(errorMsgs.firstChild).toHaveClass('msgLine')
+        expect(errorMsgs.getElementsByTagName('span').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('span')[0])
+            .toHaveTextContent(`${regInput.age} as age is not proper!`)
+        expect(errorMsgs.getElementsByTagName('a').length).toBe(1)
+        expect(errorMsgs.getElementsByTagName('a')[0])
+            .toHaveAttribute('href', '#age')
 
-            expect(funcToReg).toHaveBeenCalledTimes(0)
-        })
+
         unmount()
     })
     test('Not proper inputs at fields 5 - all input empty', async ()=>{
@@ -292,30 +299,34 @@ describe('Register Component tests', ()=>{
 
         const {container, debug, unmount} = render(comp)
 
+        //start registration, without filling anything
         userEvent.click(screen.getByText('Registration').parentElement)
 
+        //finish registration, analyze error contennt
         const regBtn = screen.getByRole('button')
         userEvent.click(regBtn)
-        await waitFor(()=>{
+        expect(await screen.findByText('Username is not acceptable!')).toBeInTheDocument()
+        expect(screen.getByText('Password is not acceptable!')).toBeInTheDocument()
+        expect(screen.getByText('Firstname is not acceptable!')).toBeInTheDocument()
 
-            const errorMsgs = screen.getByTestId('regErrors')
-            expect(errorMsgs.firstChild).toHaveClass('errorLine')
-            expect(errorMsgs.getElementsByTagName('span').length).toBe(3)
-            expect(errorMsgs.getElementsByTagName('span')[0].textContent)
-                .toBe(`Username is not acceptable! `)
-            expect(errorMsgs.getElementsByTagName('span')[1].textContent)
-                .toBe('Password is not acceptable!')
-            expect(errorMsgs.getElementsByTagName('span')[2].textContent)
-                .toBe('Firstname is not acceptable!')
-            expect(errorMsgs.getElementsByTagName('a').length).toBe(3)
-            expect(errorMsgs.getElementsByTagName('a')[0])
-                .toHaveAttribute('href', '#username')
-            expect(errorMsgs.getElementsByTagName('a')[1])
-                .toHaveAttribute('href', '#password')
-            expect(errorMsgs.getElementsByTagName('a')[2])
-                .toHaveAttribute('href', '#first_name')
-            expect(funcToReg).toHaveBeenCalledTimes(0)
-        })
+        const errorMsgs = screen.getByTestId('regErrors')
+        expect(errorMsgs.firstChild).toHaveClass('msgLine')
+        expect(errorMsgs.getElementsByTagName('span').length).toBe(3)
+        expect(errorMsgs.getElementsByTagName('span')[0])
+            .toHaveTextContent(`Username is not acceptable!`)
+        expect(errorMsgs.getElementsByTagName('span')[1])
+            .toHaveTextContent('Password is not acceptable!')
+        expect(errorMsgs.getElementsByTagName('span')[2])
+            .toHaveTextContent('Firstname is not acceptable!')
+        expect(errorMsgs.getElementsByTagName('a').length).toBe(3)
+        expect(errorMsgs.getElementsByTagName('a')[0])
+            .toHaveAttribute('href', '#username')
+        expect(errorMsgs.getElementsByTagName('a')[1])
+            .toHaveAttribute('href', '#password')
+        expect(errorMsgs.getElementsByTagName('a')[2])
+            .toHaveAttribute('href', '#first_name')
+        expect(funcToReg).toHaveBeenCalledTimes(0)
+
         unmount()
     })
 })

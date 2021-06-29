@@ -7,33 +7,70 @@ import TodoDateContent from './TodoDateContent'
 import ShowMessages from '../generals/ShowMessages'
 
 import { todoNotationInputRevise } from '../../utils/inputRevise'
+import { doAjaxSending, smblStateChangeTodoDatas, 
+  smblNotationChangeTodoDatas } from '../../utils/apiMessenger.js';
 
 class TodoItem extends Component{
   constructor(props){
     super(props);
     this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleStatusChange = this.handleStatusChange.bind(this)
     this.handleModeSwitch = this.handleModeSwitch.bind(this)
-    this.handleModifyNote = this.handleModifyNote.bind(this)
     this.handleClickDelete = this.handleClickDelete.bind(this)
+
+    this.todoStatusChangeProc = this.todoStatusChangeProc.bind(this);
+    this.todoNoteChangeProc = this.todoNoteChangeProc.bind(this);
     this.state = {
       componentMode: 'normal',
-      todoMessage: '',
-      notation: ''
+      notation: '',
+      todoMessage: ''
     }
   }
+  async todoStatusChangeProc(){
+    try{
+      const newValue = this.props.todoDatas.status === 'Finished'? 'false' : 'true'
+      const ajaxBody = smblStateChangeTodoDatas(newValue);
+      const ajaxTodoStatusRes = await doAjaxSending(
+        this.props.todoDatas.statusChangeUrl, 'PUT', ajaxBody)
+      if(ajaxTodoStatusRes.status === 'success'){
+        const valuToRender = this.props.todoDatas.status === 'Finished'? 'Proceeding' : 'Finished'
+        this.props.funcStateChanged(
+          this.props.todoDatas.id, 
+          valuToRender, this.props.todoDatas.notation, ajaxTodoStatusRes.report.value
+        )
+      }else{
+        this.handleAPIError(ajaxTodoStatusRes)
+      }
+    }catch(err){
+      this.handleAPIError(err)
+    }
+  }
+  async todoNoteChangeProc(){
+    try{
+        await todoNotationInputRevise(this.state.notation)
+        const ajaxBody = smblNotationChangeTodoDatas(this.state.notation);
+        const ajaxTodoNoteRes = await doAjaxSending(
+          this.props.todoDatas.notationChangeUrl, 'PUT', ajaxBody)
+        if(ajaxTodoNoteRes.status === 'success'){
+          this.props.funcStateChanged(
+            this.props.todoDatas.id, 
+            this.props.todoDatas.status, this.state.notation, ajaxTodoNoteRes.report.value
+          )
+          this.handleModeSwitch({ target: {name: 'forNotation'} })
+        }else{
+          this.handleAPIError(ajaxTodoNoteRes)
+        }
+      }catch(err){
+        this.handleAPIError(err)
+      }
+  }
+
   handleInputChange(event){
     const { name, value } = event.target;
     this.setState({   [name]: value })
   }
-  handleStatusChange(state){
-    this.props.funcStatusEdit(this.props.todoDatas.updateStatus, 
-      !this.state.status)
-  }
   handleAPIError(err){
     this.setState({
-      todoMessage:  err.name.includes('Validate')?
-        err.errorFields : err.message
+      todoMessage:  { type: 'warn', msg: err.name.includes('Validate')? err.errorFields : err.message }
     })
   }
   handleModeSwitch(event){
@@ -47,7 +84,7 @@ class TodoItem extends Component{
       }
       if(value==='forDeletion'){
         this.setState({
-          todoMessage: 'Do you really delete this?',
+          todoMessage: { type: 'warn', msg:'Do you really delete this?'},
           componentMode: 'deleteConfirm'
         })
       }
@@ -56,61 +93,46 @@ class TodoItem extends Component{
     }
   }
   handleClickDelete(){
-    this.props.funcTodoRemove(this.props.todoDatas.deleteTodo, this.props.todoDatas.id)
-    this.setState({ todoMessage: '' })
+    this.props.funcTodoRemove( this.props.todoDatas.removingUrl, this.props.todoDatas.id)
   }
-  async handleModifyNote(){
-    try{
-      await todoNotationInputRevise(this.state.notation)
-      this.props.funcNoteEdit(this.props.todoDatas.updateNotation, this.state.notation);
-      this.setState({ todoMessage: '' })
-    }catch(err){
-      this.handleAPIError(err)
-    }
-  }
-
 
   render(){
     return (
-      <div className='todoCardWidth cardArea'>
+      <article className='todoItem cardAreaEdge cardAreaPadding' data-testid={'todoCard' + this.props.todoDatas.id}>
 
-        <div className='todoItemCardAreas'>
-          <span className={'todoItemCardAras dataLabelMarking'}>
-            Task:</span>
-          <span> {this.props.todoDatas.task}</span>
-          <DetailsNotationArea notation={this.props.todoDatas.notation} 
-            notationAreaMode={this.state.componentMode} noteValue={this.state.notation}
-            funcExecNotify={this.handleModifyNote} funcModeSwitch={this.handleModeSwitch}
-            funcChangeNotation={this.handleInputChange}
-          />
-          <span className={'todoItemCardAreas'} >
-            <span className='dataLabelMarking'>Priority: </span> 
-            <span>{this.props.todoDatas.priority}</span>
-          </span>
-        </div>
-
-        <TodoDateContent 
-          dateContent={this.props.todoDatas.start}
-        >Start:</TodoDateContent>
-        <TodoDateContent 
-          dateContent={this.props.todoDatas.update}
-        >Update:</TodoDateContent>
-
-        <div className='wrapperRowAllCenter'>
-          <DetailsStatusArea
-            actStatusText={this.props.todoDatas.status}
-            funcStatusChange={this.handleStatusChange}
-          />
-          <DetailsDeleteArea 
-            deleteAreaMode={this.state.componentMode} 
-            funcExecDelete={this.handleClickDelete} funcModeSwitch={this.handleModeSwitch}
-          />
-        </div>
-        <ShowMessages 
-          messageContent={this.state.todoMessage  // for local errors
-            || this.props.messageFromAbove }  // from notation change, API errors
+        <h4 className='todoItemForTask'> {this.props.todoDatas.task}</h4>
+        <DetailsDeleteArea 
+          deleteAreaMode={this.state.componentMode} 
+          funcExecDelete={this.handleClickDelete} funcModeSwitch={this.handleModeSwitch}
         />
-      </div>
+
+        <DetailsNotationArea notation={this.props.todoDatas.notation} 
+          notationAreaMode={this.state.componentMode} noteValue={this.state.notation}
+          funcExecNotify={this.todoNoteChangeProc} funcModeSwitch={this.handleModeSwitch}
+          funcChangeNotation={this.handleInputChange}
+        />
+
+        <p className={'todoItemForPrioirty'} >
+          <span className='formAndCardLabels'>Priority: </span> 
+          <span>{this.props.todoDatas.priority}</span>
+        </p>
+        <div className={'todoItemForDates'}>
+          <TodoDateContent 
+            dateContent={this.props.todoDatas.start}
+          >Start:</TodoDateContent>
+          <TodoDateContent 
+            dateContent={this.props.todoDatas.update}
+          >Update:</TodoDateContent>
+        </div>
+        <DetailsStatusArea
+          actStatusText={this.props.todoDatas.status}
+          funcStatusChange={this.todoStatusChangeProc}
+        />
+
+        <ShowMessages 
+          messageContent={this.state.todoMessage}  // for local errors
+        />
+      </article>
     )
   }
 }

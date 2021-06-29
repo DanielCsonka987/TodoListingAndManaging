@@ -1,26 +1,21 @@
 import React from 'react';
 
 function ShowMessages(props){
-    /*
-    const possibleAnchor = props.messageContent.field? 
-    <a href={`#${props.messageContent.field}`}>Jump there!</a>
-    : '';
-    */
-    if(typeof props.messageContent === 'undefined'){ //TodoItem def. undefined!!
+    if(props.messageContent === '' || typeof props.messageContent === 'undefined'){
         return (<></>)
     }
-    const clssnmForErrorLine = 'errorLine'
-    const clssnmForText = 'errorText'
-    if(typeof props.messageContent === 'string'){
+    const clssnmForErrorLine = 'msgLine'
+    const clssnmForText = props.messageContent.type === 'warn'? 'errorText' : 'msgText'
+    if(typeof props.messageContent.msg === 'string'){
         // SIMPLE MESSAGE - loggedin, logged out, ect. from server eg. // 
         return (
             <div className={clssnmForErrorLine}>
-                <p className={clssnmForText}>{props.messageContent}</p>
+                <p className={clssnmForText}>{props.messageContent.msg}</p>
             </div>
         )
-    }else{
+    }else /* if(typeof props.messageContent.msg === 'object' || typeof props.messageContent.msg === 'array')*/{
         return (
-            props.messageContent.map((item, index)=>{
+            props.messageContent.msg.map((item, index)=>{
                 return <div className={clssnmForErrorLine} key={index}>
                   <span className={clssnmForText}>{item.message}</span>
                   <a href={`#${item.field}`}><i className='material-icons'>arrow_back</i></a>
