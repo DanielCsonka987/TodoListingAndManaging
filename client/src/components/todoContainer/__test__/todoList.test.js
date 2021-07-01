@@ -84,9 +84,9 @@ describe('Todo list testing', ()=>{
         expect(screen.getByText(datas.todos[0].notation)).toBeInTheDocument()
         expect(screen.getByText(datas.todos[1].task)).toBeInTheDocument()
         expect(screen.getByText(datas.todos[1].notation)).toBeInTheDocument()
-
+        
         //summarising the components
-        expect(screen.getAllByRole('button').length).toBe(7)
+        expect(screen.getAllByRole('button').length).toBe(6)
         expect(screen.getByText('Add new activity')).toBeInTheDocument()
         expect(screen.getAllByText('edit').length).toBe(2)
         expect(screen.getAllByText('delete').length).toBe(2)

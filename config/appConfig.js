@@ -45,6 +45,10 @@ module.exports.cookie = {
 }
 
 module.exports.headers = [
-    ['Content-Type','application/json; charset=utf-8']
+    ['Content-Type','application/json; charset=utf-8'],
+    ['Content-Security-Policy', "default-src 'self'"],
+    ['Content-Security-Policy', "style-src 'https://fonts.googleapis.com/'"],
+    ['X-Frame-Options', 'deny'],
+    ['X-Content-Type-Options', 'nosniff']
 ]
 

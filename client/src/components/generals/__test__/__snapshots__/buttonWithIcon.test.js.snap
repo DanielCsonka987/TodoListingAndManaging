@@ -41,7 +41,7 @@ exports[`Button complex, big and small version Component test - small config str
   onMouseOver={[Function]}
 >
   <span
-    className="iconWithoutText btnWrapper undefined"
+    className="iconWithoutText undefined"
     name="buttonAndInner"
   >
     <i

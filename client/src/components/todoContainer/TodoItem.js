@@ -1,4 +1,4 @@
-import { React, Component } from 'react'
+import React,  { Component } from 'react'
 
 import DetailsNotationArea from './DetailsNotationArea'
 import DetailsDeleteArea from './DetailsDeletArea'

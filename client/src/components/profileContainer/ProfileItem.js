@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import DetailsLoggedIn from './DetailsLoggedIn'
 import DetailsLoggedOut from './DetailsLoggedOut'
 import ShowMessages from '../generals/ShowMessages'
@@ -149,7 +149,7 @@ class ProfileItem extends Component {
   render(){
     const isThisCardLoggedIn = typeof this.props.userExtraDatas ==='object';
 
-    const loggedOutContent = <>
+    const loggedOutContent = <Fragment>
       <DetailsLoggedOut
         pwd={this.state.password}
         funcInputChange={this.handleInputChange}
@@ -157,9 +157,9 @@ class ProfileItem extends Component {
         funcLogin={this.handleLogin}
       />
       <ShowMessages messageContent={ this.state.profileMessage } />
-    </>      
+    </Fragment>      
 
-    const loggedInContent = <>
+    const loggedInContent = <Fragment>
       <DetailsLoggedIn
         extraDatas={ isThisCardLoggedIn? this.props.userExtraDatas: ''}
         oldPwd={this.state.old_password}
@@ -174,7 +174,7 @@ class ProfileItem extends Component {
         funcLogOut={this.handleLogOut}
       />
       <ShowMessages messageContent={ this.state.profileMessage || this.props.userExtraMessage} />
-    </>
+    </Fragment>
 
     const cardFocusState = this.state.cardOnFocus? 'cardUserActive' : 'cardUserInactive'
 
@@ -183,7 +183,7 @@ class ProfileItem extends Component {
     return (
       <CardTileTextAndContent
         wrapperBlockClasses={'' + cardFocusState} 
-        wrapperInlineClasses={'clickable'}
+        wrapperInlineClasses=''
         funcKeyPressActivity={this.handleCardFocus}
         funcClickActivity={this.handleCardFocus}
         tabIndexing='0' iconDef='account_circle'

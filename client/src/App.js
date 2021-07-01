@@ -8,6 +8,7 @@ import AbourContent from './components/generals/AboutContent.js'
 import Header from './components/generals/Header'
 import ErrorHandler from './components/generals/ErrorHandler.js'
 import ShowMessages from './components/generals/ShowMessages';
+import FooterPopUp from './components/generals/Footer';
 import { doAjaxSending, smblRegisDatas, smblProfDeletDatas } from './utils/apiMessenger.js';
 
 import ProfileItem from './components/profileContainer/ProfileItem.js';
@@ -26,6 +27,8 @@ class App extends Component {
     this.readBackSessionStoreage = this.readBackSessionStoreage.bind(this)
     this.fillInSessionStore = this.fillInSessionStore.bind(this)
     this.emptySessionStore = this.emptySessionStore.bind(this)
+    this.setUserAcknowlCookie = this.setUserAcknowlCookie.bind(this)
+    this.getUserAcknowlCookie = this.getUserAcknowlCookie.bind(this)
 
     this.registerProfProc = this.registerProfProc.bind(this);
     this.removeProfProc = this.removeProfProc.bind(this);
@@ -37,11 +40,13 @@ class App extends Component {
       registerAreaMsg: '',
       cardOnFocusId: -1,
     
-      loggedUser: ''
+      loggedUser: '',
+      userAcknolwledge: false
     }
   }
   async componentDidMount(){
     try{
+      this.getUserAcknowlCookie()
       const systemProfiles = await doAjaxSending('/profile/', 'GET', '');
       if(systemProfiles.status === 'failed' || systemProfiles.report.value.length === 0){
         this.setState({profiles: [] });
@@ -205,15 +210,30 @@ class App extends Component {
     sessionStorage.removeItem('profLogout')
   }
 
+  setUserAcknowlCookie(){
+    localStorage.setItem('cookieUsage', true)
+    this.setState({
+      userAcknolwledge: true
+    })
+  }
+
+  getUserAcknowlCookie(){
+    this.setState({
+      userAcknolwledge: localStorage.getItem('cookieUsage')
+    })
+  }
+
   render(){
-    const regArea = this.state.loggedUser? '' : <>
-      <h4 className='columnTitleText'>Accessing for your activity list, login or register an account!</h4>
-      <RegisterForm
-        regServMsg={this.state.registerAreaMsg}
-        funcRegister={this.registerProfProc}
-      />
-      <h4 className='columnTitleText'>Accounts in the system:</h4>
-    </>
+    const regArea = this.state.loggedUser? '' : 
+      <Fragment>
+        <h4 className='columnTitleText'>Accessing for your activity list, login or register an account!</h4>
+        <RegisterForm
+          regServMsg={this.state.registerAreaMsg}
+          funcRegister={this.registerProfProc}
+        />
+        <h4 className='columnTitleText'>Accounts in the system:</h4>
+      </Fragment>
+
     let profileList = ''
     if(typeof this.state.profiles === 'object'){
       profileList = <section  className='profileList' >
@@ -261,6 +281,10 @@ class App extends Component {
         : ''
         const aboutArea = this.state.loggedUser? '' : <AbourContent />
 
+    const footerContent = this.state.userAcknolwledge? '' : 
+      <FooterPopUp funcUserAcknowl={this.setUserAcknowlCookie} /> 
+
+
     return (
       <div className="appContainer">
         <Header />
@@ -274,7 +298,7 @@ class App extends Component {
         { aboutArea }
         </main>
         <footer className='footerApp blackBackgr'>
-        { /* Cookie usage user permission is needed!! */ }
+            { footerContent }
         </footer>
       </div>
     )

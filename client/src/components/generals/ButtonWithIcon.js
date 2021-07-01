@@ -14,7 +14,7 @@ function ButtonWithIcon(props){
         }
     }else{  //at small mode, the button text appears as bubble at focus/noMouse
         btnConfig[0] = 'btnObjSmall '
-        btnConfig[1] = 'iconWithoutText btnWrapper '
+        btnConfig[1] = 'iconWithoutText '
         if(props.children){
             btnTextContent =  tooltipBubbleState ? 
                 <span className={'btnTooltipBubble'} name={props.naming} >

@@ -82,7 +82,7 @@ describe('Todo input area tests', ()=>{
         const taskArea = await screen.findByLabelText('Task:*')
         const priorArea = screen.getByLabelText('Priority:*')
         expect(screen.getByLabelText('Notation:')).toBeInTheDocument()
-        expect(screen.queryByText('Add new activity')).not.toBeInTheDocument()
+        expect(screen.getByText('Add new activity')).toBeInTheDocument()
 
         //fill the form, read back and sending
         userEvent.type(taskArea, todoInputDatas.task)
@@ -158,9 +158,8 @@ describe('Todo input area tests', ()=>{
         expect(screen.getByDisplayValue('0'+ todoInputDatas.priority)).toBeInTheDocument()
         expect(screen.getByDisplayValue(todoInputDatas.notation)).toBeInTheDocument()
 
-        //find cancel btn, close the area
-        const allBtn = screen.getAllByRole('button')
-        userEvent.click(allBtn[1])
+        //find the tile text, close the area
+        userEvent.click(screen.getByText('Add new activity').parentElement)
 
         //reopen the area again, revise the inputs are empty
         expect(await screen.findByText('Add new activity')).toBeInTheDocument()

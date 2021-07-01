@@ -1,3 +1,4 @@
+import React from 'react'
 const options ={
     year: 'numeric',
     weekday: 'short',

@@ -1,28 +1,10 @@
 
 /* General styling */
-.appContainer{
-    text-align: center;
-}
-.mainApp{
-  border-radius: 1%;
-}
 .blackBackgr{
     color: #FFFAE8;
 }
 .whiteBackgr{
     color: black;
-}
-.cardAreaEdge{
-    box-shadow: -1px 2px 5px  grey;
-    border-radius: 10%;
-}
-.columnTitleText{
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 1rem 0rem;
-}
-.tileNameText{
-    font-size: 1.4rem;
 }
 .clickable{
     cursor: pointer;
@@ -35,6 +17,26 @@
     color: blue;
 }
 
+
+/* card component configs */
+.cardAreaEdge{
+    box-shadow: -1px 2px 5px  grey;
+    border-radius: 10%;
+}
+.tileNameText{
+    font-size: 1.4rem;
+}
+
+
+/* Profile list */
+.columnTitleText{
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 1rem 0rem;
+}
+
+
+/* messaging configs */
 .msgText{
     color: rgb(5, 150, 5);
     font-weight: bold;
@@ -43,6 +45,9 @@
     color: rgb(200, 5, 5);
     font-weight: bold;
 }
+
+
+/* form input configs */
 .formAndCardLabels{
     font-weight: 600;
     font-style: italic;
@@ -52,20 +57,48 @@
     font-size: 0.9rem;
 }
 
+
+
+/* Site containers */
+    /* Header styling */
+    .logo{
+        font-size: 1.6rem;
+        font-weight: 600;
+        font-style: oblique;
+    }
+    .regSymbol{
+        font-size: 1.2rem;
+    }
+
+.appContainer{
+    text-align: center;
+    background: radial-gradient(circle at 10% 30%, #272755, #3C3CB2);
+}
+.mainApp{
+    border-radius: 1%;
+    background-color: #FFFAE8;
+    box-shadow: -1px 2px 15px #505050;
+}
 .aboutContent{
     text-align: justify;
 }
 
 
-/* Site containers */
-.appContainer{
-  background: radial-gradient(circle at 10% 30%, #272755, #3C3CB2);
-}
-.mainApp{
-  background-color: #FFFAE8;
-  box-shadow: -1px 2px 15px #505050;
-}
 
+/* Cookie acknowledge popup ara */
+.footerPopup{
+    background: rgba(40, 40, 40, 0.8)
+}
+.cookiePopupText{
+    font-style: oblique;
+    font-size: 1.2rem;
+}
+.cookiePopupBtn{
+
+    background-color: #FFFAE8;
+    border-radius: 15%;
+    font-size: 1.1rem;
+}
 
 /* Button styling */
 .btnObjBig{
@@ -102,14 +135,5 @@
 }
 
 
-/* Header styling */
-.logo{
-    font-size: 1.6rem;
-    font-weight: 600;
-    font-style: oblique;
-}
-.regSymbol{
-    font-size: 1.2rem;
-}
 
 

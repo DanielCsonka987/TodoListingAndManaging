@@ -24,86 +24,32 @@
 }
 
 
-/* Form textarea unit configs */
-.formTextareaOuterWrapper{
-  position: relative;
-  width: 100%;
-}
-.formTextareaInnerWrapper{
-  padding: 0.2rem 1rem;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.formTextareaInput{
-  width: 100%;
-  resize: none;
-}
-
-.textareaTooltipBubble{
-  display: block;
-  position: absolute;
-  left: 5rem;
-  opacity: 0.0;
-  z-index: 13;
-  padding: 0.4rem;
-  
-  color: black;
-  font-size: 1.0rem;
-  background-color: #FFF0C3;
-  border-radius: 13%;
-
-  transition: opacity 1600ms ease-in-out;
-  animation: tooltips 4s;
-}
 
 /* Todos intputa card layout */
 .InputLayout{  }
-.todoInputForTask{
-
+.todoInputForTask{  }
+.todoInputForNote{  }
+.todoInputForPrior{ }
+.todoInputForBtn{ 
+  width: 70%;
 }
-.todoInputForNote{
-
-}
-.todoInputForPrior{
-
-}
-.todoInputForBtn{
-
-}
-.todoInputForMsg{
-
-}
+.todoInputForMsg{ }
   
 
 
 /* Todo item card layout */
-.todoitem{
-
-}
-.todoItemtForTask{
-
-
-}
-.todoItemForNotation{
-  
-
-}
-
+.todoitem{  }
+.todoItemtForTask{  }
+.todoItemForNotation{ }
 .todoItemForDates{
   font-size: smaller;
 }
 .todoItemForDates p{
   margin: 0.1rem;
 }
-.todoItemForSatus{
-
-}
-.todoItemForDel{
-
-}
-
+.todoItemForSatus{  }
+.todoItemForDel{  }
 .todoItemForShowNote{
   width: 100%;
 }
@@ -131,24 +77,34 @@
 
 /* Contorllers, tooltips  */
 
-.iconAndTextTogether{   
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
 
-  /* at big btn-s */
+/* at big btn-s */
+.buttonGroupWrapper{
+  margin: 0.4rem 0rem;
+  display: flex;
+  flex-direction: column;
+}
   .btnObjBig{
     padding: 0.4rem;
     width: 100%;
   }
+  .iconAndTextTogether{   
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+
 
   /* at small btn-s */
   .btnObjSmall{
     padding: 0.1rem;
   }
   .iconWithoutText{
+    display: block;
+    position: relative;
     margin: 0 auto;
   }
   .textNextToIcon{
@@ -157,20 +113,8 @@
     letter-spacing: 0.04rem;
   }
 
-.buttonGroupWrapper{
-  margin: 0.4rem 0rem;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-.smallButtonGroupWrapper{
-  margin: 0.6rem 0rem;
+/* tooltip bubble for buttons and form inputs, exc. textareas */
 
-}
-.btnWrapper{
-  display: block;
-  position: relative;
-}
 .btnTooltipBubble{
   display: block;
   position: absolute;
@@ -188,6 +132,41 @@
   animation: tooltips 4s;
 }
 
+/* Form textarea unit configs */
+.formTextareaOuterWrapper{
+  position: relative;
+  width: 100%;
+}
+.formTextareaInnerWrapper{
+  padding: 0.2rem 1rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+  .formTextareaInput{
+    width: 100%;
+    resize: none;
+  }
+
+  .textareaTooltipBubble{
+    display: block;
+    position: absolute;
+    left: 5rem;
+    opacity: 0.0;
+    z-index: 13;
+    padding: 0.4rem;
+    
+    color: black;
+    font-size: 1.0rem;
+    background-color: #FFF0C3;
+    border-radius: 13%;
+
+    transition: opacity 1600ms ease-in-out;
+    animation: tooltips 4s;
+  }
+
+/* common animation for tooptip bubbles */
 
 @keyframes tooltips {
   0% { opacity: 0; }

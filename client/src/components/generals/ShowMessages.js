@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 function ShowMessages(props){
     if(props.messageContent === '' || typeof props.messageContent === 'undefined'){
-        return (<></>)
+        return (<Fragment></Fragment>)
     }
     const clssnmForErrorLine = 'msgLine'
     const clssnmForText = props.messageContent.type === 'warn'? 'errorText' : 'msgText'

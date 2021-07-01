@@ -5,7 +5,7 @@ exports[`Card entity tests Normal assembling 1`] = `
   className="cardAreaPadding cardAreaEdge cardStyleClass"
 >
   <p
-    className="iconTextTogether cardContnetnClass"
+    className="clickable iconTextTogether cardContnetnClass"
     onClick={[MockFunction]}
     onKeyPress={[MockFunction]}
     tabIndex="0"

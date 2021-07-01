@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import FormInputUnit from '../generals/FormInputUnit.js';
 import ShowMessages from '../generals/ShowMessages'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
@@ -78,7 +78,7 @@ class RegisterForm extends Component{
     const errormessages = <ShowMessages 
       messageContent={this.state.registerMessage} />;
 
-    const theRegistrationFrom = <>
+    const theRegistrationFrom = <Fragment>
         <p className='cardExlpanation'>Filling the fields with * are required!</p>
         <div className='profileInputContainer'>
           <FormInputUnit
@@ -154,12 +154,12 @@ class RegisterForm extends Component{
           >Registration</ButtonWithIcon>
 
         </div>
-    </>;
+    </Fragment>;
 
     return (
       <CardTileTextAndContent
         wrapperBlockClasses='contentSetCenter'
-        wrapperInlineClasses='clickable'
+        wrapperInlineClasses=''
         funcKeyPressActivity={this.handleFormToggle}
         funcClickActivity={this.handleFormToggle}
         tabIndexing='0' iconDef='person_add' tileText='Registration'

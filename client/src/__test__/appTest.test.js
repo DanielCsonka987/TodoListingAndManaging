@@ -1,3 +1,5 @@
+
+
 import React from 'react'
 import { render, waitFor, screen, waitForElementToBeRemoved  } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -61,6 +63,8 @@ describe('Application tests - structures', ()=>{
         userEvent.tab()
         expect(screen.getByText(guiStaticTexts.regTileText).parentElement)
             .toHaveFocus()
+        userEvent.tab()
+        expect(screen.getByText('Acknowlegded')).toHaveFocus()
         userEvent.tab()
         expect(document.body).toHaveFocus()
         unmount();
@@ -234,7 +238,7 @@ describe('App test - profile processes', ()=>{
         const userTile = screen.getByText(apiReportDatas.startingProfDatas[0].username).parentElement
         userEvent.click(userTile)
         const logInput = screen.getByLabelText(guiStaticTexts.pwdLogInputLabel)
-        const logBtn = screen.getByRole('button')
+        const logBtn = screen.getByText(guiStaticTexts.loginBtnText).parentElement
         userEvent.type(logInput, userInputs.toLogin.password1)
         expect(await screen.findByDisplayValue(userInputs.toLogin.password1)).toBeInTheDocument()
         userEvent.click(logBtn)
@@ -332,10 +336,11 @@ describe('Todo processes', ()=>{
         userEvent.type(taskInp, userInputs.toNewTodo.task)
         userEvent.type(priorInp, userInputs.toNewTodo.priority)
         userEvent.type(noteInp, userInputs.toNewTodo.notation)
+        
         expect(await screen.findByDisplayValue(userInputs.toNewTodo.task)).toBeInTheDocument()
-        expect(screen.getByDisplayValue(userInputs.toNewTodo.notation)).toBeInTheDocument()        
+        expect(screen.getByDisplayValue(userInputs.toNewTodo.notation)).toBeInTheDocument()     
         const saveBtn = screen.getByTestId(guiStaticTexts.todos.inputTestId)
-        .querySelector(guiStaticTexts.todos.saveBtnClass)       
+            .querySelector(guiStaticTexts.todos.saveBtnClass)       
         userEvent.click(saveBtn)
         
         //revison API answer, gui outputs
@@ -407,7 +412,7 @@ describe('Todo processes', ()=>{
         const userTile = screen.getByText(apiReportDatas.startingProfDatas[0].username).parentElement
         userEvent.click(userTile)
         const logInput = screen.getByLabelText(guiStaticTexts.pwdLogInputLabel)
-        const logBtn = screen.getByRole('button')
+        const logBtn = screen.getByText(guiStaticTexts.loginBtnText).parentElement
         userEvent.type(logInput, userInputs.toLogin.password1)
         expect(await screen.findByDisplayValue(userInputs.toLogin.password1)).toBeInTheDocument()
         userEvent.click(logBtn)

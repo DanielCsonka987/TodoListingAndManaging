@@ -1,8 +1,9 @@
-import { React, Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import ShowMessages from '../generals/ShowMessages'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 import FormTextareaUnit from '../generals/FormTextareaUnit'
 import FormInputUnit from '../generals/FormInputUnit'
+import CardTileTextAndContent from '../generals/CardTileTextAndContent'
 
 import { todoInputRevise } from '../../utils/inputRevise'
 import { doAjaxSending, smblNewTodoDatas } from '../../utils/apiMessenger.js';
@@ -80,11 +81,9 @@ class TodoInput extends Component{
         const errorMessage = <ShowMessages messageContent={this.state.todoInputMsg
         } />
         let todoInputContent = ''
-        let todoInputClass = ''
         if(this.state.addInputShowToggle){
-            todoInputClass += 'contentSetCenter'
             todoInputContent = 
-            <>
+            <Fragment>
                 <FormTextareaUnit classes='todoInputForTask'
                     id='task' label='Task:*'
                     name='task' maxCharLength={'150'}
@@ -109,34 +108,27 @@ class TodoInput extends Component{
                     >
                     It must be between 1-10 value. Required!
                 </FormInputUnit>
-                <div className='smallButtonGroupWrapper todoInputForBtn'>
-                    <ButtonWithIcon sizing= 'small' iconDef='create'
+                <div className='contentSetCenter todoInputForBtn buttonGroupWrapper'>
+                    <ButtonWithIcon sizing= 'big' iconDef='create'
                         wrapperBlockClasses='btnCreate' 
                         funcClickActivity={this.handleTodoSave}
                         >Save</ButtonWithIcon>
-                    <ButtonWithIcon sizing= 'small' iconDef='cancel'
-                        wrapperBlockClasses='btnBack' 
-                        funcClickActivity={this.handleToogleArea}
-                        >Remove input area</ButtonWithIcon>
                 </div>
                 <div className='todoInputForMsg'> { errorMessage }  </div>
-
-            </>
-        }else{
-            todoInputClass += 'buttonGroupWrapper'
-            todoInputContent = <>
-                <ButtonWithIcon sizing= 'big' classes='todoInputBtn'
-                    wrapperBlockClasses='btnCreate' iconDef='create'
-                    funcClickActivity={this.handleToogleArea}
-                    >Add new activity</ButtonWithIcon>
-            </>
+            </Fragment>
         }
 
         return(
-            <section className={'todoInput cardAreaEdge cardAreaPadding ' + todoInputClass}
-                data-testid='todoInputToTest'>
+            <CardTileTextAndContent setTestId='todoInputToTest'
+                wrapperBlockClasses={'todoInput contentSetCenter'}
+                wrapperInlineClasses=''
+                funcKeyPressActivity={this.handleToogleArea}
+                funcClickActivity={this.handleToogleArea}
+                tabIndexing='0' iconDef=''
+                tileText={'Add new activity'}
+            >
                 { todoInputContent }
-            </section>
+            </CardTileTextAndContent>
         )
     }
     

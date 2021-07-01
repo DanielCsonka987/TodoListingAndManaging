@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import FromInputUnit from '../generals/FormInputUnit'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 
@@ -7,7 +7,7 @@ const DetailsLoggedIn = (props)=>{
 
   let areaInputContent,  areaContentForButton = '';
   if(stateOfComponent === 'none'){
-    areaContentForButton = <>
+    areaContentForButton = <Fragment>
       <ButtonWithIcon sizing='big'
         wrapperBlockClasses='btnChange' iconDef='edit' 
         funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
@@ -17,10 +17,10 @@ const DetailsLoggedIn = (props)=>{
       <ButtonWithIcon sizing='big'
         wrapperBlockClasses='btnLogout' iconDef='lock' 
         funcClickActivity={props.funcLogOut}>Logout</ButtonWithIcon>
-    </>
+    </Fragment>
   }
   if(stateOfComponent === 'pwd'){
-    areaInputContent = <>
+    areaInputContent = <Fragment>
         <FromInputUnit 
         label={'Old password:'}
         type='password' name='old_password' id='old_password'
@@ -36,32 +36,32 @@ const DetailsLoggedIn = (props)=>{
         type='password' name='password_repeat' id='password_repeat'
         value={props.repPwd} funcChange={props.funcInputChange}
       />
-    </>
-    areaContentForButton = <>
+    </Fragment>
+    areaContentForButton = <Fragment>
       <ButtonWithIcon sizing='big'
         wrapperBlockClasses='btnChange' iconDef='send' 
         funcClickActivity={props.funcPwdChange}>Change password</ButtonWithIcon>
       <ButtonWithIcon sizing='big'
         wrapperBlockClasses='btnBack' iconDef='cancel' 
         funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
-    </> 
+    </Fragment> 
   }
 
   if(stateOfComponent === 'del'){
-    areaInputContent = <>
+    areaInputContent = <Fragment>
       <FromInputUnit 
         label={'Password:'}
         type='password' name='old_password' id='old_password'
         value={props.oldPwd} funcChange={props.funcInputChange}
-      /></>
-      areaContentForButton = <>
+      /></Fragment>
+      areaContentForButton = <Fragment>
         <ButtonWithIcon sizing='big'
           wrapperBlockClasses='btnDelete' iconDef='delete' 
           funcClickActivity={props.funcProfDel}>Delete account</ButtonWithIcon>  
         <ButtonWithIcon sizing='big'
           wrapperBlockClasses='btnBack' iconDef='cancel'
           funcClickActivity={props.funcCancelModify}>Cancel</ButtonWithIcon>
-      </>
+      </Fragment>
   }
 
   return(

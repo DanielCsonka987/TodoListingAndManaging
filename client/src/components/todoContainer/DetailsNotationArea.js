@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import ButtonWithIcon from '../generals/ButtonWithIcon'
 import FormTextareaUnit from '../generals/FormTextareaUnit'
 
 function DetailsNotationArea(props){
 
-    const preNotationChangePhase = <>
+    const preNotationChangePhase = <Fragment>
 
         <FormTextareaUnit classes='todoInputForNote'
             id='noteTodo' label='Notation:'
@@ -25,9 +25,9 @@ function DetailsNotationArea(props){
             >Cancel notation editing!</ButtonWithIcon>
         </div>
 
-    </>
+    </Fragment>
 
-    const  beforeNotationChangePhase = <>
+    const  beforeNotationChangePhase = <Fragment>
         <p className='todoItemForShowNote' >
             {props.notation?props.notation : 'Notation none...'}
         </p>
@@ -36,7 +36,7 @@ function DetailsNotationArea(props){
             iconDef = 'edit' wrapperBlockClasses='btnChange'
             funcClickActivity={props.funcModeSwitch}
         >Edit this notation!</ButtonWithIcon>
-    </>
+    </Fragment>
 
     return(
         <div className='todoItemForNotation' >

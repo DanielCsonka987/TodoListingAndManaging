@@ -1,4 +1,4 @@
-import { React, Component, Fragment } from 'react'
+import React, { Component, Fragment } from 'react'
 import TodoItem from './TodoItem.js'
 import TodoInput from './TodoInput'
 import ErrorHandler from '../generals/ErrorHandler'
@@ -84,7 +84,7 @@ class TodoList extends Component{
             if(this.state.todos.length > 0){
                 todoAmount = this.state.todos.length;
                 todosToRender = this.state.todos.map((item, index)=>{
-                    if(!item.id) { return <></>}
+                    if(!item.id) { return <Fragment></Fragment>}
                     return (
                         <ErrorHandler key={item.id} location={`TodoItem ${item.id}`}>
                             <TodoItem key={item.id}
@@ -103,7 +103,7 @@ class TodoList extends Component{
         }
 
         return (
-            <>
+            <Fragment>
                 <TodoInput 
                     createNewTodoUrl={this.props.createNewTodo}
                     funcTodoSave={this.todoAdditionProc}
@@ -117,7 +117,7 @@ class TodoList extends Component{
                         { todosToRender }
                     </div>
                 </section>
-            </>
+            </Fragment>
         )
     }
 }
