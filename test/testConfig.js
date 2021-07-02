@@ -1,5 +1,5 @@
 module.exports = {
-    testDBConnection: require('../config/appConfig').db.db_access_local,
+    testDBConnection: require('../config/appConfig').db.db_access_cloud,
     headerArrayToTest: require('../config/appConfig').headers,
 
     profURLRegexp:{

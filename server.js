@@ -41,6 +41,11 @@ app.disable('x-powered-by');
 app.get("/", (req, res)=>{
   res.sendFile(path.resolve(__dirname, './clientBuild', 'index.html'))
 })
+app.get('/revdb', (req, res)=>{
+  res.write(dbAccessUrl)
+  res.write(mongoose.connection)
+  res.send()
+})
 app.use(apiRouting.basePath, routerProfileAllowed); // GET ALL PROFILES + REG + LOGIN + LOGUT
 app.use(apiRouting.basePath, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
 app.use(apiRouting.basePath, routerLimitedTodos);  // TODO PROCESSES
