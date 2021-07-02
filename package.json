@@ -2,7 +2,7 @@
   "name": "todoappapi",
   "version": "1.0.0",
   "description": "javascript node/express-api and react-front to practice webapp creation",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
