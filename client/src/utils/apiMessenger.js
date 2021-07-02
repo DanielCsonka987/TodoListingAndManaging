@@ -1,6 +1,6 @@
 const { ClientException, ServerException, ServerError, ServerValidateException } = require('./errorObject')
 
-module.exports.doAjaxSending = (apiPath, method, input)=>{
+const doAjaxSending = (apiPath, method, input)=>{
   return new Promise( (resolve, reject)=>{
     if(!apiPath){
       throw new ClientException('Front development error - no path!')
@@ -77,7 +77,7 @@ function smblTheInit(met){
 
 
 // PROFILE DATA ASSEMBLERS //
-module.exports.smblRegisDatas = (datas) =>{
+const smblRegisDatas = (datas) =>{
   let dataCont = '';
   dataCont += `username=${datas.username}&`;
   dataCont += `password=${datas.password}&`;
@@ -89,34 +89,48 @@ module.exports.smblRegisDatas = (datas) =>{
   dataCont += `occupation=${datas.occupation}`;
   return dataCont;
 }
-module.exports.smblLoginDatas = (unm, pwd) =>{
+const smblLoginDatas = (unm, pwd) =>{
   let dataCont = '';
   dataCont += `username=${unm}&`;
   dataCont += `password=${pwd}`;
   return dataCont;
 }
-module.exports.smblPwdChangeDatas = (oldpwd, newpwd)=>{
+const smblPwdChangeDatas = (oldpwd, newpwd)=>{
   let dataCont = '';
   dataCont += `old_password=${oldpwd}&`;
   dataCont += `new_password=${newpwd}`;
   return dataCont;
 }
-module.exports.smblProfDeletDatas = (oldpwd)=>{
+const smblProfDeletDatas = (oldpwd)=>{
   return `old_password=${oldpwd}`;
 }
 
 
 // TODO DATAS ASSEMBLERS //
-module.exports.smblNewTodoDatas = (datas)=>{
+const smblNewTodoDatas = (datas)=>{
   let dataCont = '';
   dataCont += `task=${datas.task}&`;
   dataCont += `priority=${datas.priority}&`;
   dataCont += `notation=${datas.notation}`;
   return dataCont;
 }
-module.exports.smblStateChangeTodoDatas = (status)=>{
+const smblStateChangeTodoDatas = (status)=>{
   return `status=${status}`;
 }
-module.exports.smblNotationChangeTodoDatas = (note)=>{
+const smblNotationChangeTodoDatas = (note)=>{
   return `notation=${note}`;
+}
+
+
+export {
+  doAjaxSending,
+
+  smblRegisDatas,
+  smblLoginDatas,
+  smblPwdChangeDatas,
+  smblProfDeletDatas,
+
+  smblNewTodoDatas,
+  smblStateChangeTodoDatas,
+  smblNotationChangeTodoDatas
 }

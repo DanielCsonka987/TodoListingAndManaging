@@ -1,11 +1,12 @@
 {
-  "name": "todoapp",
+  "name": "todoappapi",
   "version": "1.0.0",
   "description": "javascript node/express-api and react-front to practice webapp creation",
   "main": "app.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "deploy": "node server.js todositedb",
     
     "seedDB": "node ./model/dbSeeder.js",
     "test_modelProf1": "mocha ./test/model/profileItem.test.js",

@@ -8,7 +8,7 @@ const upload = multer();
 
 const appConfigPorting = require('./config/appConfig').server.port
 const PORT_FINAL = process.env.PORT || appConfigPorting;
-const dbAccessUrl = require('./config/appConfig.js').db.db_access_local;
+const dbAccessUrl = require('./config/appConfig.js').db.db_access_cloud;
 const apiRouting = require('./config/appConfig.js').routing;
 
 const routerProfileAllowed = require('./control/routerProfilesAllowed.js');
@@ -35,7 +35,12 @@ const app = express();
 app.use(cookieparser());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(upload.array());
+app.use(express.static(path.resolve(__dirname, './clientBuild')))
+app.disable('x-powered-by');
 
+app.get("/", (req, res)=>{
+  res.sendFile(path.resolve(__dirname, './clientBuild', 'index.html'))
+})
 app.use(apiRouting.basePath, routerProfileAllowed); // GET ALL PROFILES + REG + LOGIN + LOGUT
 app.use(apiRouting.basePath, routerLimitedProfile); // SINGLE PROFILE GET+POST+PUT+DELETE
 app.use(apiRouting.basePath, routerLimitedTodos);  // TODO PROCESSES
